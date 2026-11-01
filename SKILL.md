@@ -1,41 +1,56 @@
 ---
-name: srt-clip-skill
-description: Turn one or more raw SRT livestream subtitle files into verified, conversion-focused short-video clip scripts using SRT Clip Copy V3.0 and R8 utilities. Trigger on "srt切片文案". Strictly preserve original SRT text, timecodes and indices.
+name: srt-clip-fast
+description: Fast single-pass variant of the SRT clip-script skill. Turns raw SRT livestream subtitle files into conversion-focused short-video clip scripts in one pass, preserving the exact 5-section closing format and quality rules of V3.0 while skipping the deterministic Python verification chain. Trigger on "srt切片文案快版" / "快速切片文案". Strictly preserve original SRT text, timecodes and indices.
 ---
 
-# SRT 切片文案 · V3.0 ACTIVE / R8
+# SRT 切片文案 · 快速版（V3.0-FAST）
 
-## Scope
-Use for pure SRT text files only, including pasted SRT-formatted TXT. Do not claim to have validated video/audio. This is separate from the MP4-enabled "切片文案 V5.1" workflow. Never silently replace this workflow with archived R7/R6/R5 versions.
+## 定位
+这是「srt切片文案 V3.0 / R8」的定制加速版。**成交格式（五部分结构 + 第三部分冻结字段）与质量规则完全继承 V3.0 不变**；仅去掉确定性程序验证链路（ZIP/SHA-256 校验、Final Gate、Batch Router、bundle 身份链、task state），改为**单遍读取 + 单遍选择 + 单遍渲染**。无 Python 运行时依赖，纯对话即可跑，追求最短输出时间。
 
-## Inputs
-- One or more .srt files, or verbatim SRT text with recognizable numbered subtitle blocks and timestamps.
-- Optional specified target product; otherwise identify product boundaries first. If multiple products are present and target is ambiguous, ask once for target product(s) before deep selection.
-- Files are isolated by default, even if they appear continuous. Only merge with explicit user instruction.
+## 适用范围
+仅纯 SRT 文本（含粘贴的 SRT 格式 TXT）。不验证视频/音频，不与视频版「切片文案 V5.1」混用。
 
-## Authority / runtime
-- Business rules: V3.0 ACTIVE. Support package: R8, located in `assets/SRT_V3.0_R8.zip`.
-- Source-of-truth runtime card: Google Drive ID `1L7Q8HaW4vHSeLcKWBQnaKZ4ppvPUXnQ9wuUjAdco-aQ` (FAST-PATH 2.0). This skill embeds core operational rules so other AI agents can run without Drive access. When conflicts are detected, stop and request the authoritative rule rather than guessing.
-- Confirm SHA-256 of package is `999679f9b9de47c348813ef79880ea2d230412c6741b70665ad04ffefab3edbb` before executing bundled scripts; inspect README and CLI help inside ZIP. Never execute an unverified archive blindly.
+## 输入
+- 一个或多个 .srt 文件，或带编号字幕块与时间戳的逐字 SRT 文本。
+- 可选指定目标商品；未指定且多商品时先识别商品边界。
+- 多个文件默认互相隔离，绝不拼接；仅在用户明确要求时合并。
 
-## Process
-1. Read each SRT exactly once. Decode UTF-8-SIG -> UTF-8 -> GB18030. Parse and freeze per-file canonical read-only index: `source_key`, `file_id`, `filename`, `block_ordinal`, source index as text, verbatim subtitle content, `start_raw`, `end_raw`, `start_ms`, `end_ms`, file SHA-256. Do not renumber source indices.
-2. Perform ONE lightweight full-file scan for product transitions, role/quote or read-comment signals, numeric risk and context boundaries. For multiple SRTs assign stable `f01`/`f02` file slots. Never concatenate source files.
-3. If multiple products require user selection, pause once with product names and source ranges; keep parsed canonical state. Once confirmed, do not re-read/reparse or redo the full scan.
-4. Deep-scan only the target product windows with bounded context using multi-window target slices. Use the R8 scope-once model bundle: top-level `s=f01` etc per file (single-SRT path does not add scope), row-level `c001`/`c002`. Resolve cues only with batch/file-slot/bundle/file identity and ordered canonical source keys; reject cross-file reference reuse. Long `source_key` stays in deterministic software.
-5. AI interprets product meaning, buyer pain, selling points, evidence, scenario/fit, objections, trading rationale and genuine CTA. Surface `question_like` and dependency hints without automatically dropping subtitles. Reject explicit read-chat/commentary content when not suitable as the speaker's substantive pitch.
-6. Compress semantically equivalent candidates without losing unique facts/price/CTA/needed context. Up to 3 complementary per cluster, up to 5 opening and 5 closing candidates ordinarily. Avoid full permutation search.
-7. Opening must pass all 3 hard criteria: target buyers recognize themselves; non-target viewers can self-filter; opening promises a concrete payoff the video delivers quickly (prefer within 3 segments). Middle segments each advance the purchase decision. Price and transaction reasons generally late. If a reliable CTA exists, it must be the final segment; never fabricate claims, prices, urgency or stock conditions.
-8. Target theoretical precise-cut subtitle duration strictly 45-90 seconds, ideally near 70 seconds when source supports it. Do not pad with repetitious/off-topic lines.
-9. Final playback plan stores only validated `source_key` values. Run a single deterministic Final Gate to build ONE `verified_manifest` with exact original index, complete original text, raw timecode, start/end ms, file identity, source coverage, uncovered gaps, group boundaries, cumulative finished timeline and final ordered indices. No independent model arithmetic or reassembly of Part 3 and Part 5. On mismatch or duration violation, block formal delivery and repair the candidate plan, then revalidate.
-10. Render five sections from that same manifest in order; keep Part 3 format fixed.
+## 单遍流程（关键：不要多轮、不要重读）
+一次完成以下全部，然后直接输出五部分：
 
-## Required output (per file)
-**一、文件解析结果** — filename, parsed cue count and defects/identity.
+1. **读一次 SRT**，逐块解析出唯一索引：原始序号文本、`HH:MM:SS,mmm --> HH:MM:SS,mmm` 时间码、逐字原文。不要重排、不要改写、不要合并相邻行、不要替换时间码。序号允许有重复/乱序，按原文原样保留。
+2. **同遍识别商品**：定位目标商品边界。多商品且目标不明时，只暂停一次，报出商品名 + 源序号区间，确认后直接继续（不再重读）。单商品直接选。
+3. **同遍选段并标注成交功能**：给候选片段打上 需求/痛点、核心结果、证明、适配/场景、顾虑处理、交易理由、CTA 之一。语义等价候选去重（每簇至多 3 个互补、开头至多 5、结尾至多 5），不做全排列搜索。
+4. **同遍核对时长与顺序**：总时长 = 各组「原SRT 起止」跨度之和；成片时间轴从 00:00:00.000 起累计。目标 45–90 秒，素材允许时尽量接近 70 秒。用源时间码直接计算，算完自查一遍和是否一致。
+5. **直接渲染五部分**（第三部分逐字从源索引复制原文/时间码/序号）。
 
-**二、商品识别** — target product and identified segments; request confirmation first if ambiguous.
+## 质量硬规则（继承 V3.0，不变）
+- **开头三关全过**：目标买家能认出自己；非目标观众能自我筛除；开头承诺一个成片前 3 个片段内快速兑现的具体收益。
+- **中段每段推进购买决策**：新增购买理由、独立证据、适配确定性、顾虑消除或必要上下文；同义重复无边际价值就淘汰。
+- **价格与交易理由后置**；可靠的 CTA 必须是最后一段，CTA 后不再纳入无成交价值的闲聊。
+- **绝不编造**：不虚构价格、折扣、库存、紧迫性、链接或购买理由。
+- **逐字保留**：原始文本、时间码、序号不得改写；单位缺失的数字只能逐字引用并加疑点提醒，不补单位、不标准化。
+- **剔除读评论/念弹幕**：非主播实质性讲解的内容不入选。
+- 不因追求快而用重复/跑题行凑时长。
 
-**三、最佳成片方案** — frozen format, each segment:
+## 成交格式（冻结，逐字执行）
+
+五个部分标题与顺序固定：
+
+1. 一、文件解析结果
+2. 二、商品识别
+3. 三、最佳成片方案
+4. 四、作品标题与话题
+5. 五、原始SRT序号（按成片播放顺序）
+
+### 一、文件解析结果
+文件名、解析出的字幕条数、缺陷/身份（如序号重复、乱序、时间倒退、空文本）。
+
+### 二、商品识别
+目标商品 + 识别出的片段区间。多商品且模糊时先确认一次。
+
+### 三、最佳成片方案（字段顺序冻结，不可增删改名）
 ```text
 三、最佳成片方案
 主推主题：……
@@ -43,17 +58,29 @@ Use for pure SRT text files only, including pasted SRT-formatted TXT. Do not cla
 片段N｜片段功能｜预计成片 HH:MM:SS.mmm–HH:MM:SS.mmm｜原SRT HH:MM:SS.mmm–HH:MM:SS.mmm｜源序号 5–8｜本组未覆盖间隔 HH:MM:SS.mmm｜SRT源字幕定位
 原始序号 | HH:MM:SS,mmm --> HH:MM:SS,mmm | 完整原始字幕文本
 ```
-Do not paraphrase source subtitle lines, invert end/start, merge adjacent lines or substitute estimated timestamps. Every segment's original cue lines must be printed and source-validated.
+规则：
+- 「预计成片」时间轴用点毫秒（`.`），从 00:00:00.000 起逐组累计；「原SRT」起止与该组源字幕最早开始/最晚结束一致。
+- 「源序号」用连续范围压缩（`28–36`，长横杠–），非连续用半角逗号无空格（`92–99,100`），单条即写单序号。
+- 「本组未覆盖间隔」= 组内源时间跨度 − 字幕覆盖时长。
+- 「SRT源字幕定位」必须在该元数据行末尾；随后逐行打印每条原始字幕：`原始序号 | 开始时间,毫秒 --> 结束时间,毫秒 | 完整原文`，原文含换行也逐字保留。
+- 仅在数字单位缺失等必要时追加「字幕疑点提醒：……」。
+- 预计成片时长的 `.mmm` 用点毫秒；源时间码用逗号毫秒。
 
-**四、作品标题与话题** — exactly one title and three hashtags.
+### 四、作品标题与话题
+恰好 1 个标题 + 3 个话题标签。
 
-**五、原始SRT序号（按成片播放顺序）** — offer a copy control when UI supports it; show only the same ordered indices in a copyable code block; the absolute final line must repeat the identical plain numeric index sequence, with no text following it. Determine indices from `verified_manifest` only, including when files have repeated or out-of-order source numbering. For multiple files produce independently scoped outputs, never a combined source-number list.
+### 五、原始SRT序号（按成片播放顺序）
+- 提供可复制按钮（界面支持时）；代码块内只放序号串。
+- 序号串 = 按成片播放顺序展开的原始序号，英文半角逗号分隔、无空格。
+- **回复的最后一行必须是这段纯数字序号串本身，之后不得有任何文字**。
+- 多文件各自独立成段，绝不合并成一个序号串。
 
-## Hard fails
-Fail closed when package hash disagrees, file/SHA/slot/bundle/cue resolver is inconsistent, original text or source timecodes drift, source start is later than end, any subtitles cross into another product/file, group gap/coverage is contradictory, finished length is outside 45–90 seconds, or Part 3 and Part 5 diverge. Declare what failed; do not fabricate a finished answer.
+## 硬失败（快速可查项）
+- 原文 / 时间码 / 序号任一处漂移；或把结束当开始、开始晚于结束。
+- 字幕跨进其他商品或文件。
+- 成片总时长不在 45–90 秒。
+- 第三部分与第五部分序号不一致。
+- 出现上述任一，如实说明失败点并修正后重出，不得编造成片结果。
 
-## Efficiency
-Typical single-file path: 1 runtime read (or none when self-contained), 1 SRT read, 1 parse, 1 lightweight scan, 1 target deep scan, 1 Final Gate. Multi-file paths preserve per-file isolation and single-pass reads. Never claim a wall-clock speedup without measurements.
-
-## Portable invocation
-Ask an AI agent to load this SKILL.md and the R8 archive, then: “srt切片文案” with the actual subtitle file(s). Executing Python utilities requires a Python runtime; plain conversational models can follow the rules but cannot claim deterministic validation without running the Final Gate.
+## 效率目标
+单文件 = 1 次读取 + 1 次选择 + 1 次输出；多文件保持逐文件隔离与单遍读取。商品确认后绝不重读/重解析。不宣称未经测量的墙钟提速；只追求最少步骤、最短输出时间。

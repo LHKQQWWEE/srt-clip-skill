@@ -1,17 +1,14 @@
-# srt-clip-c2 — SRT切片文案 V3.0 · C2精简文本版
+# SRT文案与SRT切片文案｜C2 0.1.5
 
-这是本仓库默认使用的 Skill。精确触发词：`srt切片文案`。根目录 `SKILL.md` 与 `.agents/skills/srt-clip-c2/SKILL.md` 均为C2格式，必须输出五部分。
+本仓库只保留一个权威 Skill，路径为 [`.agents/skills/srt-slice-copy/SKILL.md`](.agents/skills/srt-slice-copy/SKILL.md)。旧根目录副本、重复的 `srt-clip-c2` 技能副本及 V3.0/R8 历史规则包已从当前版本移除。
 
-第三部分只展示片段功能、原SRT大致时间、源序号与主播完整原话；不展示逐句精确时间码，精确数据仅后台校验。第五部分为唯一完整可复制序号串。
+统一触发词：`srt文案`、`srt切片文案`、`str文案`、`C2完整精简版`。全部执行 C2 0.1.5 唯一规则。
 
-运行：
+- 完整、结构适中的短文本直接处理，不启动脚本。
+- 长附件、可能截断或累计计算复杂时，采用一次扫描、一次 AI 选段、一次定稿核验。
+- 未实际执行脚本时，不报告程序核验通过；逐条时长文本位置只作累计估算。
+- 只处理 SRT 或逐条时长文本，不处理 MP4；视频/原声流程保持独立。
 
-```
-python -S scripts/srt_fast.py scan INPUT.srt --snapshot session.json
-# AI决定plan.json
-python -S scripts/render_compact.py --snapshot session.json --plan plan.json --stdout
-```
+## 在 Codex 中使用
 
-本地测试：`python -S tests/test_portable.py`。旧版根目录Skill内容存档在 `legacy/SRT_FAST_REFERENCE.md`，不得被 `srt切片文案` 触发。
-
-**重要**：将代码上传GitHub，不意味着ChatGPT账号已安装；需要在客户端安装/更新Skill。Google Drive现行Runtime如未更新，仍可能执行旧第三部分格式。
+克隆本仓库后，项目级 Skill 位于 `.agents/skills/srt-slice-copy/`。个人安装时，将该目录复制到 `$CODEX_HOME/skills/srt-slice-copy/`。

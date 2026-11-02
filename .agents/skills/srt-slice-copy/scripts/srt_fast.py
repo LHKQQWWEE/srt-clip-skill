@@ -10,9 +10,11 @@ import argparse
 import json
 import re
 import sys
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 TIME_RE = re.compile(r'^(\d{2,}:\d\d:\d\d,\d{3})\s*-->\s*(\d{2,}:\d\d:\d\d,\d{3})(?:\s+.*)?$')
+DURATION_LINE_RE = re.compile(r'^[ \t]*(?P<id>\d+)[ \t]+(?P<duration>\d+(?:\.\d+)?)s[ \t]+(?P<text>\S.*)$')
 
 
 def ms(s):
@@ -27,15 +29,23 @@ def fmt(t):
     return f'{h:02d}:{m:02d}:{s:02d}.{z:03d}'
 
 
+def srt_time(t):
+    h,t=divmod(t,3600000); m,t=divmod(t,60000); s,z=divmod(t,1000)
+    return f'{h:02d}:{m:02d}:{s:02d},{z:03d}'
+
+
+def decode_bytes(raw, label):
+    for enc in ('utf-8-sig','gb18030'):
+        try: return raw.decode(enc,'strict')
+        except UnicodeDecodeError: pass
+    raise ValueError(f'Cannot strictly decode {label}')
+
+
 def parse_once(path):
     path=Path(path)
     if path.suffix.lower()!='.srt': raise ValueError('Only SRT allowed')
     raw=path.read_bytes()   # Exactly one read, no retries.
-    decoded=None
-    for enc in ('utf-8-sig','gb18030'):
-        try: decoded=raw.decode(enc,'strict'); break
-        except UnicodeDecodeError: pass
-    if decoded is None: raise ValueError('Cannot strictly decode SRT')
+    decoded=decode_bytes(raw,'SRT')
     blocks=re.split(r'\n[ \t]*\n+', decoded.replace('\r\n','\n').replace('\r','\n').strip('\n'))
     if not blocks or not blocks[0].strip(): raise ValueError('Empty SRT')
     rows=[]; ids=set()
@@ -51,16 +61,78 @@ def parse_once(path):
         start,end=ms(mt[1]),ms(mt[2])
         if end<=start: raise ValueError(f'Nonpositive source cue at {ordinal}')
         rows.append({'ord':ordinal,'id':sid,'start_raw':mt[1], 'end_raw':mt[2],
-                     'start':start,'end':end,'text':'\n'.join(lines[2:])})
-    return {'filename':path.name,'count':len(rows),'start':min(r['start'] for r in rows),
+                     'start':start,'end':end,'duration_ms':end-start,
+                     'duration_raw':fmt(end-start),'text':'\n'.join(lines[2:])})
+    return {'input_type':'srt','filename':path.name,'count':len(rows),'start':min(r['start'] for r in rows),
             'end':max(r['end'] for r in rows),'rows':rows}
 
 
+def parse_duration_text(text, filename='<pasted text>'):
+    """Parse one record per line: source ID, per-cue seconds, and exact text."""
+    rows=[]; ids=set(); elapsed=0; record=0
+    for line_no,line in enumerate(text.splitlines(),1):
+        if not line.strip(): continue
+        match=DURATION_LINE_RE.fullmatch(line)
+        if not match:
+            if record==0 and line.strip() in {'srt文案','str文案','C2完整精简版'}:
+                continue
+            raise ValueError(f'Invalid duration-text record at line {line_no}; expected "ID 0.8s transcript"')
+        sid=match['id']; numeric_id=int(sid)
+        if numeric_id<=0:
+            raise ValueError(f'Source number must be positive at line {line_no}')
+        if numeric_id in ids:
+            raise ValueError(f'Duplicate source number {sid} at line {line_no}')
+        ids.add(numeric_id)
+        try: duration=Decimal(match['duration'])
+        except InvalidOperation:
+            raise ValueError(f'Invalid duration at line {line_no}') from None
+        if duration.as_tuple().exponent < -3:
+            raise ValueError(f'Duration has more than millisecond precision at line {line_no}')
+        duration_ms=int(duration*1000)
+        if duration_ms<=0:
+            raise ValueError(f'Nonpositive duration at line {line_no}')
+        start=elapsed; end=start+duration_ms; elapsed=end; record+=1
+        rows.append({'ord':record,'id':sid,'start_raw':srt_time(start),'end_raw':srt_time(end),
+                     'start':start,'end':end,'duration_ms':duration_ms,
+                     'duration_raw':match['duration']+'s','text':match['text']})
+    if not rows: raise ValueError('Empty duration-text input')
+    return {'input_type':'duration_text','filename':filename,'count':len(rows),
+            'start':0,'end':elapsed,'rows':rows}
+
+
 def scan(doc):
+    if doc.get('input_type')=='duration_text':
+        print(f"FILE={doc['filename']} | CUES={doc['count']} | SUM_OF_CUE_DURATIONS={fmt(doc['end'])}")
+        print('FORMAT: 逐条时长文本；序号@累计位置约（只累加字幕时长，不含字幕间隔，非原始绝对视频时间）|本条时长|原话')
+        for r in doc['rows']:
+            sec=r['start']//1000; h,rest=divmod(sec,3600); m,s=divmod(rest,60)
+            locator=f'{h:02d}:{m:02d}:{s:02d}' if h else f'{m:02d}:{s:02d}'
+            print(f"{r['id']}@{locator}|{r['duration_raw']}|{r['text'].replace(chr(10),' / ')}")
+        return
     print(f"FILE={doc['filename']} | CUES={doc['count']} | SPAN={fmt(doc['end']-doc['start'])}")
     print('FORMAT: 原SRT序号|原话（完整时间码保存在本地快照）')
     for r in doc['rows']:
         print(f"{r['id']}|{r['text'].replace(chr(10),' / ')}")
+
+
+def scan_page(doc, offset, limit):
+    """Print a page from an existing snapshot without rereading the source."""
+    if offset < 0 or limit <= 0:
+        raise ValueError('Page offset must be nonnegative and limit must be positive')
+    rows=doc['rows'][offset:offset+limit]
+    if not rows:
+        raise ValueError('Requested page is outside the snapshot')
+    print(f"ROWS={offset+1}-{offset+len(rows)} OF {doc['count']}")
+    if doc.get('input_type')=='duration_text':
+        print('FORMAT: 逐条时长文本；序号@累计位置约|本条时长|原话')
+        for r in rows:
+            sec=r['start']//1000; h,rest=divmod(sec,3600); m,s=divmod(rest,60)
+            locator=f'{h:02d}:{m:02d}:{s:02d}' if h else f'{m:02d}:{s:02d}'
+            print(f"{r['id']}@{locator}|{r['duration_raw']}|{r['text'].replace(chr(10),' / ')}")
+    else:
+        print('FORMAT: 原SRT序号|原话')
+        for r in rows:
+            print(f"{r['id']}|{r['text'].replace(chr(10),' / ')}")
 
 
 def compress(ids):
@@ -116,10 +188,15 @@ def render(doc,plan):
     if not 45000<=cumulative<=90000:
         raise ValueError('Selected duration is outside 45–90 seconds')
     serials=','.join(all_ids)
+    is_text=doc.get('input_type')=='duration_text'
     third=['三、最佳成片方案',f"主推主题：{plan['theme']}",f'预计成片时长：{fmt(cumulative)}']
     for n,func,g,a,b,ts,te,gap in groups:
-        third.append(f"片段{n}｜{func}｜预计成片 {fmt(ts)}–{fmt(te)}｜原SRT {fmt(a)}–{fmt(b)}｜源序号 {compress([r['id'] for r in g])}｜本组未覆盖间隔 {fmt(gap)}｜SRT源字幕定位")
-        third.extend(f"{r['id']} | {r['start_raw']} --> {r['end_raw']} | {r['text']}" for r in g)
+        if is_text:
+            third.append(f"片段{n}｜{func}｜累计位置约 {fmt(a)}–{fmt(b)}｜源序号 {compress([r['id'] for r in g])}｜逐条时长文本定位（无原始绝对时间码）")
+            third.extend(f"{r['id']} | {r['duration_raw']} | {r['text']}" for r in g)
+        else:
+            third.append(f"片段{n}｜{func}｜预计成片 {fmt(ts)}–{fmt(te)}｜原SRT {fmt(a)}–{fmt(b)}｜源序号 {compress([r['id'] for r in g])}｜本组未覆盖间隔 {fmt(gap)}｜SRT源字幕定位")
+            third.extend(f"{r['id']} | {r['start_raw']} --> {r['end_raw']} | {r['text']}" for r in g)
     notes=plan['subtitle_notes']
     if notes:
         if not isinstance(notes,list) or not all(isinstance(x,str) for x in notes):raise ValueError('subtitle_notes must be list')
@@ -128,11 +205,11 @@ def render(doc,plan):
         '一、文件解析结果',
         '文件名称：'+doc['filename'],
         f"原始字幕数量：{doc['count']}条",
-        f"原素材时间范围：{fmt(doc['start'])}–{fmt(doc['end'])}",
-        f"素材总跨度：{fmt(doc['end']-doc['start'])}",
+        (f"累计时长范围（估算）：{fmt(doc['start'])}–{fmt(doc['end'])}" if is_text else f"原素材时间范围：{fmt(doc['start'])}–{fmt(doc['end'])}"),
+        (f"逐条时长合计：{fmt(doc['end']-doc['start'])}（未含字幕间隔）" if is_text else f"素材总跨度：{fmt(doc['end']-doc['start'])}"),
         f"入选字幕：{len(all_ids)}条，{len(groups)}组",
         f"预计成片时长：{fmt(cumulative)}",
-        '来源核对：PASS（仅原字幕、时间码、序号与45–90秒检查；非R8验收）',
+        ('来源核对：PASS（仅原话、原编号、逐条时长与45–90秒检查；累计位置按字幕时长相加估算，不是原始视频时间码；非R8验收）' if is_text else '来源核对：PASS（仅原字幕、时间码、序号与45–90秒检查；非R8验收）'),
         '', '二、商品识别', *plan['product_lines'], '', *third, '',
         '四、作品标题与话题', '作品标题：'+plan['title'],
         '作品话题：'+' '.join(s if s.startswith('#') else '#'+s for s in plan['topics']),
@@ -145,6 +222,11 @@ def main():
     ap=argparse.ArgumentParser()
     sub=ap.add_subparsers(dest='cmd',required=True)
     scanp=sub.add_parser('scan');scanp.add_argument('srt');scanp.add_argument('--snapshot',required=True)
+    textp=sub.add_parser('scan-text');text_source=textp.add_mutually_exclusive_group(required=True)
+    text_source.add_argument('text_file',nargs='?');text_source.add_argument('--stdin',action='store_true')
+    textp.add_argument('--snapshot',required=True)
+    pagep=sub.add_parser('page');pagep.add_argument('--snapshot',required=True)
+    pagep.add_argument('--offset',type=int,default=0);pagep.add_argument('--limit',type=int,required=True)
     rend=sub.add_parser('render');rend.add_argument('--snapshot',required=True);rend.add_argument('--plan',required=True);rend.add_argument('--save')
     args=ap.parse_args()
     try:
@@ -152,6 +234,17 @@ def main():
             doc=parse_once(args.srt)
             Path(args.snapshot).write_text(json.dumps(doc,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
             scan(doc)
+        elif args.cmd=='scan-text':
+            if args.stdin:
+                source=sys.stdin.read();filename='<stdin>'
+            else:
+                path=Path(args.text_file);source=decode_bytes(path.read_bytes(),'duration text');filename=path.name
+            doc=parse_duration_text(source,filename)
+            Path(args.snapshot).write_text(json.dumps(doc,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
+            scan(doc)
+        elif args.cmd=='page':
+            doc=json.loads(Path(args.snapshot).read_text(encoding='utf-8'))
+            scan_page(doc,args.offset,args.limit)
         else:
             doc=json.loads(Path(args.snapshot).read_text(encoding='utf-8'))
             plan=json.loads(Path(args.plan).read_text(encoding='utf-8'))

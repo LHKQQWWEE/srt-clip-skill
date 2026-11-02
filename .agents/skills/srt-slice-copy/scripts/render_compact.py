@@ -22,6 +22,9 @@ def rough_sec(ms: int) -> str:
 def render_compact(doc: dict, plan: dict) -> str:
     verified = v3.render(doc, plan)  # raises on unverified sources, invalid groups or duration
     pre, remainder = verified.split("\n三、最佳成片方案\n", 1)
+    is_text = doc.get("input_type") == "duration_text"
+    if is_text:
+        pre = pre.replace("\n文件名称：", "\n输入格式：逐条时长文本（无原始绝对时间码）\n文件名称：", 1)
     _, rest = remainder.split("\n四、作品标题与话题\n", 1)
     fourth, _ = rest.split("\n五、原始SRT序号（按成片播放顺序）\n", 1)
     byid = {r["id"]: r for r in doc["rows"]}
@@ -38,10 +41,12 @@ def render_compact(doc: dict, plan: dict) -> str:
         role = group['function'].split('｜',1)[0].strip()
         first = min(r['start'] for r in selected)
         last = max(r['end'] for r in selected)
+        locator = (f"累计位置约 {rough_sec(first)}–{rough_sec(last)}（按逐条时长累加估算）"
+                   if is_text else f"原SRT约 {rough_sec(first)}–{rough_sec(last)}")
         third += [f"片段{number}｜{role}",
-                  f"原SRT约 {rough_sec(first)}–{rough_sec(last)}｜序号 {v3.compress([r['id'] for r in selected])}"]
+                  f"{locator}｜序号 {v3.compress([r['id'] for r in selected])}"]
         for j,r in enumerate(selected):
-            if j and r['start']-selected[j-1]['end'] > 1000:
+            if not is_text and j and r['start']-selected[j-1]['end'] > 1000:
                 third.append("【剪辑断点：前后字幕相隔超过1秒】")
             third.append(f"【{r['id']}】{r['text']}")
         third.append("")

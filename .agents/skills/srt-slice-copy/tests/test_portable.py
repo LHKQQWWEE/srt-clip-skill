@@ -57,4 +57,43 @@ with tempfile.TemporaryDirectory(prefix='c2_skill_') as t:
     plan.write_text(json.dumps(bad,ensure_ascii=False),encoding='utf-8')
     reject=subprocess.run(['python','-S',str(rend),'--snapshot',str(session),'--plan',str(plan),'--stdout'],capture_output=True,text=True)
     check(reject.returncode!=0,'duration blocked')
+
+    # Pasted duration-text mode uses the same snapshot and renderer, while the
+    # cumulative positions remain explicitly labeled as estimates.
+    text_file=t/'pasted.txt'; text_session=t/'text_snapshot.json'; text_plan=t/'text_plan.json'
+    phrases=['轻薄透气，适合夏季使用' if i<6 else '根据实际尺码选购，喜欢可以下单' for i in range(12)]
+    phrases[2]='保留原话：1,000单、3+1、79块9、1.4s'
+    source='\n'.join(f'{i+1} 5.0s {phrases[i]}' for i in range(12))+'\n'
+    text_file.write_text(source,encoding='utf-8')
+    text_scan=call(src,'scan-text',text_file,'--snapshot',text_session)
+    text_doc=json.loads(text_session.read_text(encoding='utf-8'))
+    check(text_doc['input_type']=='duration_text','text input type')
+    check(text_doc['count']==12 and text_doc['end']==60000,'text count and duration sum')
+    check(text_doc['rows'][2]['text']==phrases[2],'text source exact including numeric phrases')
+    check(text_doc['rows'][6]['start']==30000 and text_doc['rows'][11]['end']==60000,'text cumulative positions')
+    check('非原始绝对视频时间' in text_scan and '3+1、79块9、1.4s' in text_scan,'scan labels estimates and preserves transcript')
+    text_payload=dict(payload)
+    text_payload['product_lines']=['合成商品讲解窗口：累计位置约00:00–01:00']
+    text_plan.write_text(json.dumps(text_payload,ensure_ascii=False),encoding='utf-8')
+    text_out=call(rend,'--snapshot',text_session,'--plan',text_plan,'--stdout')
+    check('输入格式：逐条时长文本（无原始绝对时间码）' in text_out,'text format declared')
+    check('累计位置约 00:00–00:30（按逐条时长累加估算）' in text_out,'first estimated locator')
+    check('累计位置约 00:30–01:00（按逐条时长累加估算）' in text_out,'second estimated locator')
+    check('原SRT约' not in text_out and '00:00:00,000 -->' not in text_out,'no false absolute SRT timestamps')
+    check(f'【3】{phrases[2]}' in text_out,'render exact source words')
+    check(text_out.strip().endswith('1,2,3,4,5,6,7,8,9,10,11,12'),'text output final source IDs')
+    stdin_scan=subprocess.run(['python','-S',str(src),'scan-text','--stdin','--snapshot',str(t/'stdin.json')],
+                              input=source,capture_output=True,text=True,encoding='utf-8')
+    check(stdin_scan.returncode==0 and json.loads((t/'stdin.json').read_text(encoding='utf-8'))['count']==12,
+          'stdin text input')
+    for invalid,label,needle in [
+        ('1 1.0s ok\nnot a cue\n','malformed row','line 2'),
+        ('1 1.0s first\n01 1.0s duplicate\n','duplicate numeric ID','line 2'),
+        ('1 0.000s zero\n','zero duration','line 1'),
+        ('1 0.1234s too precise\n','submillisecond precision','line 1'),
+    ]:
+        bad_text=t/'invalid.txt';bad_text.write_text(invalid,encoding='utf-8')
+        rejected=subprocess.run(['python','-S',str(src),'scan-text',str(bad_text),'--snapshot',str(t/'invalid.json')],
+                               capture_output=True,text=True,encoding='utf-8')
+        check(rejected.returncode!=0 and needle in rejected.stderr,label)
 print(f'{count}/{count} portable tests PASS')

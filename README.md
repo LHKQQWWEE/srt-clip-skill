@@ -1,25 +1,17 @@
-# srt-clip-fast（srt切片文案 · 快速版）
+# srt-clip-c2 — SRT切片文案 V3.0 · C2精简文本版
 
-SRT 切片文案 V3.0 的定制加速版 skill。保留成交格式（五部分结构 + 第三部分冻结字段）与质量规则，去掉确定性 Python 验证链路，改为单遍读取 + 单遍选择 + 单遍渲染，追求最短输出时间。
+这是本仓库默认使用的 Skill。精确触发词：`srt切片文案`。根目录 `SKILL.md` 与 `.agents/skills/srt-clip-c2/SKILL.md` 均为C2格式，必须输出五部分。
 
-## 触发词
-- `srt切片文案快版`
-- `快速切片文案`
+第三部分只展示片段功能、原SRT大致时间、源序号与主播完整原话；不展示逐句精确时间码，精确数据仅后台校验。第五部分为唯一完整可复制序号串。
 
-## 与原版 V3.0 / R8 的关系
-- 保留：五部分成交格式、第三部分字段顺序、45–90 秒（近 70 秒）、逐字保留原文/时间码/序号、开头三关、中段逐段推进购买决策、价格/交易理由后置、CTA 末段、绝不编造。
-- 移除：ZIP/SHA-256 校验、Final Gate、Batch Router、bundle 身份链、task state 等确定性程序验证环节。无 Python 运行时依赖，纯对话即可运行。
-
-## 用法
-对 AI 说 `快速切片文案` 或 `srt切片文案快版`，并附上一个或多个 `.srt` 文件（或粘贴 SRT 格式文本），即可一次输出五部分成交文案。
-
-## 安装（DSH / 通用 skill 目录）
-把 `SKILL.md` 放入 skill 目录即可，例如：
+运行：
 
 ```
-~/.dsh/skills/srt-clip-fast/SKILL.md
+python -S scripts/srt_fast.py scan INPUT.srt --snapshot session.json
+# AI决定plan.json
+python -S scripts/render_compact.py --snapshot session.json --plan plan.json --stdout
 ```
 
-## 文件清单
-- `SKILL.md`：完整 skill 指令（含冻结成交格式与质量硬规则）。
-- `README.md`：本说明。
+本地测试：`python -S tests/test_portable.py`。旧版根目录Skill内容存档在 `legacy/SRT_FAST_REFERENCE.md`，不得被 `srt切片文案` 触发。
+
+**重要**：将代码上传GitHub，不意味着ChatGPT账号已安装；需要在客户端安装/更新Skill。Google Drive现行Runtime如未更新，仍可能执行旧第三部分格式。

@@ -13,7 +13,7 @@
 
 ## 安装
 - ChatGPT（支持个人Skill上传的账号/工作空间）：插件 → 技能 → 创建 → 从电脑上传ZIP，完成平台扫描后启用。
-- Codex：将本Skill目录放入 `${CODEX_HOME:-$HOME/.codex}/skills/srt-clip-c2/`；或使用GitHub仓库的 `.agents/skills/srt-clip-c2/` 项目级Skill。
+- Codex：将本Skill目录放入 `${CODEX_HOME:-$HOME/.codex}/skills/srt-slice-copy/`；或使用GitHub仓库的 `.agents/skills/srt-slice-copy/` 项目级Skill。
 - 未看到对应安装入口时，使用与账号匹配的Plugin Creator能力或Codex项目级安装；ZIP/仓库提交不能自动给当前ChatGPT会话注册Skill。
 
 ## 长附件处理与机器核验

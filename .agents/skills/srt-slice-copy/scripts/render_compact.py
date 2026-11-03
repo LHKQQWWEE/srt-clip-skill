@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""C2 display only. All source/time/ID/duration validations delegated to frozen V3.0 engine."""
+"""C2 display only. Source/time/ID/duration validations are delegated to srt_fast.py."""
 import argparse
 import importlib.util
 import json
@@ -34,7 +34,8 @@ def render_compact(doc: dict, plan: dict) -> str:
     for group in plan['groups']:
         selected = [byid[str(s)] for s in group['ids']]
         total_ms += max(r['end'] for r in selected) - min(r['start'] for r in selected)
-    third.append(f"预计成片时长：{v3.fmt(total_ms)}")
+    third += [f"原始选段时长（1.0倍）：{v3.fmt(total_ms)}",
+              f"预计1.2倍速成片时长：{v3.fmt(v3.after_1_2x(total_ms))}"]
     for number, group in enumerate(plan['groups'], 1):
         selected = [byid[str(s)] for s in group['ids']]
         source_ids += [r['id'] for r in selected]

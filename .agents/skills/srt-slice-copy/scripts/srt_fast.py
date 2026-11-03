@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""srt切片文案 V3.0 FAST-LITE-1 ACTIVE.
+"""srt切片文案 C2 0.1.8 source and duration checker.
 
 One SRT byte read/parse -> one compact model scan -> one author-selected plan
 -> source-only checked, frozen-format delivery. This deliberately DOES NOT
@@ -27,6 +27,11 @@ def ms(s):
 def fmt(t):
     h,t=divmod(t,3600000); m,t=divmod(t,60000); s,z=divmod(t,1000)
     return f'{h:02d}:{m:02d}:{s:02d}.{z:03d}'
+
+
+def after_1_2x(source_ms):
+    """Convert source-speed milliseconds to 1.2x runtime, half-up to 1 ms."""
+    return (source_ms * 5 + 3) // 6
 
 
 def srt_time(t):
@@ -183,19 +188,22 @@ def render(doc,plan):
         for c,d in windows:
             if min(b,d)>max(a,c):raise ValueError('Overlap between original source groups')
         windows.append((a,b)); span=b-a; gap=span-covered(g)
-        groups.append((n,rawg['function'],g,a,b,cumulative,cumulative+span,gap))
+        raw_start=cumulative; raw_end=cumulative+span
+        groups.append((n,rawg['function'],g,a,b,raw_start,raw_end,gap))
         cumulative+=span;selected.update(ids);all_ids.extend(ids)
-    if not 45000<=cumulative<=90000:
-        raise ValueError('Selected duration is outside 45–90 seconds')
+    final_ms=after_1_2x(cumulative)
+    if not 45000<=final_ms<=90000:
+        raise ValueError('Estimated 1.2x final duration is outside 45–90 seconds')
     serials=','.join(all_ids)
     is_text=doc.get('input_type')=='duration_text'
-    third=['三、最佳成片方案',f"主推主题：{plan['theme']}",f'预计成片时长：{fmt(cumulative)}']
-    for n,func,g,a,b,ts,te,gap in groups:
+    third=['三、最佳成片方案',f"主推主题：{plan['theme']}",f'原始选段时长（1.0倍）：{fmt(cumulative)}',f'预计1.2倍速成片时长：{fmt(final_ms)}']
+    for n,func,g,a,b,raw_ts,raw_te,gap in groups:
+        ts=after_1_2x(raw_ts); te=after_1_2x(raw_te)
         if is_text:
-            third.append(f"片段{n}｜{func}｜累计位置约 {fmt(a)}–{fmt(b)}｜源序号 {compress([r['id'] for r in g])}｜逐条时长文本定位（无原始绝对时间码）")
+            third.append(f"片段{n}｜{func}｜原素材累计位置约 {fmt(a)}–{fmt(b)}（1.0倍，未缩放）｜源序号 {compress([r['id'] for r in g])}｜逐条时长文本定位（无原始绝对时间码）")
             third.extend(f"{r['id']} | {r['duration_raw']} | {r['text']}" for r in g)
         else:
-            third.append(f"片段{n}｜{func}｜预计成片 {fmt(ts)}–{fmt(te)}｜原SRT {fmt(a)}–{fmt(b)}｜源序号 {compress([r['id'] for r in g])}｜本组未覆盖间隔 {fmt(gap)}｜SRT源字幕定位")
+            third.append(f"片段{n}｜{func}｜预计1.2倍速成片 {fmt(ts)}–{fmt(te)}｜原SRT位置（1.0倍）{fmt(a)}–{fmt(b)}｜源序号 {compress([r['id'] for r in g])}｜本组未覆盖间隔 {fmt(gap)}｜SRT源字幕定位")
             third.extend(f"{r['id']} | {r['start_raw']} --> {r['end_raw']} | {r['text']}" for r in g)
     notes=plan['subtitle_notes']
     if notes:
@@ -208,8 +216,9 @@ def render(doc,plan):
         (f"累计时长范围（估算）：{fmt(doc['start'])}–{fmt(doc['end'])}" if is_text else f"原素材时间范围：{fmt(doc['start'])}–{fmt(doc['end'])}"),
         (f"逐条时长合计：{fmt(doc['end']-doc['start'])}（未含字幕间隔）" if is_text else f"素材总跨度：{fmt(doc['end']-doc['start'])}"),
         f"入选字幕：{len(all_ids)}条，{len(groups)}组",
-        f"预计成片时长：{fmt(cumulative)}",
-        ('来源核对：PASS（仅原话、原编号、逐条时长与45–90秒检查；累计位置按字幕时长相加估算，不是原始视频时间码；非R8验收）' if is_text else '来源核对：PASS（仅原字幕、时间码、序号与45–90秒检查；非R8验收）'),
+        f"原始选段时长（1.0倍）：{fmt(cumulative)}",
+        f"预计1.2倍速成片时长：{fmt(final_ms)}",
+        ('来源核对：PASS（仅原话、原编号、逐条时长与1.2倍速后45–90秒检查；累计位置按原素材字幕时长相加估算，不是原始视频时间码；非R8验收）' if is_text else '来源核对：PASS（仅原字幕、时间码、序号与1.2倍速后45–90秒检查；非R8验收）'),
         '', '二、商品识别', *plan['product_lines'], '', *third, '',
         '四、作品标题与话题', '作品标题：'+plan['title'],
         '作品话题：'+' '.join(s if s.startswith('#') else '#'+s for s in plan['topics']),

@@ -36,3 +36,5 @@ python -S tests/test_portable.py
 ```
 
 无外部依赖、无用户SRT或真实销售价格硬编码。Google Drive 现行 Runtime、索引和记忆摘要与本版同步；日常处理不读取云盘。
+
+旧版规则与候选文档已从可读取目录清理；日常处理只使用当前Skill和现行规则入口。

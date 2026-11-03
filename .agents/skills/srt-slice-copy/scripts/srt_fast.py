@@ -107,8 +107,8 @@ def parse_duration_text(text, filename='<pasted text>'):
 
 def scan(doc):
     if doc.get('input_type')=='duration_text':
-        print(f"FILE={doc['filename']} | CUES={doc['count']} | SUM_OF_CUE_DURATIONS={fmt(doc['end'])}")
-        print('FORMAT: 逐条时长文本；序号@累计位置约（只累加字幕时长，不含字幕间隔，非原始绝对视频时间）|本条时长|原话')
+        print(f"FILE={doc['filename']} | CUES={doc['count']} | SUM_OF_CUE_DURATIONS_AT_SOURCE_SPEED_1.0X={fmt(doc['end'])}")
+        print('FORMAT: 逐条时长文本；原素材1.0倍下的未缩放累计位置约（只累加字幕时长，不含字幕间隔，非原始绝对视频时间）|本条原素材时长|原话')
         for r in doc['rows']:
             sec=r['start']//1000; h,rest=divmod(sec,3600); m,s=divmod(rest,60)
             locator=f'{h:02d}:{m:02d}:{s:02d}' if h else f'{m:02d}:{s:02d}'
@@ -129,7 +129,7 @@ def scan_page(doc, offset, limit):
         raise ValueError('Requested page is outside the snapshot')
     print(f"ROWS={offset+1}-{offset+len(rows)} OF {doc['count']}")
     if doc.get('input_type')=='duration_text':
-        print('FORMAT: 逐条时长文本；序号@累计位置约|本条时长|原话')
+        print('FORMAT: 逐条时长文本；原素材1.0倍下的未缩放累计位置约|本条原素材时长|原话')
         for r in rows:
             sec=r['start']//1000; h,rest=divmod(sec,3600); m,s=divmod(rest,60)
             locator=f'{h:02d}:{m:02d}:{s:02d}' if h else f'{m:02d}:{s:02d}'

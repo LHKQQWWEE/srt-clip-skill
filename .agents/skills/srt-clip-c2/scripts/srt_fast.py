@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""srt切片文案 C2 0.1.8 source and duration checker.
+"""SRT source and duration checker for the C2 0.2.0 skill.
 
-One SRT byte read/parse -> one compact model scan -> one author-selected plan
--> source-only checked, frozen-format delivery. This deliberately DOES NOT
-claim R8 Final Gate or automated semantic verification.
+This tool validates text-source identity, numbering, and duration estimates. It does not
+perform semantic selection, audio/video decoding, or media verification.
 """
 from __future__ import annotations
 import argparse
@@ -218,7 +217,7 @@ def render(doc,plan):
         f"入选字幕：{len(all_ids)}条，{len(groups)}组",
         f"原始选段时长（1.0倍）：{fmt(cumulative)}",
         f"预计1.2倍速成片时长：{fmt(final_ms)}",
-        ('来源核对：PASS（仅原话、原编号、逐条时长与1.2倍速后45–90秒检查；累计位置按原素材字幕时长相加估算，不是原始视频时间码；非R8验收）' if is_text else '来源核对：PASS（仅原字幕、时间码、序号与1.2倍速后45–90秒检查；非R8验收）'),
+        ('来源核对：PASS（仅原话、原编号、逐条时长与1.2倍速后45–90秒检查；累计位置按原素材字幕时长相加估算，不是原始视频时间码；不代表语义或音画核验）' if is_text else '来源核对：PASS（仅原字幕、时间码、序号与1.2倍速后45–90秒检查；不代表语义或音画核验）'),
         '', '二、商品识别', *plan['product_lines'], '', *third, '',
         '四、作品标题与话题', '作品标题：'+plan['title'],
         '作品话题：'+' '.join(s if s.startswith('#') else '#'+s for s in plan['topics']),
@@ -261,7 +260,7 @@ def main():
             if args.save:Path(args.save).write_text(text,encoding='utf-8')
             print(text)
     except (ValueError,KeyError,TypeError) as e:
-        print('FAST-LITE blocked: '+str(e),file=sys.stderr)
+        print('C2 scanner blocked: '+str(e),file=sys.stderr)
         return 2
     return 0
 

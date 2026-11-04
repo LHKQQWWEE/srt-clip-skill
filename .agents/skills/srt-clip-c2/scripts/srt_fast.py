@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""SRT source and duration checker for the C2 0.2.0 skill.
+"""srt-clip-c2 C2 0.2.1 source and duration checker.
 
-This tool validates text-source identity, numbering, and duration estimates. It does not
-perform semantic selection, audio/video decoding, or media verification.
+One SRT byte read/parse -> one compact model scan -> one author-selected plan
+-> source-only checked, frozen-format delivery. This deliberately DOES NOT
+claim R8 Final Gate or automated semantic verification.
 """
 from __future__ import annotations
 import argparse
@@ -13,7 +14,7 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 TIME_RE = re.compile(r'^(\d{2,}:\d\d:\d\d,\d{3})\s*-->\s*(\d{2,}:\d\d:\d\d,\d{3})(?:\s+.*)?$')
-DURATION_LINE_RE = re.compile(r'^[ \t]*(?P<id>\d+)[ \t]+(?P<duration>\d+(?:\.\d+)?)s[ \t]+(?P<text>\S.*)$')
+DURATION_LINE_RE = re.compile(r'^[ \t]*(?P<id>\d+)[ \t]+(?P<duration>\d+(?:\.\d+)?)(?:s)?[ \t]+(?P<text>\S.*)$')
 
 
 def ms(s):
@@ -80,7 +81,7 @@ def parse_duration_text(text, filename='<pasted text>'):
         if not match:
             if record==0 and line.strip() in {'srt文案','str文案','C2完整精简版'}:
                 continue
-            raise ValueError(f'Invalid duration-text record at line {line_no}; expected "ID 0.8s transcript"')
+            raise ValueError(f'Invalid duration-text record at line {line_no}; expected "ID 0.8[s] transcript" (s suffix optional)')
         sid=match['id']; numeric_id=int(sid)
         if numeric_id<=0:
             raise ValueError(f'Source number must be positive at line {line_no}')
@@ -117,6 +118,13 @@ def scan(doc):
     print('FORMAT: 原SRT序号|原话（完整时间码保存在本地快照）')
     for r in doc['rows']:
         print(f"{r['id']}|{r['text'].replace(chr(10),' / ')}")
+
+
+def scan_summary(doc, snapshot_path):
+    """Print parse metadata only; the full parsed source remains in the snapshot."""
+    total=fmt(doc['end']-doc['start'])
+    print(f"FILE={doc['filename']} | CUES={doc['count']} | SOURCE_DURATION_SUM={total} | PARSE=PASS | SNAPSHOT={snapshot_path}")
+    print('NOTE=complete rows are saved in the snapshot; this summary does not verify semantic quality')
 
 
 def scan_page(doc, offset, limit):
@@ -217,7 +225,7 @@ def render(doc,plan):
         f"入选字幕：{len(all_ids)}条，{len(groups)}组",
         f"原始选段时长（1.0倍）：{fmt(cumulative)}",
         f"预计1.2倍速成片时长：{fmt(final_ms)}",
-        ('来源核对：PASS（仅原话、原编号、逐条时长与1.2倍速后45–90秒检查；累计位置按原素材字幕时长相加估算，不是原始视频时间码；不代表语义或音画核验）' if is_text else '来源核对：PASS（仅原字幕、时间码、序号与1.2倍速后45–90秒检查；不代表语义或音画核验）'),
+        ('来源核对：PASS（仅原话、原编号、逐条时长与1.2倍速后45–90秒检查；累计位置按原素材字幕时长相加估算，不是原始视频时间码；非R8验收）' if is_text else '来源核对：PASS（仅原字幕、时间码、序号与1.2倍速后45–90秒检查；非R8验收）'),
         '', '二、商品识别', *plan['product_lines'], '', *third, '',
         '四、作品标题与话题', '作品标题：'+plan['title'],
         '作品话题：'+' '.join(s if s.startswith('#') else '#'+s for s in plan['topics']),
@@ -232,7 +240,7 @@ def main():
     scanp=sub.add_parser('scan');scanp.add_argument('srt');scanp.add_argument('--snapshot',required=True)
     textp=sub.add_parser('scan-text');text_source=textp.add_mutually_exclusive_group(required=True)
     text_source.add_argument('text_file',nargs='?');text_source.add_argument('--stdin',action='store_true')
-    textp.add_argument('--snapshot',required=True)
+    textp.add_argument('--snapshot',required=True);textp.add_argument('--summary',action='store_true',help='Print metadata only after parsing and saving the complete snapshot')
     pagep=sub.add_parser('page');pagep.add_argument('--snapshot',required=True)
     pagep.add_argument('--offset',type=int,default=0);pagep.add_argument('--limit',type=int,required=True)
     rend=sub.add_parser('render');rend.add_argument('--snapshot',required=True);rend.add_argument('--plan',required=True);rend.add_argument('--save')
@@ -249,7 +257,7 @@ def main():
                 path=Path(args.text_file);source=decode_bytes(path.read_bytes(),'duration text');filename=path.name
             doc=parse_duration_text(source,filename)
             Path(args.snapshot).write_text(json.dumps(doc,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
-            scan(doc)
+            scan_summary(doc,args.snapshot) if args.summary else scan(doc)
         elif args.cmd=='page':
             doc=json.loads(Path(args.snapshot).read_text(encoding='utf-8'))
             scan_page(doc,args.offset,args.limit)
@@ -260,7 +268,7 @@ def main():
             if args.save:Path(args.save).write_text(text,encoding='utf-8')
             print(text)
     except (ValueError,KeyError,TypeError) as e:
-        print('C2 scanner blocked: '+str(e),file=sys.stderr)
+        print('FAST-LITE blocked: '+str(e),file=sys.stderr)
         return 2
     return 0
 

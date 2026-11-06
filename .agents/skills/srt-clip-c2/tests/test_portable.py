@@ -58,6 +58,9 @@ with tempfile.TemporaryDirectory(prefix='c2_skill_') as t:
     plan.write_text(json.dumps(bad,ensure_ascii=False),encoding='utf-8')
     reject=subprocess.run(['python','-S',str(rend),'--snapshot',str(session),'--plan',str(plan),'--stdout'],capture_output=True,text=True)
     check(reject.returncode!=0,'duration blocked')
+    short=call(rend,'--snapshot',session,'--plan',plan,'--stdout','--allow-short-report')
+    check('三、素材不足候选，非正式成片' in short and '时长未达45秒' in short,'short report clearly labelled')
+    check('来源核对：PASS' not in short and '【1】' in short,'short report verifies sources without claiming duration passed')
 
     # Pasted duration-text mode uses the same snapshot and renderer, while the
     # cumulative positions remain explicitly labeled as estimates.
@@ -98,3 +101,4 @@ with tempfile.TemporaryDirectory(prefix='c2_skill_') as t:
                                capture_output=True,text=True,encoding='utf-8')
         check(rejected.returncode!=0 and needle in rejected.stderr,label)
 print(f'{count}/{count} portable tests PASS')
+

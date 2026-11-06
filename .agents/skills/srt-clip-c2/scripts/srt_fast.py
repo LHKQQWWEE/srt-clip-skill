@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""srt-clip-c2 C2 0.2.1 source and duration checker.
+"""srt-clip-c2 C2 0.2.2 source and duration checker.
 
 One SRT byte read/parse -> one compact model scan -> one author-selected plan
 -> source-only checked, frozen-format delivery. This deliberately DOES NOT
@@ -166,7 +166,7 @@ def covered(rows):
     return total+hi-lo
 
 
-def render(doc,plan):
+def render(doc,plan,allow_short_report=False):
     expected={'groups','theme','product_lines','title','topics','subtitle_notes'}
     if not isinstance(plan,dict) or set(plan)!=expected:
         raise ValueError('Plan requires exactly '+','.join(sorted(expected)))
@@ -199,7 +199,8 @@ def render(doc,plan):
         groups.append((n,rawg['function'],g,a,b,raw_start,raw_end,gap))
         cumulative+=span;selected.update(ids);all_ids.extend(ids)
     final_ms=after_1_2x(cumulative)
-    if not 45000<=final_ms<=90000:
+    short_report = allow_short_report and 0 < final_ms < 45000
+    if not 45000<=final_ms<=90000 and not short_report:
         raise ValueError('Estimated 1.2x final duration is outside 45–90 seconds')
     serials=','.join(all_ids)
     is_text=doc.get('input_type')=='duration_text'
@@ -225,7 +226,7 @@ def render(doc,plan):
         f"入选字幕：{len(all_ids)}条，{len(groups)}组",
         f"原始选段时长（1.0倍）：{fmt(cumulative)}",
         f"预计1.2倍速成片时长：{fmt(final_ms)}",
-        ('来源核对：PASS（仅原话、原编号、逐条时长与1.2倍速后45–90秒检查；累计位置按原素材字幕时长相加估算，不是原始视频时间码；非R8验收）' if is_text else '来源核对：PASS（仅原字幕、时间码、序号与1.2倍速后45–90秒检查；非R8验收）'),
+        ('时长未达45秒：素材不足候选，非正式成片；来源结构核对通过，不代表语义、合规或音画通过' if short_report else ('来源核对：PASS（仅原话、原编号、逐条时长与1.2倍速后45–90秒检查；累计位置按原素材字幕时长相加估算，不是原始视频时间码；非R8验收）' if is_text else '来源核对：PASS（仅原字幕、时间码、序号与1.2倍速后45–90秒检查；非R8验收）')),
         '', '二、商品识别', *plan['product_lines'], '', *third, '',
         '四、作品标题与话题', '作品标题：'+plan['title'],
         '作品话题：'+' '.join(s if s.startswith('#') else '#'+s for s in plan['topics']),
@@ -273,3 +274,4 @@ def main():
     return 0
 
 if __name__=='__main__':raise SystemExit(main())
+

@@ -19,8 +19,8 @@ def rough_sec(ms: int) -> str:
     return f"{h:02d}:{m:02d}:{s:02d}" if h else f"{m:02d}:{s:02d}"
 
 
-def render_compact(doc: dict, plan: dict) -> str:
-    verified = v3.render(doc, plan)  # raises on unverified sources, invalid groups or duration
+def render_compact(doc: dict, plan: dict, allow_short_report: bool = False) -> str:
+    verified = v3.render(doc, plan, allow_short_report=allow_short_report)  # raises on unverified sources, invalid groups or duration
     pre, remainder = verified.split("\n三、最佳成片方案\n", 1)
     is_text = doc.get("input_type") == "duration_text"
     if is_text:
@@ -34,6 +34,8 @@ def render_compact(doc: dict, plan: dict) -> str:
     for group in plan['groups']:
         selected = [byid[str(s)] for s in group['ids']]
         total_ms += max(r['end'] for r in selected) - min(r['start'] for r in selected)
+    if allow_short_report and v3.after_1_2x(total_ms) < 45000:
+        third[0] = "三、素材不足候选，非正式成片"
     third += [f"原始选段时长（1.0倍）：{v3.fmt(total_ms)}",
               f"预计1.2倍速成片时长：{v3.fmt(v3.after_1_2x(total_ms))}"]
     for number, group in enumerate(plan['groups'], 1):
@@ -63,6 +65,7 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument('--snapshot',required=True)
     p.add_argument('--plan',required=True)
+    p.add_argument('--allow-short-report',action='store_true',help='Report a verified short candidate under 45 seconds; not a compliant final plan')
     p.add_argument('--stdout',action='store_true')
     p.add_argument('--output')
     args=p.parse_args()
@@ -70,9 +73,10 @@ def main():
         p.error('Use --stdout and/or --output')
     doc=json.loads(Path(args.snapshot).read_text(encoding='utf-8'))
     plan=json.loads(Path(args.plan).read_text(encoding='utf-8'))
-    result=render_compact(doc,plan)
+    result=render_compact(doc,plan,allow_short_report=args.allow_short_report)
     if args.output: Path(args.output).write_text(result,encoding='utf-8')
     if args.stdout: print(result)
 
 if __name__=='__main__':
     main()
+

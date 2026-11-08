@@ -48,15 +48,26 @@ with tempfile.TemporaryDirectory(prefix='c2_skill_') as t:
     check('成片 00:00.000' not in txt,'no per-group timecode')
     check(txt.count('1,2,3,4,5,6,7,8,9,10,11,12')==1,'no duplicated serials')
     check('【剪辑断点' not in txt,'synthetic contiguous input no misleading gap')
+    spec=importlib.util.spec_from_file_location('final_check',ROOT/'scripts/check_final.py')
+    mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+    check(mod.check(txt,payload),'final check accepts valid answer')
+    serial='1,2,3,4,5,6,7,8,9,10,11,12'
+    for broken in [serial.replace(',', '、'),serial.replace(',', '，'),serial.replace(',', ', ',1),serial.replace('1,2,','2,1,',1),serial.replace('1,2,','1,',1),serial+',12',serial+'\nextra']:
+        try: mod.check(txt.rstrip('\n')[:-len(serial)]+broken,payload)
+        except ValueError: check(True,'bad final serial rejected')
+        else: raise AssertionError('bad final serial accepted')
+    try: mod.check(txt.replace('【1】','【2】',1),payload)
+    except ValueError: check(True,'third section mismatch rejected')
+    else: raise AssertionError('third section mismatch accepted')
     call(rend,'--snapshot',session,'--plan',plan,'--output',output)
     check(output.read_text(encoding='utf-8')==txt.rstrip('\n'),'output bytes match stdout except newline')
     bad=dict(payload);bad['groups']=[{'ids':[1,2,3,4,5,6],'function':'1'},{'ids':[6,7,8,9,10,11,12],'function':'2'}]
     plan.write_text(json.dumps(bad,ensure_ascii=False),encoding='utf-8')
-    reject=subprocess.run(['python','-S',str(rend),'--snapshot',str(session),'--plan',str(plan),'--stdout'],capture_output=True,text=True)
+    reject=subprocess.run(['python','-S',str(rend),'--snapshot',str(session),'--plan',str(plan),'--stdout'],capture_output=True,text=True,encoding="utf-8")
     check(reject.returncode!=0,'duplicates blocked')
     bad=dict(payload);bad['groups']=[{'ids':[1,2,3],'function':'too short'}]
     plan.write_text(json.dumps(bad,ensure_ascii=False),encoding='utf-8')
-    reject=subprocess.run(['python','-S',str(rend),'--snapshot',str(session),'--plan',str(plan),'--stdout'],capture_output=True,text=True)
+    reject=subprocess.run(['python','-S',str(rend),'--snapshot',str(session),'--plan',str(plan),'--stdout'],capture_output=True,text=True,encoding="utf-8")
     check(reject.returncode!=0,'duration blocked')
     short=call(rend,'--snapshot',session,'--plan',plan,'--stdout','--allow-short-report')
     check('三、素材不足候选，非正式成片' in short and '时长未达45秒' in short,'short report clearly labelled')
@@ -101,4 +112,3 @@ with tempfile.TemporaryDirectory(prefix='c2_skill_') as t:
                                capture_output=True,text=True,encoding='utf-8')
         check(rejected.returncode!=0 and needle in rejected.stderr,label)
 print(f'{count}/{count} portable tests PASS')
-

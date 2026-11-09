@@ -199,9 +199,9 @@ def render(doc,plan,allow_short_report=False):
         groups.append((n,rawg['function'],g,a,b,raw_start,raw_end,gap))
         cumulative+=span;selected.update(ids);all_ids.extend(ids)
     final_ms=after_1_2x(cumulative)
-    short_report = allow_short_report and 0 < final_ms < 45000
-    if not 45000<=final_ms<=90000 and not short_report:
-        raise ValueError('Estimated 1.2x final duration is outside 45–90 seconds')
+    short_report = allow_short_report and 0 < final_ms <= 30000
+    if not 30000 < final_ms <= 90000 and not short_report:
+        raise ValueError('Estimated 1.2x final duration must be greater than 30 and at most 90 seconds')
     serials=','.join(all_ids)
     is_text=doc.get('input_type')=='duration_text'
     third=['三、最佳成片方案',f"主推主题：{plan['theme']}",f'原始选段时长（1.0倍）：{fmt(cumulative)}',f'预计1.2倍速成片时长：{fmt(final_ms)}']
@@ -226,7 +226,7 @@ def render(doc,plan,allow_short_report=False):
         f"入选字幕：{len(all_ids)}条，{len(groups)}组",
         f"原始选段时长（1.0倍）：{fmt(cumulative)}",
         f"预计1.2倍速成片时长：{fmt(final_ms)}",
-        ('时长未达45秒：素材不足候选，非正式成片；来源结构核对通过，不代表语义、合规或音画通过' if short_report else ('来源核对：PASS（仅原话、原编号、逐条时长与1.2倍速后45–90秒检查；累计位置按原素材字幕时长相加估算，不是原始视频时间码；非R8验收）' if is_text else '来源核对：PASS（仅原字幕、时间码、序号与1.2倍速后45–90秒检查；非R8验收）')),
+        ('时长不超过30秒：短候选，非正式成片；来源结构核对通过，不代表语义、合规或音画通过' if short_report else (('素材不足45秒：大于30秒的完整方案，需说明原因；' if final_ms < 45000 else '') + ('来源核对：PASS（仅原话、原编号、逐条时长与1.2倍速后时长分级检查；累计位置为估算，不是原始视频时间码）' if is_text else '来源核对：PASS（仅原字幕、时间码、序号与1.2倍速后时长分级检查）'))),
         '', '二、商品识别', *plan['product_lines'], '', *third, '',
         '四、作品标题与话题', '作品标题：'+plan['title'],
         '作品话题：'+' '.join(s if s.startswith('#') else '#'+s for s in plan['topics']),

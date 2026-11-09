@@ -34,8 +34,8 @@ def render_compact(doc: dict, plan: dict, allow_short_report: bool = False) -> s
     for group in plan['groups']:
         selected = [byid[str(s)] for s in group['ids']]
         total_ms += max(r['end'] for r in selected) - min(r['start'] for r in selected)
-    if allow_short_report and v3.after_1_2x(total_ms) < 45000:
-        third[0] = "三、素材不足候选，非正式成片"
+    if allow_short_report and v3.after_1_2x(total_ms) <= 30000:
+        third[0] = "三、短候选，非正式成片"
     third += [f"原始选段时长（1.0倍）：{v3.fmt(total_ms)}",
               f"预计1.2倍速成片时长：{v3.fmt(v3.after_1_2x(total_ms))}"]
     for number, group in enumerate(plan['groups'], 1):
@@ -65,7 +65,7 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument('--snapshot',required=True)
     p.add_argument('--plan',required=True)
-    p.add_argument('--allow-short-report',action='store_true',help='Report a verified short candidate under 45 seconds; not a compliant final plan')
+    p.add_argument('--allow-short-report',action='store_true',help='Report a verified short candidate at or below 30 seconds; not a full plan')
     p.add_argument('--stdout',action='store_true')
     p.add_argument('--output')
     args=p.parse_args()

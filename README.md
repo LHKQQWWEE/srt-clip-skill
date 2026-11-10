@@ -1,6 +1,6 @@
-# 直播切片文案 C2 0.2.7
+# 直播切片文案 C2 0.2.8
 
-现行规则在 [.agents/skills/srt-clip-c2/SKILL.md](.agents/skills/srt-clip-c2/SKILL.md)。按商品主线灵活选择原话，不固定卖点数量或70秒目标；优先预计1.2倍速45–90秒，素材受限时大于30秒可成片，保留来源及五部分交付。千川与抖音电商离线参考见技能内 references，用户要求更新时联网核对。
+现行规则在 [.agents/skills/srt-clip-c2/SKILL.md](.agents/skills/srt-clip-c2/SKILL.md)。优先输出三个不同开头的完整方案并推荐一个，素材不足时不硬凑；按商品主线灵活选择原话，不固定卖点数量或70秒目标；优先预计1.2倍速45–90秒，素材受限时大于30秒可成片，保留来源及五部分交付。千川与抖音电商离线参考见技能内 references，用户要求更新时联网核对。
 
 支持 SRT、逐条时长文本、MP4+SRT 和实际可读的 MP4-only；文本脚本不解码视频。安装后在技能目录运行 `python -S tests/test_portable.py` 验证。程序不证明语义、平台合规或音画。
 

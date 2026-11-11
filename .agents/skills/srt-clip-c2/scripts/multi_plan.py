@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render and check one to three independent C2 plans against one snapshot."""
+"""Render and check one C2 plan against one snapshot."""
 import argparse
 import json
 import re
@@ -16,8 +16,8 @@ def ids_for(plan):
     return ids
 
 def check_multi(answer, plans):
-    if not 1 <= len(plans) <= 3:
-        raise ValueError('expected one to three plans')
+    if len(plans) != 1:
+        raise ValueError('expected exactly one plan')
     expected = [ids_for(p) for p in plans]
     try:
         third = answer.split('三、', 1)[1].split('四、', 1)[0]
@@ -41,7 +41,7 @@ def check_multi(answer, plans):
     return True
 
 def render_multi(doc, plans, recommended, allow_short_report=False):
-    if not 1 <= len(plans) <= 3 or not 1 <= recommended <= len(plans):
+    if len(plans) != 1 or recommended != 1:
         raise ValueError('invalid plan count or recommendation')
     firsts, thirds, fourths, sequences = [], [], [], []
     second = None
@@ -54,14 +54,14 @@ def render_multi(doc, plans, recommended, allow_short_report=False):
         four, serial = rest.split('\n五、原始SRT序号（按成片播放顺序）\n', 1)
         if second is None: second = two
         elif second != two: raise ValueError('product identification differs across plans')
-        label = '方案' + NAMES[i] + ('｜推荐' if i+1 == recommended else '')
+        label = '方案' + NAMES[i]
         firsts.append(label + '\n' + first.split('\n', 1)[1])
         third_head, third_body = three.split('\n', 1)
         if '短候选' in third_head: label += '｜短候选，非正式成片'
         thirds.append(label + '\n' + third_body)
         fourths.append(label + '\n' + four.strip())
         sequences.append(serial.strip())
-    labels = '、'.join('方案'+NAMES[i]+('（推荐）' if i+1 == recommended else '') for i in range(len(plans)))
+    labels = '方案一'
     output = ('一、文件解析结果\n'+'\n\n'.join(firsts)+'\n\n二、商品识别'+second+
               '\n三、成片方案\n'+'\n\n'.join(thirds)+'\n\n四、作品标题与话题\n'+'\n\n'.join(fourths)+
               '\n\n五、原始SRT序号（按成片播放顺序）\n'+labels+'，序号依次如下：\n\n```text\n'+'\n\n'.join(sequences)+'\n```')

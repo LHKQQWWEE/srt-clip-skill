@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""srt-clip-c2 C2 0.2.2 source and duration checker.
+"""srt-clip-c2 C2 0.2.9 source and duration checker.
 
 One SRT byte read/parse -> one compact model scan -> one author-selected plan
 -> source-only checked, frozen-format delivery. This deliberately DOES NOT
@@ -200,8 +200,8 @@ def render(doc,plan,allow_short_report=False):
         cumulative+=span;selected.update(ids);all_ids.extend(ids)
     final_ms=after_1_2x(cumulative)
     short_report = allow_short_report and 0 < final_ms <= 30000
-    if not 30000 < final_ms <= 90000 and not short_report:
-        raise ValueError('Estimated 1.2x final duration must be greater than 30 and at most 90 seconds')
+    if not 30000 < final_ms <= 120000 and not short_report:
+        raise ValueError('Estimated 1.2x final duration must be greater than 30 and at most 120 seconds')
     serials=','.join(all_ids)
     is_text=doc.get('input_type')=='duration_text'
     third=['三、最佳成片方案',f"主推主题：{plan['theme']}",f'原始选段时长（1.0倍）：{fmt(cumulative)}',f'预计1.2倍速成片时长：{fmt(final_ms)}']

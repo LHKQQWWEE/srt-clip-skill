@@ -111,23 +111,16 @@ with tempfile.TemporaryDirectory(prefix='c2_skill_') as t:
         rejected=subprocess.run(['python','-S',str(src),'scan-text',str(bad_text),'--snapshot',str(t/'invalid.json')],
                                capture_output=True,text=True,encoding='utf-8')
         check(rejected.returncode!=0 and needle in rejected.stderr,label)
-    # Render three individually validated plans with shared source cues.
+    # One plan, final order and short-candidate verification.
     multi = ROOT/'scripts/multi_plan.py'
-    plans = [text_payload, dict(text_payload), dict(text_payload)]
-    plans[1]['groups'] = list(reversed(text_payload['groups']))
-    plans[2]['groups'] = text_payload['groups']
-    batch=t/'plans.json'; result_file=t/'multi.txt'
-    batch.write_text(json.dumps({'plans':plans,'recommended':2},ensure_ascii=False),encoding='utf-8')
-    rendered=call(multi,'--snapshot',text_session,'--plans',batch,'--output',result_file)
-    output_multi=result_file.read_text(encoding='utf-8')
-    check('方案二｜推荐' in output_multi, 'recommended plan marked')
-    check('1,2,3,4,5,6,7,8,9,10,11,12\n\n7,8,9,10,11,12,1,2,3,4,5,6' in output_multi, 'multiple serials in requested order')
-    check('MULTI SERIAL CHECK PASS' in call(multi,'--snapshot',text_session,'--plans',batch,'--answer',result_file), 'multi final check')
-    batch.write_text(json.dumps({'plans':plans[:1],'recommended':1},ensure_ascii=False),encoding='utf-8')
-    check('方案一｜推荐' in call(multi,'--snapshot',text_session,'--plans',batch), 'one viable plan accepted')
-    batch.write_text(json.dumps({'plans':plans[:2],'recommended':2},ensure_ascii=False),encoding='utf-8')
-    check('方案二｜推荐' in call(multi,'--snapshot',text_session,'--plans',batch), 'two viable plans accepted')
+    batch=t/'plans.json'; result_file=t/'single.txt'
+    batch.write_text(json.dumps({'plans':[text_payload],'recommended':1},ensure_ascii=False),encoding='utf-8')
+    call(multi,'--snapshot',text_session,'--plans',batch,'--output',result_file)
+    output=result_file.read_text(encoding='utf-8')
+    check('方案一' in output and '方案二' not in output, 'one plan only')
+    check('1,2,3,4,5,6,7,8,9,10,11,12' in output, 'serial sequence')
+    check('MULTI SERIAL CHECK PASS' in call(multi,'--snapshot',text_session,'--plans',batch,'--answer',result_file), 'final check')
     short_plan = dict(text_payload); short_plan['groups'] = [{'ids':[1,2,3],'function':'短开头'}]
     batch.write_text(json.dumps({'plans':[short_plan],'recommended':1},ensure_ascii=False),encoding='utf-8')
-    check('方案一｜推荐｜短候选，非正式成片' in call(multi,'--snapshot',text_session,'--plans',batch,'--allow-short-report'), 'short candidate retains label')
+    check('短候选，非正式成片' in call(multi,'--snapshot',text_session,'--plans',batch,'--allow-short-report'), 'short candidate label')
 print(f'{count}/{count} portable tests PASS')

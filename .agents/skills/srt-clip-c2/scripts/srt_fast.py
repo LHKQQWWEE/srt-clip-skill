@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""srt-clip-c2 C2 0.2.9 source and duration checker.
+"""srt-clip-c2 C2 0.2.15 source and duration checker.
 
 One SRT byte read/parse -> one compact model scan -> one author-selected plan
 -> source-only checked, frozen-format delivery. This deliberately DOES NOT
@@ -79,7 +79,7 @@ def parse_duration_text(text, filename='<pasted text>'):
         if not line.strip(): continue
         match=DURATION_LINE_RE.fullmatch(line)
         if not match:
-            if record==0 and line.strip() in {'srt文案','str文案','C2完整精简版'}:
+            if record==0 and line.strip() in {'切片文案','srt文案','srt切片文案','str文案','C2完整精简版','【字幕列表】'}:
                 continue
             raise ValueError(f'Invalid duration-text record at line {line_no}; expected "ID 0.8[s] transcript" (s suffix optional)')
         sid=match['id']; numeric_id=int(sid)
@@ -182,7 +182,8 @@ def render(doc,plan,allow_short_report=False):
     byid={r['id']:r for r in doc['rows']}
     selected=set(); groups=[]; cumulative=0; windows=[]; all_ids=[]
     for n,rawg in enumerate(plan['groups'],1):
-        if not isinstance(rawg,dict) or set(rawg)!={'ids','function'}:raise ValueError('group shape invalid')
+        if not isinstance(rawg,dict) or not {'ids','function'} <= set(rawg) or set(rawg)-{'ids','function','note'}:raise ValueError('group shape invalid')
+        if 'note' in rawg and (not isinstance(rawg['note'],str) or not rawg['note'].strip()):raise ValueError('group note must be nonempty text')
         ids=[str(i) for i in rawg['ids']]
         if not ids or not isinstance(rawg['function'],str) or not rawg['function'].strip():raise ValueError('invalid group')
         if any(i not in byid for i in ids):raise ValueError('Selected ID absent from original SRT')

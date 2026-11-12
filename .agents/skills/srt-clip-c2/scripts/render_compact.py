@@ -52,6 +52,8 @@ def render_compact(doc: dict, plan: dict, allow_short_report: bool = False) -> s
             if not is_text and j and r['start']-selected[j-1]['end'] > 1000:
                 third.append("【剪辑断点：前后字幕相隔超过1秒】")
             third.append(f"【{r['id']}】{r['text']}")
+        if group.get('note'):
+            third.append('待核实／剪辑提醒：' + group['note'])
         third.append("")
     if plan['subtitle_notes']:
         third.append('字幕疑点提醒：'+'；'.join(x.rstrip('。； ') for x in plan['subtitle_notes'])+'。')

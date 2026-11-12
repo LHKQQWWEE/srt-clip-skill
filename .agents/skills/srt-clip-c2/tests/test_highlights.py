@@ -17,7 +17,7 @@ class HighlightCheckTests(unittest.TestCase):
             {'id':'h1','point':'轻','source_ids':['1'],'status':'入选','retained_ids':['1']},
             {'id':'h2','point':'软','source_ids':['2'],'status':'入选','retained_ids':['2']},
             {'id':'h3','point':'柔软','source_ids':['3'],'status':'合并','merged_into':'h2','retained_ids':['2'],'reason':'与h2语义相同'},
-            {'id':'h4','point':'功能','source_ids':['4'],'status':'待核实','reason':'需要核对商品功能依据'}
+            {'id':'h4','point':'功能','source_ids':['4'],'status':'待核实','exception_kind':'商品归属不明','reason':'需要核对商品归属依据'}
         ]}
 
     def tearDown(self):

@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 
 VAGUE = {'重复','精简','时长','超时','衔接','风险','不选','无','无理由'}
+EXCEPTIONS = {'商品归属不明', '已知不实', '当前素材已拒审'}
 
 def fail(message):
     raise ValueError(message)
@@ -69,6 +70,8 @@ def validate(snapshot, plans, ledger):
             reason = text_value(row.get('reason'), key + ' reason')
             if reason in VAGUE or len(reason) < 4:
                 fail(key + ' needs a specific explanation')
+        if status in ('未入选','待核实') and row.get('exception_kind') not in EXCEPTIONS:
+            fail(key + ' needs an allowed exception_kind; timing or transition alone is not an exception')
         by_key[key] = row
     for key, row in by_key.items():
         if row['status'] == '合并':

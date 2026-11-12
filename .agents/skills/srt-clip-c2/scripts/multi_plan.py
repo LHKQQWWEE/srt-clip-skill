@@ -127,7 +127,7 @@ def main():
         doc = json.loads(Path(a.snapshot).read_text(encoding='utf-8-sig')) if ledger is not None else None
         if ledger is not None:
             validate_highlights(doc, batch, ledger)
-        expected = render_multi(doc, batch['plans'], batch['recommended'], a.allow_short_report, ledger)
+        expected = render_multi(doc, batch['plans'], batch['recommended'], True, ledger)
         answer = Path(a.answer).read_text(encoding='utf-8-sig')
         if answer.strip() != expected.strip():
             raise ValueError('answer differs from rendered source-checked delivery; regenerate or review changes')

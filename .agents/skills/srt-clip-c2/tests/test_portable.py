@@ -124,4 +124,6 @@ with tempfile.TemporaryDirectory(prefix='c2_skill_') as t:
     short_plan = dict(text_payload); short_plan['groups'] = [{'ids':[1,2,3],'function':'短开头'}]
     batch.write_text(json.dumps({'plans':[short_plan],'recommended':1},ensure_ascii=False),encoding='utf-8')
     check('短候选，非正式成片' in call(multi,'--snapshot',text_session,'--plans',batch,'--ledger',ledger_file,'--allow-short-report'), 'short candidate label')
+    short_out=call(multi,'--snapshot',text_session,'--plans',batch,'--ledger',ledger_file,'--allow-short-report'); result_file.write_text(short_out,encoding='utf-8')
+    check('MULTI SERIAL CHECK PASS' in call(multi,'--snapshot',text_session,'--plans',batch,'--ledger',ledger_file,'--answer',result_file), 'short answer check')
 print(f'{count}/{count} portable tests PASS')

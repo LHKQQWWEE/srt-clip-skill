@@ -123,7 +123,8 @@ def scan(doc):
 def scan_summary(doc, snapshot_path):
     """Print parse metadata only; the full parsed source remains in the snapshot."""
     total=fmt(doc['end']-doc['start'])
-    print(f"FILE={doc['filename']} | CUES={doc['count']} | SOURCE_DURATION_SUM={total} | PARSE=PASS | SNAPSHOT={snapshot_path}")
+    label = 'SOURCE_DURATION_SUM' if doc.get('input_type') == 'duration_text' else 'SOURCE_SPAN'
+    print(f"FILE={doc['filename']} | CUES={doc['count']} | {label}={total} | PARSE=PASS | SNAPSHOT={snapshot_path}")
     print('NOTE=complete rows are saved in the snapshot; this summary does not verify semantic quality')
 
 
@@ -200,8 +201,8 @@ def render(doc,plan,allow_short_report=False):
         cumulative+=span;selected.update(ids);all_ids.extend(ids)
     final_ms=after_1_2x(cumulative)
     short_report = allow_short_report and 0 < final_ms <= 30000
-    if not 30000 < final_ms <= 120000 and not short_report:
-        raise ValueError('Estimated 1.2x final duration must be greater than 30 and at most 120 seconds')
+    if final_ms <= 30000 and not short_report:
+        raise ValueError('Estimated 1.2x final duration must be greater than 30 seconds unless short report is enabled')
     serials=','.join(all_ids)
     is_text=doc.get('input_type')=='duration_text'
     third=['三、最佳成片方案',f"主推主题：{plan['theme']}",f'原始选段时长（1.0倍）：{fmt(cumulative)}',f'预计1.2倍速成片时长：{fmt(final_ms)}']
@@ -238,7 +239,7 @@ def render(doc,plan,allow_short_report=False):
 def main():
     ap=argparse.ArgumentParser()
     sub=ap.add_subparsers(dest='cmd',required=True)
-    scanp=sub.add_parser('scan');scanp.add_argument('srt');scanp.add_argument('--snapshot',required=True)
+    scanp=sub.add_parser('scan');scanp.add_argument('srt');scanp.add_argument('--snapshot',required=True);scanp.add_argument('--summary',action='store_true')
     textp=sub.add_parser('scan-text');text_source=textp.add_mutually_exclusive_group(required=True)
     text_source.add_argument('text_file',nargs='?');text_source.add_argument('--stdin',action='store_true')
     textp.add_argument('--snapshot',required=True);textp.add_argument('--summary',action='store_true',help='Print metadata only after parsing and saving the complete snapshot')
@@ -250,7 +251,7 @@ def main():
         if args.cmd=='scan':
             doc=parse_once(args.srt)
             Path(args.snapshot).write_text(json.dumps(doc,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
-            scan(doc)
+            scan_summary(doc,args.snapshot) if args.summary else scan(doc)
         elif args.cmd=='scan-text':
             if args.stdin:
                 source=sys.stdin.read();filename='<stdin>'

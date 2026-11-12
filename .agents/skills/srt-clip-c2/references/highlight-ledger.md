@@ -8,16 +8,16 @@
     {"id":"h1","point":"轻","source_ids":["12"],"status":"入选","retained_ids":["12"]},
     {"id":"h2","point":"柔软","source_ids":["34"],"status":"未入选","reason":"该句与别款商品交叉，指代尚不能确认"},
     {"id":"h3","point":"上身轻","source_ids":["56"],"status":"合并","merged_into":"h1","retained_ids":["12"],"reason":"与h1均表达穿着轻"},
-    {"id":"h4","point":"小雨防泼","source_ids":["78"],"status":"待核实","reason":"缺少商品功能和适用条件依据"}
+    {"id":"h4","point":"小雨防泼","source_ids":["78"],"status":"入选","retained_ids":["78"],"note":"商品归属可靠；功能和适用条件待核实"}
   ]
 }
 ```
 
 状态及字段：
-- `入选`：`retained_ids` 非空，必须属于该条 `source_ids`，且实际存在冻结方案中。
+- `入选`：`retained_ids` 非空，必须属于该条 `source_ids`，且实际存在冻结方案中。商品归属可靠但内容存疑的亮点仍为入选，在 `note` 和成片对应位置说明具体待核实事项。
 - `合并`：`merged_into` 指向一条 `入选` 记录，`retained_ids` 是该目标实际入选来源；`reason` 说明为何同义。同类不同利益不可误标同义。
 - `未入选`：`reason` 写具体约束及取舍，不只写“重复”“精简”“时长”“衔接”。
-- `待核实`：`reason` 写清具体事项及暂不采用的原因；不得把待核实作为已确认事实。
+- `待核实`：`reason` 写清商品归属等具体事项及暂不采用的原因；不得把待核实作为已确认事实。
 
 完成主观补漏比较和人工冻结后执行：
 ```text

@@ -129,7 +129,12 @@ def main():
             validate_highlights(doc, batch, ledger)
         expected = render_multi(doc, batch['plans'], batch['recommended'], True, ledger)
         answer = Path(a.answer).read_text(encoding='utf-8-sig')
-        if answer.strip() != expected.strip():
+        try:
+            first, rest = answer.split('\n二、商品识别', 1)
+            expected_first, expected_rest = expected.split('\n二、商品识别', 1)
+        except ValueError:
+            raise ValueError('missing product section')
+        if not first.startswith(expected_first) or rest.strip() != expected_rest.strip():
             raise ValueError('answer differs from rendered source-checked delivery; regenerate or review changes')
         check_multi(answer, batch['plans'], ledger, doc)
         print('MULTI SERIAL CHECK PASS')

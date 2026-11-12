@@ -121,6 +121,8 @@ with tempfile.TemporaryDirectory(prefix='c2_skill_') as t:
     check('方案一' in output and '方案二' not in output, 'one plan only')
     check('1,2,3,4,5,6,7,8,9,10,11,12' in output, 'serial sequence')
     check('MULTI SERIAL CHECK PASS' in call(multi,'--snapshot',text_session,'--plans',batch,'--ledger',ledger_file,'--answer',result_file), 'final check')
+    output=result_file.read_text(encoding='utf-8').replace('\n二、商品识别','\n合规提示：示例待核实。\n二、商品识别',1); result_file.write_text(output,encoding='utf-8')
+    check('MULTI SERIAL CHECK PASS' in call(multi,'--snapshot',text_session,'--plans',batch,'--ledger',ledger_file,'--answer',result_file), 'risk note accepted in first section')
     short_plan = dict(text_payload); short_plan['groups'] = [{'ids':[1,2,3],'function':'短开头'}]
     batch.write_text(json.dumps({'plans':[short_plan],'recommended':1},ensure_ascii=False),encoding='utf-8')
     check('短候选，非正式成片' in call(multi,'--snapshot',text_session,'--plans',batch,'--ledger',ledger_file,'--allow-short-report'), 'short candidate label')

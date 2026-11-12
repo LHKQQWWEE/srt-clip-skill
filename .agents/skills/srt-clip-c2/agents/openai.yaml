@@ -1,4 +1,4 @@
 interface:
-  display_name: "直播切片文案 C2 0.2.16"
+  display_name: "直播切片文案 C2 0.2.17"
   short_description: "完整编排商品亮点与来源"
-  default_prompt: "按 C2 0.2.16 的 SKILL.md 完整读取，编入归属明确的所有不同亮点和配色；展示覆盖清单、逐段疑点及来源序号，不设120秒上限。"
+  default_prompt: "按 C2 0.2.17 的 SKILL.md 完整读取，编入归属明确的所有不同亮点和配色；展示覆盖清单、逐段疑点及来源序号，不设120秒上限。"

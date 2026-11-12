@@ -34,10 +34,13 @@ def render_compact(doc: dict, plan: dict, allow_short_report: bool = False) -> s
     for group in plan['groups']:
         selected = [byid[str(s)] for s in group['ids']]
         total_ms += max(r['end'] for r in selected) - min(r['start'] for r in selected)
-    if allow_short_report and v3.after_1_2x(total_ms) <= 30000:
+    final_ms = v3.after_1_2x(total_ms) + plan.get('unaccelerated_ms', 0)
+    if allow_short_report and final_ms <= 30000:
         third[0] = "三、短候选，非正式成片"
     third += [f"原始选段时长（1.0倍）：{v3.fmt(total_ms)}",
-              f"预计1.2倍速成片时长：{v3.fmt(v3.after_1_2x(total_ms))}"]
+              f"预计1.2倍速成片时长：{v3.fmt(final_ms)}"]
+    if plan.get('unaccelerated_ms', 0):
+        third.append(f"已加计未加速时长：{v3.fmt(plan['unaccelerated_ms'])}")
     for number, group in enumerate(plan['groups'], 1):
         selected = [byid[str(s)] for s in group['ids']]
         source_ids += [r['id'] for r in selected]

@@ -72,6 +72,13 @@ def validate(snapshot, plans, ledger):
                 fail(key + ' needs a specific explanation')
         if status in ('未入选','待核实') and row.get('exception_kind') not in EXCEPTIONS:
             fail(key + ' needs an allowed exception_kind; timing or transition alone is not an exception')
+        if status in ('未入选','待核实'):
+            overlap = set(src) & selected
+            for sid in overlap:
+                groups = [g for g in batch[0]['groups'] if sid in set(map(str, g['ids']))]
+                note = ' '.join(str(g.get('note', '')) for g in groups)
+                if row.get('exception_kind') == '商品归属不明' or not (sid in note and '保留' in note and '剪除' in note and '回听' in note):
+                    fail(key + ' exception overlaps selected ID without explicit partial-cut instructions: ' + sid)
         by_key[key] = row
     for key, row in by_key.items():
         if row['status'] == '合并':

@@ -3,6 +3,7 @@
 import argparse
 import json
 import re
+import copy
 from pathlib import Path
 from render_compact import render_compact
 from check_highlights import validate as validate_highlights
@@ -51,6 +52,11 @@ def check_multi(answer, plans, ledger=None, doc=None):
         subtitle_section = sections[2+2*i].split('亮点覆盖（按成片播放顺序）：', 1)[0]
         if sections[1+2*i] != NAMES[i] or re.findall(r'【([1-9][0-9]*)】', subtitle_section) != ids:
             raise ValueError('third section plan order or IDs differ')
+        if doc is not None:
+            source = {str(r['id']): r['text'] for r in doc['rows']}
+            for sid in ids:
+                if not re.search(re.escape('【'+sid+'】'+source[sid]) + r'(?=\r?\n|$)', subtitle_section):
+                    raise ValueError('source text missing or changed: ' + sid)
         if any(g.get('note') for g in plans[i]['groups']):
             group_sections = re.split(r'(?m)^片段[0-9]+｜', subtitle_section)[1:]
             if len(group_sections) != len(plans[i]['groups']):
@@ -75,6 +81,15 @@ def render_multi(doc, plans, recommended, allow_short_report=False, ledger=None)
         raise ValueError('invalid plan count or recommendation')
     if ledger is not None:
         validate_highlights(doc, {'plans': plans}, ledger)
+    plans = copy.deepcopy(plans)
+    if ledger is not None:
+        for item in ledger['highlights']:
+            if item['status'] == '入选' and item.get('note'):
+                for group in plans[0]['groups']:
+                    ids = set(map(str, group['ids'])) & set(map(str, item['retained_ids']))
+                    if ids:
+                        msg = '序号' + ','.join(sorted(ids, key=int)) + '：' + item['note']
+                        group['note'] = (group.get('note', '') + '；' + msg).strip('；')
     firsts, thirds, fourths, sequences = [], [], [], []
     second = None
     for i, plan in enumerate(plans):
@@ -103,7 +118,7 @@ def render_multi(doc, plans, recommended, allow_short_report=False, ledger=None)
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('--snapshot', required=True); p.add_argument('--plans', required=True)
-    p.add_argument('--ledger', help='human-reviewed highlight ledger, used for coverage output and checks')
+    p.add_argument('--ledger', required=True, help='human-reviewed highlight ledger, required for delivery')
     p.add_argument('--answer'); p.add_argument('--output'); p.add_argument('--allow-short-report', action='store_true')
     a = p.parse_args()
     batch = json.loads(Path(a.plans).read_text(encoding='utf-8-sig'))
@@ -112,7 +127,11 @@ def main():
         doc = json.loads(Path(a.snapshot).read_text(encoding='utf-8-sig')) if ledger is not None else None
         if ledger is not None:
             validate_highlights(doc, batch, ledger)
-        check_multi(Path(a.answer).read_text(encoding='utf-8-sig'), batch['plans'], ledger, doc)
+        expected = render_multi(doc, batch['plans'], batch['recommended'], a.allow_short_report, ledger)
+        answer = Path(a.answer).read_text(encoding='utf-8-sig')
+        if answer.strip() != expected.strip():
+            raise ValueError('answer differs from rendered source-checked delivery; regenerate or review changes')
+        check_multi(answer, batch['plans'], ledger, doc)
         print('MULTI SERIAL CHECK PASS')
     else:
         doc = json.loads(Path(a.snapshot).read_text(encoding='utf-8-sig'))

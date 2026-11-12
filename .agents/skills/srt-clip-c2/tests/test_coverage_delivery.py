@@ -51,6 +51,26 @@ class CoverageDeliveryTests(unittest.TestCase):
         answer=render_multi(self.doc,[self.plan],1,ledger=self.ledger)
         self.assertIn('另一个具体信息｜序号 2',answer)
 
+    def test_unaccelerated_time_is_included(self):
+        self.plan['unaccelerated_ms']=5000
+        answer=render_multi(self.doc,[self.plan],1,ledger=self.ledger)
+        self.assertIn('预计1.2倍速成片时长：00:00:55.000',answer)
+        self.assertIn('已加计未加速时长：00:00:05.000',answer)
+
+    def test_ledger_note_reaches_selected_group(self):
+        self.ledger['highlights'][1]['note']='肤感待核实'
+        answer=render_multi(self.doc,[self.plan],1,ledger=self.ledger)
+        self.assertIn('序号2：肤感待核实',answer)
+
+    def test_final_source_text_mutation_fails(self):
+        answer=render_multi(self.doc,[self.plan],1,ledger=self.ledger)
+        with self.assertRaises(ValueError):
+            check_multi(answer.replace('【2】软','【2】硬'),[self.plan],self.ledger,self.doc)
+
+    def test_exception_cannot_silently_enter_sequence(self):
+        self.ledger['highlights'][2]['source_ids']=['1']
+        with self.assertRaises(ValueError): validate(self.doc,self.plans,self.ledger)
+
     def test_known_subtitle_header_does_not_require_file_rewrite(self):
         for header in ('srt文案','str文案','C2完整精简版','切片文案','srt切片文案'):
             doc=parse_duration_text(header+'\n\n【字幕列表】\n1 1.5 原始字幕\n')

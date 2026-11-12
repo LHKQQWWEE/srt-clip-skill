@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""srt-clip-c2 C2 0.2.15 source and duration checker.
+"""srt-clip-c2 C2 0.2.16 source and duration checker.
 
 One SRT byte read/parse -> one compact model scan -> one author-selected plan
 -> source-only checked, frozen-format delivery. This deliberately DOES NOT
@@ -169,8 +169,11 @@ def covered(rows):
 
 def render(doc,plan,allow_short_report=False):
     expected={'groups','theme','product_lines','title','topics','subtitle_notes'}
-    if not isinstance(plan,dict) or set(plan)!=expected:
+    if not isinstance(plan,dict) or not expected <= set(plan) or set(plan)-expected-{'unaccelerated_ms'}:
         raise ValueError('Plan requires exactly '+','.join(sorted(expected)))
+    extra_ms = plan.get('unaccelerated_ms', 0)
+    if not isinstance(extra_ms, int) or isinstance(extra_ms, bool) or extra_ms < 0:
+        raise ValueError('unaccelerated_ms must be a nonnegative integer')
     if not isinstance(plan['groups'],list) or not plan['groups']:
         raise ValueError('No selected groups')
     if not all(isinstance(v,str) and v.strip() for v in [plan['theme'],plan['title']]):
@@ -200,7 +203,7 @@ def render(doc,plan,allow_short_report=False):
         raw_start=cumulative; raw_end=cumulative+span
         groups.append((n,rawg['function'],g,a,b,raw_start,raw_end,gap))
         cumulative+=span;selected.update(ids);all_ids.extend(ids)
-    final_ms=after_1_2x(cumulative)
+    final_ms=after_1_2x(cumulative)+extra_ms
     short_report = allow_short_report and 0 < final_ms <= 30000
     if final_ms <= 30000 and not short_report:
         raise ValueError('Estimated 1.2x final duration must be greater than 30 seconds unless short report is enabled')

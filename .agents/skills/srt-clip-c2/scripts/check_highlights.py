@@ -8,6 +8,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from sentence_edits import extract_sentence_edits
 
 VAGUE = {'重复','精简','时长','超时','衔接','风险','不选','无','无理由'}
 EXCEPTIONS = {'商品归属不明', '已知不实', '当前素材已拒审'}
@@ -40,6 +41,7 @@ def validate(snapshot, plans, ledger):
     if not isinstance(batch, list) or not 1 <= len(batch) <= 3:
         fail('between one and three plans required')
     plan_ids = []
+    plan_edits = []
     for index, plan in enumerate(batch, 1):
         if not isinstance(plan, dict) or not isinstance(plan.get('groups'), list):
             fail('plan %d groups required' % index)
@@ -47,6 +49,7 @@ def validate(snapshot, plans, ledger):
         if not ids or len(ids) != len(set(ids)) or not set(ids) <= source_ids:
             fail('plan %d IDs are empty, duplicate, or absent from snapshot' % index)
         plan_ids.append(ids)
+        plan_edits.append(extract_sentence_edits(plan, snapshot))
     plan_id_sets = [set(ids) for ids in plan_ids]
     items = ledger.get('highlights')
     if not isinstance(items, list) or not items:
@@ -99,12 +102,26 @@ def validate(snapshot, plans, ledger):
                     fail(key + ' needs a specific explanation')
             if status in ('未入选','待核实') and assignment.get('exception_kind') not in EXCEPTIONS:
                 fail(key + ' needs an allowed exception_kind; timing or transition alone is not an exception')
+            excluded = assignment.get('excluded_sentences', [])
+            if status in ('未入选','待核实'):
+                if not isinstance(excluded, list):
+                    fail(key + ' excluded_sentences must be a list')
+                for sentence in excluded:
+                    if not isinstance(sentence, dict) or set(sentence) != {'source_id','text'}:
+                        fail(key + ' excluded sentence needs source_id and exact text')
+                    sid = str(sentence['source_id'])
+                    text = sentence['text']
+                    source_text = next(row['text'] for row in rows if str(row['id']) == sid) if sid in source_ids else None
+                    if sid not in src or not isinstance(text, str) or not text or text not in source_text:
+                        fail(key + ' excluded sentence must be exact text from one of its source cues')
+                    if sid in selected and text not in plan_edits[index-1].get(sid, {}).get('removed_sentences', []):
+                        fail(key + ' selected source sentence is not removed by the plan: ' + sid)
             if status in ('未入选','待核实'):
                 overlap = set(src) & selected
                 for sid in overlap:
-                    groups = [g for g in batch[index-1]['groups'] if sid in set(map(str, g['ids']))]
-                    note = ' '.join(str(g.get('note', '')) for g in groups)
-                    if assignment.get('exception_kind') == '商品归属不明' or not (sid in note and '保留' in note and '剪除' in note and '回听' in note):
+                    removed = plan_edits[index-1].get(sid, {}).get('removed_sentences', [])
+                    listed = [item['text'] for item in excluded if str(item['source_id']) == sid]
+                    if assignment.get('exception_kind') == '商品归属不明' or not removed or sorted(removed) != sorted(listed):
                         fail(key + ' exception overlaps selected ID without explicit partial-cut instructions: ' + sid)
             checked[str(index)] = (status, assignment, kept)
         by_key[key] = (row, checked)
@@ -119,6 +136,17 @@ def validate(snapshot, plans, ledger):
                     fail(key + ' must merge into an existing selected highlight in plan %d' % index)
                 if not set(map(str, kept)) <= set(map(str, target_assignment[2])):
                     fail(key + ' retained IDs must match its merge target')
+    for index, edits in enumerate(plan_edits, 1):
+        for sid, edit in edits.items():
+            for removed_text in edit['removed_sentences']:
+                recorded = any(
+                    checked[str(index)][0] in ('未入选','待核实') and
+                    any(str(item['source_id']) == sid and item['text'] == removed_text
+                        for item in checked[str(index)][1].get('excluded_sentences', []))
+                    for _, checked in by_key.values()
+                )
+                if not recorded:
+                    fail('sentence edit removal must appear in a source exception: ' + sid)
     return len(items), sum(len(ids) for ids in plan_ids)
 
 def main():

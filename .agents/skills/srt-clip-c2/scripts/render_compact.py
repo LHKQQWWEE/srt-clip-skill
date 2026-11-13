@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 """C2 display only. Source/time/ID/duration validations are delegated to srt_fast.py."""
 import argparse
+import copy
 import importlib.util
 import json
+import sys
 from pathlib import Path
+
+SCRIPT_DIR = str(Path(__file__).resolve().parent)
+if SCRIPT_DIR not in sys.path:
+    sys.path.insert(0, SCRIPT_DIR)
+from sentence_edits import extract_sentence_edits
 
 ENGINE = Path(__file__).resolve().parent / "srt_fast.py"
 spec = importlib.util.spec_from_file_location("canonical_srt_fast", ENGINE)
@@ -19,8 +26,15 @@ def rough_sec(ms: int) -> str:
     return f"{h:02d}:{m:02d}:{s:02d}" if h else f"{m:02d}:{s:02d}"
 
 
-def render_compact(doc: dict, plan: dict, allow_short_report: bool = False) -> str:
-    verified = v3.render(doc, plan, allow_short_report=allow_short_report)  # raises on unverified sources, invalid groups or duration
+def render_compact(doc: dict, plan: dict, allow_short_report: bool = False,
+                   allow_sentence_edits: bool = False) -> str:
+    sentence_edits = extract_sentence_edits(plan, doc)
+    if sentence_edits and not allow_sentence_edits:
+        raise ValueError('sentence edits require a prevalidated source-exception ledger through multi_plan.py')
+    validated_plan = copy.deepcopy(plan)
+    for group in validated_plan.get('groups', []):
+        group.pop('sentence_edits', None)
+    verified = v3.render(doc, validated_plan, allow_short_report=allow_short_report)  # raises on unverified sources, invalid groups or duration
     pre, remainder = verified.split("\n三、最佳成片方案\n", 1)
     is_text = doc.get("input_type") == "duration_text"
     if is_text:
@@ -54,7 +68,8 @@ def render_compact(doc: dict, plan: dict, allow_short_report: bool = False) -> s
         for j,r in enumerate(selected):
             if not is_text and j and r['start']-selected[j-1]['end'] > 1000:
                 third.append("【剪辑断点：前后字幕相隔超过1秒】")
-            third.append(f"【{r['id']}】{r['text']}")
+            text = sentence_edits.get(str(r['id']), {}).get('kept_text', r['text'])
+            third.append(f"【{r['id']}】{text}")
         if group.get('note'):
             third.append('待核实／剪辑提醒：' + group['note'])
         third.append("")

@@ -9,6 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 from check_highlights import validate
 from multi_plan import render_multi, check_multi
+from render_compact import render_compact
 from srt_fast import parse_duration_text
 
 
@@ -71,14 +72,68 @@ class CoverageDeliveryTests(unittest.TestCase):
             check_multi(answer.replace('亮点覆盖（按成片播放顺序）：',''),[self.plan],self.ledger,self.doc)
 
     def test_refused_material_sentence_can_leave_clean_sentence_in_same_cue(self):
-        self.plan['groups'][1]['note']='序号1保留三防工艺；剪除白鹅绒句；句内剪点待回听'
+        self.doc['rows'][0]['text']='白鹅绒填充。面料还做了三防工艺。'
+        self.plan['groups'][1]['note']='序号1保留独立完整句；句间剪点待回听'
+        self.plan['groups'][1]['sentence_edits']=[{
+            'id':'1','sentences':[
+                {'text':'白鹅绒填充。','action':'剪除'},
+                {'text':'面料还做了三防工艺。','action':'保留'}
+            ]
+        }]
         ledger={'highlights':self.ledger['highlights']+[
             {'id':'h4','point':'被拒审的材质句','source_ids':['1'],'status':'待核实',
-             'exception_kind':'当前素材已拒审','reason':'平台明确指出该句违规'}]}
+             'exception_kind':'当前素材已拒审','reason':'平台明确指出该句违规',
+             'excluded_sentences':[{'source_id':'1','text':'白鹅绒填充。'}]}]}
         self.assertEqual(validate(self.doc,self.plans,ledger),(4,2))
         answer=render_multi(self.doc,[self.plan],1,ledger=ledger)
-        self.assertIn('序号1保留三防工艺；剪除白鹅绒句；句内剪点待回听',answer)
+        clip_section=answer.split('亮点覆盖（按成片播放顺序）：',1)[0]
+        self.assertIn('【1】面料还做了三防工艺。',clip_section)
+        self.assertNotIn('【1】白鹅绒填充。面料还做了三防工艺。',clip_section)
+        self.assertIn('句间剪点待回听',clip_section)
         self.assertIn('当前素材已拒审：平台明确指出该句违规',answer)
+        self.assertIn('风险核对用原句：序号1｜白鹅绒填充。',answer)
+        with self.assertRaises(ValueError):
+            check_multi(answer.replace('【1】面料还做了三防工艺。','【1】'+self.doc['rows'][0]['text']),[self.plan],ledger,self.doc)
+        injected=answer.replace('【1】面料还做了三防工艺。','【1】面料还做了三防工艺。\n白鹅绒填充。')
+        with self.assertRaisesRegex(ValueError,'clip section differs'):
+            check_multi(injected,[self.plan],ledger,self.doc)
+
+    def test_sentence_cut_requires_a_coverage_exception(self):
+        self.doc['rows'][0]['text']='白鹅绒填充。面料还做了三防工艺。'
+        self.plan['groups'][1]['note']='序号1保留独立完整句；句间剪点待回听'
+        self.plan['groups'][1]['sentence_edits']=[{
+            'id':'1','sentences':[
+                {'text':'白鹅绒填充。','action':'剪除'},
+                {'text':'面料还做了三防工艺。','action':'保留'}
+            ]
+        }]
+        with self.assertRaisesRegex(ValueError,'sentence edit removal must appear'):
+            validate(self.doc,self.plans,self.ledger)
+        with self.assertRaisesRegex(ValueError,'highlight ledger'):
+            render_multi(self.doc,[self.plan],1)
+
+    def test_direct_compact_renderer_requires_prevalidated_sentence_exceptions(self):
+        self.doc['rows'][0]['text']='白鹅绒填充。面料还做了三防工艺。'
+        self.plan['groups'][1]['note']='序号1保留独立完整句；句间剪点待回听'
+        self.plan['groups'][1]['sentence_edits']=[{
+            'id':'1','sentences':[
+                {'text':'白鹅绒填充。','action':'剪除'},
+                {'text':'面料还做了三防工艺。','action':'保留'}
+            ]
+        }]
+        with self.assertRaisesRegex(ValueError,'prevalidated source-exception ledger'):
+            render_compact(self.doc,self.plan)
+
+    def test_sentence_edit_must_account_for_the_entire_source_cue(self):
+        self.doc['rows'][0]['text']='白鹅绒填充。面料还做了三防工艺。'
+        self.plan['groups'][1]['sentence_edits']=[{
+            'id':'1','sentences':[
+                {'text':'白鹅绒填充。','action':'剪除'},
+                {'text':'面料还做了三防。','action':'保留'}
+            ]
+        }]
+        with self.assertRaisesRegex(ValueError,'sentence edit'):
+            render_multi(self.doc,[self.plan],1,ledger=self.ledger)
 
     def test_one_cue_can_support_multiple_distinct_highlights(self):
         self.ledger['highlights'].append({'id':'h4','point':'另一个具体信息','source_ids':['2'],'status':'入选','retained_ids':['2']})

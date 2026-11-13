@@ -8,6 +8,7 @@ from pathlib import Path
 
 from render_compact import render_compact
 from check_highlights import validate as validate_highlights
+from sentence_edits import extract_sentence_edits
 
 NAMES = ['一', '二', '三']
 SERIAL = r'[1-9][0-9]*(?:,[1-9][0-9]*)*'
@@ -28,6 +29,24 @@ def _assignment(item, plan_index):
     return item
 
 
+def _plans_with_ledger_notes(plans, ledger):
+    result = copy.deepcopy(plans)
+    if ledger is None:
+        return result
+    for item in ledger['highlights']:
+        for index, plan in enumerate(result, 1):
+            assignment = _assignment(item, index)
+            if assignment['status'] == '入选' and assignment.get('note'):
+                for group in plan['groups']:
+                    ids = set(map(str, group['ids'])) & set(map(str, assignment['retained_ids']))
+                    if ids:
+                        msg = '序号' + ','.join(sorted(ids, key=int)) + '：' + assignment['note']
+                        current = group.get('note', '')
+                        if msg not in current:
+                            group['note'] = (current + '；' + msg).strip('；')
+    return result
+
+
 def coverage_text(ledger, plan, doc, plan_index=1):
     order = {sid: pos for pos, sid in enumerate(ids_for(plan))}
     current = [(_assignment(item, plan_index), item) for item in ledger['highlights']]
@@ -42,10 +61,19 @@ def coverage_text(ledger, plan, doc, plan_index=1):
     exceptions = [(a, item) for a, item in current if a['status'] in ('未入选', '待核实')]
     if exceptions:
         source = {str(row['id']): row['text'] for row in doc['rows']}
+        selected_ids = set(ids_for(plan))
         lines.append('未编入的素材例外：')
         for a, item in exceptions:
             lines.append('- ' + item['point'] + '｜来源序号 ' + ','.join(map(str, item['source_ids'])) + '｜' + a['exception_kind'] + '：' + a['reason'])
-            lines.extend('原话：' + source[str(sid)] for sid in item['source_ids'])
+            excluded = {}
+            for sentence in a.get('excluded_sentences', []):
+                excluded.setdefault(str(sentence['source_id']), []).append(sentence['text'])
+            for sid in item['source_ids']:
+                sid = str(sid)
+                if sid in excluded and sid in selected_ids:
+                    lines.extend('风险核对用原句：序号' + sid + '｜' + text for text in excluded[sid])
+                else:
+                    lines.append('原话：' + source[sid])
     return '\n'.join(lines)
 
 
@@ -59,6 +87,7 @@ def _topic_line(plan):
 def check_multi(answer, plans, ledger=None, doc=None):
     if not 1 <= len(plans) <= 3:
         raise ValueError('expected between one and three plans')
+    plans = _plans_with_ledger_notes(plans, ledger)
     expected = [ids_for(p) for p in plans]
     try:
         third = re.search(r'(?s)三、成片方案\s*\n(.*?)\n四、作品标题与话题\s*\n', answer).group(1)
@@ -80,8 +109,10 @@ def check_multi(answer, plans, ledger=None, doc=None):
         if re.findall(r'【([1-9][0-9]*)】', subtitle_section) != ids:
             raise ValueError('third section plan order or IDs differ')
         if doc is not None:
+            sentence_edits = extract_sentence_edits(plans[i], doc)
             for sid in ids:
-                if not re.search(re.escape('【' + sid + '】' + source[sid]) + r'(?=\r?\n|$)', subtitle_section):
+                displayed_text = sentence_edits.get(sid, {}).get('kept_text', source[sid])
+                if not re.search(re.escape('【' + sid + '】' + displayed_text) + r'(?=\r?\n|$)', subtitle_section):
                     raise ValueError('source text missing or changed: ' + sid)
         if any(g.get('note') for g in plans[i]['groups']):
             group_sections = re.split(r'(?m)^片段[0-9]+｜', subtitle_section)[1:]
@@ -92,6 +123,19 @@ def check_multi(answer, plans, ledger=None, doc=None):
                     raise ValueError('group note missing from corresponding group')
         if ledger is not None and (doc is None or coverage_text(ledger, plans[i], doc, i + 1) not in block):
             raise ValueError('plan highlight coverage differs from ledger')
+        if doc is not None:
+            rendered = render_compact(doc, plans[i], allow_short_report=True,
+                                      allow_sentence_edits=ledger is not None)
+            rendered_third = rendered.split('\n三、', 1)[1].split('\n四、作品标题与话题\n', 1)[0]
+            rendered_head, rendered_body = rendered_third.split('\n', 1)
+            expected_label = '方案' + NAMES[i]
+            if '短候选' in rendered_head:
+                expected_label += '｜短候选，非正式成片'
+            expected_block = expected_label + '\n' + rendered_body
+            if ledger is not None:
+                expected_block += '\n\n' + coverage_text(ledger, plans[i], doc, i + 1)
+            if block != expected_block.rstrip():
+                raise ValueError('clip section differs from validated source rendering')
         title_end = title_matches[i + 1].start() if i + 1 < len(title_matches) else len(fourth)
         title_block = fourth[title_matches[i].start():title_end]
         if title_matches[i].group(1) != NAMES[i]:
@@ -115,24 +159,17 @@ def check_multi(answer, plans, ledger=None, doc=None):
 def render_multi(doc, plans, recommended, allow_short_report=False, ledger=None):
     if not 1 <= len(plans) <= 3 or not isinstance(recommended, int) or not 1 <= recommended <= len(plans):
         raise ValueError('invalid plan count or recommendation')
+    if ledger is None and any(group.get('sentence_edits') for plan in plans for group in plan.get('groups', [])):
+        raise ValueError('sentence edits require a highlight ledger with exact source exceptions')
     if ledger is not None:
         validate_highlights(doc, {'plans': plans}, ledger)
-    plans = copy.deepcopy(plans)
-    if ledger is not None:
-        for item in ledger['highlights']:
-            for index, plan in enumerate(plans, 1):
-                assignment = _assignment(item, index)
-                if assignment['status'] == '入选' and assignment.get('note'):
-                    for group in plan['groups']:
-                        ids = set(map(str, group['ids'])) & set(map(str, assignment['retained_ids']))
-                        if ids:
-                            msg = '序号' + ','.join(sorted(ids, key=int)) + '：' + assignment['note']
-                            group['note'] = (group.get('note', '') + '；' + msg).strip('；')
+    plans = _plans_with_ledger_notes(plans, ledger)
     rendered = []
     second = None
     for index, plan in enumerate(plans):
         ids_for(plan)
-        output = render_compact(doc, plan, allow_short_report=allow_short_report)
+        output = render_compact(doc, plan, allow_short_report=allow_short_report,
+                                allow_sentence_edits=ledger is not None)
         first, rest = output.split('\n二、商品识别', 1)
         two, rest = rest.split('\n三、', 1)
         three, rest = rest.split('\n四、作品标题与话题\n', 1)

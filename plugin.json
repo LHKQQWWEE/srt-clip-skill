@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "srt-clip-c2",
-  "version": "0.1.47",
+  "version": "0.1.48",
   "description": "直播切片文案 C2 0.2.20：材质违规按标记句处理，开头比较外观吸引力、核心卖点与真实顾客困扰。",
   "extensions": {
     "com.openai": {
@@ -12,7 +12,7 @@
         "developerName": "惠康 黎",
         "category": "Productivity",
         "capabilities": [],
-        "defaultPrompt": "按 C2 0.2.20 的 srt-clip-c2 技能及其 references/editorial-policy.md 执行。平台指出材质违规词句时删除含违规内容的整句，保留同字幕其他独立干净句及相邻字幕。开头比较吸引力强的好看类外观、商品核心卖点与真实顾客困扰，不固定困扰优先；每版覆盖全部归属明确且有原话支持的不同亮点。"
+        "defaultPrompt": "按 C2 0.2.20 的 srt-clip-c2 技能及其 references/editorial-policy.md 执行。平台指出材质违规词句时删除含违规内容的整句；同字幕有其他独立句时，成片原话只显示保留句，删句只在素材例外中用于核对。开头比较吸引力强的好看类外观、商品核心卖点与真实顾客困扰，不固定困扰优先，也不按商品品类排除困扰；每版覆盖全部归属明确且有原话支持的不同亮点。"
       }
     }
   },

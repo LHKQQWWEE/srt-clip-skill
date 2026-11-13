@@ -39,6 +39,7 @@ with tempfile.TemporaryDirectory(prefix='c2_skill_') as t:
     plan.write_text(json.dumps(payload,ensure_ascii=False),encoding='utf-8')
     txt=call(rend,'--snapshot',session,'--plan',plan,'--stdout')
     check(all(f'{i}、' in txt for i in ['一','二','三','四','五']),'5 sections')
+    check('作品话题：#合成话题甲 #合成话题乙 #合成话题丙 #穿搭 #时尚营销' in txt,'three generated plus two fixed topics')
     check('【3】保留原字幕第一行\n保留原字幕第二行' in txt,'source exact multiline')
     check('原SRT约 00:00–00:29｜序号 1–6' in txt,'coarse group locator')
     check('原始选段时长（1.0倍）：00:00:59.800' in txt,'source duration')
@@ -72,6 +73,11 @@ with tempfile.TemporaryDirectory(prefix='c2_skill_') as t:
     short=call(rend,'--snapshot',session,'--plan',plan,'--stdout','--allow-short-report')
     check('三、短候选，非正式成片' in short and '时长不超过30秒' in short,'short report clearly labelled')
     check('来源核对：PASS' not in short and '【1】' in short,'short report verifies sources without claiming duration passed')
+
+    duplicate_topic=dict(payload);duplicate_topic['topics']=['#穿搭','话题乙','话题丙']
+    plan.write_text(json.dumps(duplicate_topic,ensure_ascii=False),encoding='utf-8')
+    reject=subprocess.run(['python','-S',str(rend),'--snapshot',str(session),'--plan',str(plan),'--stdout'],capture_output=True,text=True,encoding='utf-8')
+    check(reject.returncode!=0,'generated topics cannot duplicate fixed topics')
 
     # Pasted duration-text mode uses the same snapshot and renderer, while the
     # cumulative positions remain explicitly labeled as estimates.

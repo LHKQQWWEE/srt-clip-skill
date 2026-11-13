@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""srt-clip-c2 C2 0.2.17 source and duration checker.
+"""srt-clip-c2 C2 0.2.19 source and duration checker.
 
 One SRT byte read/parse -> one compact model scan -> one author-selected plan
 -> source-only checked, frozen-format delivery. This deliberately DOES NOT
@@ -181,7 +181,11 @@ def render(doc,plan,allow_short_report=False):
     if not isinstance(plan['product_lines'],list) or not plan['product_lines'] or not all(isinstance(x,str) and x.strip() for x in plan['product_lines']):
         raise ValueError('Product identification missing')
     if not isinstance(plan['topics'],list) or len(plan['topics'])!=3 or not all(isinstance(x,str) and x.strip() for x in plan['topics']):
-        raise ValueError('Exactly three topics required')
+        raise ValueError('Exactly three generated topics required')
+    generated_topics = [x.strip() if x.strip().startswith('#') else '#' + x.strip() for x in plan['topics']]
+    fixed_topics = ['#穿搭', '#时尚营销']
+    if len(set(generated_topics)) != 3 or set(generated_topics) & set(fixed_topics):
+        raise ValueError('Generated topics must be unique and cannot duplicate fixed topics')
     byid={r['id']:r for r in doc['rows']}
     selected=set(); groups=[]; cumulative=0; windows=[]; all_ids=[]
     for n,rawg in enumerate(plan['groups'],1):
@@ -234,7 +238,7 @@ def render(doc,plan,allow_short_report=False):
         ('时长不超过30秒：短候选，非正式成片；来源结构核对通过，不代表语义、合规或音画通过' if short_report else (('素材不足45秒：大于30秒的完整方案，需说明原因；' if final_ms < 45000 else '') + ('来源核对：PASS（仅原话、原编号、逐条时长与1.2倍速后时长分级检查；累计位置为估算，不是原始视频时间码）' if is_text else '来源核对：PASS（仅原字幕、时间码、序号与1.2倍速后时长分级检查）'))),
         '', '二、商品识别', *plan['product_lines'], '', *third, '',
         '四、作品标题与话题', '作品标题：'+plan['title'],
-        '作品话题：'+' '.join(s if s.startswith('#') else '#'+s for s in plan['topics']),
+        '作品话题：'+' '.join(generated_topics + fixed_topics),
         '', '五、原始SRT序号（按成片播放顺序）','复制后可直接用于剪辑定位：',
         '```text',serials,'```','',''+serials]
     return '\n'.join(parts)

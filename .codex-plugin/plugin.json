@@ -1,0 +1,20 @@
+{
+  "interface": {
+    "displayName": "直播切片文案 C2 0.2.19",
+    "shortDescription": "精准处理材质字幕并选择更有效的开头",
+    "longDescription": "支持 SRT、逐条时长文本及宿主可读取的视频。材质违规按平台指出的字幕整条删除，保留并逐条判断其他内容。开头优先选最能引起共鸣的商品相关顾客困扰，没有合适困扰再选核心卖点。",
+    "developerName": "惠康 黎",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "按 C2 0.2.19 的 SKILL.md 执行。平台明确指出材质字幕违规时删除对应整条字幕，其他字幕逐条判断；开头优先选择最能引起共鸣的商品相关顾客困扰，没有合适困扰再选核心卖点。"
+  },
+  "name": "srt-clip-c2",
+  "version": "0.1.43",
+  "description": "直播切片文案 C2 0.2.19：按单条字幕处理明确材质违规，并优先用顾客困扰选择开头。",
+  "author": {
+    "name": "惠康 黎",
+    "email": "lihuikang23@gmail.com"
+  },
+  "keywords": [],
+  "skills": "./skills"
+}

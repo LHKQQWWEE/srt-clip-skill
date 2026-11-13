@@ -1,4 +1,7 @@
+import json
+import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -10,9 +13,9 @@ from srt_fast import parse_duration_text
 
 class CoverageDeliveryTests(unittest.TestCase):
     def setUp(self):
-        self.doc = {'filename':'test.txt','input_type':'duration_text','count':3,'start':0,'end':90000,'rows':[
+        self.doc = {'filename':'test.txt','input_type':'duration_text','count':4,'start':0,'end':120000,'rows':[
             {'id':str(i),'ord':i,'start':(i-1)*30000,'end':i*30000,'duration_raw':'30s','text':t}
-            for i,t in [(1,'轻'),(2,'软'),(3,'归属不明')]]}
+            for i,t in [(1,'轻'),(2,'软'),(3,'归属不明'),(4,'通勤搭配')]]}
         self.plan={'theme':'试排','product_lines':['商品'],'title':'标题','topics':['一','二','三'],'subtitle_notes':[],
                    'groups':[{'ids':['2'],'function':'柔软','note':'序号2肤感待核实'}, {'ids':['1'],'function':'轻'}]}
         self.plans={'plans':[self.plan],'recommended':1}
@@ -75,5 +78,111 @@ class CoverageDeliveryTests(unittest.TestCase):
         for header in ('srt文案','str文案','C2完整精简版','切片文案','srt切片文案'):
             doc=parse_duration_text(header+'\n\n【字幕列表】\n1 1.5 原始字幕\n')
             self.assertEqual(doc['rows'][0]['text'],'原始字幕')
+
+    def test_multi_plan_focus_omission_and_blank_line_serials(self):
+        second=dict(self.plan)
+        second['theme']='轻盈主线'
+        second['title']='轻盈方案标题'
+        second['topics']=['轻盈','通勤','版型']
+        second['groups']=[{'ids':['1'],'function':'开头'},{'ids':['4'],'function':'通勤搭配'}]
+        ledger={'highlights':[
+            {'id':'h1','point':'轻','source_ids':['1'],'by_plan':{
+                '1':{'status':'入选','retained_ids':['1']},
+                '2':{'status':'入选','retained_ids':['1']}}},
+            {'id':'h2','point':'柔软','source_ids':['2'],'by_plan':{
+                '1':{'status':'入选','retained_ids':['2']},
+                '2':{'status':'侧重点省略','reason':'方案二聚焦轻盈版型，不展开触感'}}},
+            {'id':'h3','point':'归属不明','source_ids':['3'],'by_plan':{
+                '1':{'status':'待核实','exception_kind':'商品归属不明','reason':'交叉讲解指代不清'},
+                '2':{'status':'待核实','exception_kind':'商品归属不明','reason':'交叉讲解指代不清'}}},
+            {'id':'h4','point':'通勤搭配','source_ids':['4'],'by_plan':{
+                '1':{'status':'侧重点省略','reason':'方案一聚焦面料和版型，不展开搭配场景'},
+                '2':{'status':'入选','retained_ids':['4']}}}
+        ]}
+        plans=[self.plan,second]
+        self.assertEqual(validate(self.doc,{'plans':plans},ledger),(4,4))
+        answer=render_multi(self.doc,plans,1,ledger=ledger)
+        self.assertIn('方案一',answer)
+        self.assertIn('方案二',answer)
+        self.assertIn('本版侧重点未选亮点',answer)
+        self.assertIn('方案二聚焦轻盈版型，不展开触感',answer)
+        self.assertIn('作品话题：#一 #二 #三 #穿搭 #时尚营销',answer)
+        self.assertEqual(answer.count('#穿搭'),2)
+        self.assertEqual(answer.count('#时尚营销'),2)
+        self.assertIn('```text\n2,1\n\n1,4\n```',answer)
+        self.assertTrue(check_multi(answer,plans,ledger,self.doc))
+        changed=answer.replace('作品话题：#轻盈 #通勤 #版型 #穿搭 #时尚营销',
+                               '作品话题：#错误 #通勤 #版型 #穿搭 #时尚营销')
+        with self.assertRaises(ValueError): check_multi(changed,plans,ledger,self.doc)
+
+    def test_three_plan_renderer_and_limit(self):
+        second=dict(self.plan); second['title']='二号标题'; second['topics']=['柔软','日常','保暖']
+        second['groups']=[{'ids':['1','2'],'function':'第二开头'}]
+        third=dict(self.plan); third['title']='三号标题'; third['topics']=['版型','通勤','搭配']
+        third['groups']=[{'ids':['2'],'function':'第三开头'},{'ids':['1'],'function':'承接'}]
+        plans=[self.plan,second,third]
+        ledger={'highlights':[
+            {'id':'h1','point':'轻','source_ids':['1'],'by_plan':{
+                str(i):{'status':'入选','retained_ids':['1']} for i in range(1,4)}},
+            {'id':'h2','point':'柔软','source_ids':['2'],'by_plan':{
+                str(i):{'status':'入选','retained_ids':['2']} for i in range(1,4)}},
+            {'id':'h3','point':'归属不明','source_ids':['3'],'by_plan':{
+                str(i):{'status':'待核实','exception_kind':'商品归属不明','reason':'交叉讲解指代不清'} for i in range(1,4)}}
+        ]}
+        answer=render_multi(self.doc,plans,1,ledger=ledger)
+        self.assertIn('方案三',answer)
+        self.assertEqual(answer.count('#穿搭'),3)
+        self.assertEqual(answer.count('#时尚营销'),3)
+        self.assertIn('```text\n2,1\n\n1,2\n\n2,1\n```',answer)
+        with self.assertRaises(ValueError): render_multi(self.doc,plans+[self.plan],1,ledger=ledger)
+
+    def test_focus_omission_source_cannot_be_selected_in_that_plan(self):
+        second=dict(self.plan)
+        plans=[self.plan,second]
+        ledger={'highlights':[
+            {'id':'h1','point':'轻','source_ids':['1'],'by_plan':{
+                '1':{'status':'入选','retained_ids':['1']},'2':{'status':'入选','retained_ids':['1']}}},
+            {'id':'h2','point':'柔软','source_ids':['2'],'by_plan':{
+                '1':{'status':'入选','retained_ids':['2']},'2':{'status':'侧重点省略','reason':'方案二聚焦版型，不讲面料触感'}}},
+            {'id':'h3','point':'归属不明','source_ids':['3'],'by_plan':{
+                '1':{'status':'待核实','exception_kind':'商品归属不明','reason':'交叉讲解指代不清'},
+                '2':{'status':'待核实','exception_kind':'商品归属不明','reason':'交叉讲解指代不清'}}}
+        ]}
+        with self.assertRaises(ValueError): validate(self.doc,{'plans':plans},ledger)
+        second['groups'][0]['note']='序号2保留相关原话；剪除侧重点之外的语句；回听句内剪点'
+        self.assertEqual(validate(self.doc,{'plans':plans},ledger),(3,4))
+
+    def test_multi_answer_cli_round_trip(self):
+        second=dict(self.plan); second['title']='二号标题'; second['topics']=['柔软','日常','保暖']
+        second['groups']=[{'ids':['1'],'function':'开头'},{'ids':['4'],'function':'搭配'}]
+        plans=[self.plan,second]
+        ledger={'highlights':[
+            {'id':'h1','point':'轻','source_ids':['1'],'by_plan':{
+                '1':{'status':'入选','retained_ids':['1']},'2':{'status':'入选','retained_ids':['1']}}},
+            {'id':'h2','point':'柔软','source_ids':['2'],'by_plan':{
+                '1':{'status':'入选','retained_ids':['2']},'2':{'status':'侧重点省略','reason':'方案二聚焦版型，不讲面料触感'}}},
+            {'id':'h3','point':'归属不明','source_ids':['3'],'by_plan':{
+                '1':{'status':'待核实','exception_kind':'商品归属不明','reason':'交叉讲解指代不清'},
+                '2':{'status':'待核实','exception_kind':'商品归属不明','reason':'交叉讲解指代不清'}}},
+            {'id':'h4','point':'通勤搭配','source_ids':['4'],'by_plan':{
+                '1':{'status':'侧重点省略','reason':'方案一聚焦面料和版型，不展开搭配场景'},
+                '2':{'status':'入选','retained_ids':['4']}}}
+        ]}
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            snapshot=root/'snapshot.json'; batch=root/'plans.json'; ledger_path=root/'ledger.json'; answer=root/'answer.txt'
+            snapshot.write_text(json.dumps(self.doc,ensure_ascii=False),encoding='utf-8')
+            batch.write_text(json.dumps({'plans':plans,'recommended':1},ensure_ascii=False),encoding='utf-8')
+            ledger_path.write_text(json.dumps(ledger,ensure_ascii=False),encoding='utf-8')
+            answer.write_text(render_multi(self.doc,plans,1,ledger=ledger),encoding='utf-8')
+            script=Path(__file__).resolve().parents[1]/'scripts'/'multi_plan.py'
+            command=[sys.executable,'-S',str(script),'--snapshot',str(snapshot),'--plans',str(batch),
+                     '--ledger',str(ledger_path),'--answer',str(answer)]
+            result=subprocess.run(command,capture_output=True,text=True,encoding='utf-8')
+            self.assertEqual(result.returncode,0,result.stderr)
+            self.assertIn('MULTI SERIAL CHECK PASS',result.stdout)
+            answer.write_text(answer.read_text(encoding='utf-8').replace('1,4','4,1'),encoding='utf-8')
+            rejected=subprocess.run(command,capture_output=True,text=True,encoding='utf-8')
+            self.assertNotEqual(rejected.returncode,0)
 
 if __name__=='__main__': unittest.main()

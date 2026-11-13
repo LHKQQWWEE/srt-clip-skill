@@ -16,9 +16,13 @@ for source_ms,cls in [(36000,'short'),(36001,'complete'),(36002,'complete'),(539
   result=run(source_ms)
   assert '最佳成片方案' in result and ('短候选' not in result),source_ms
   if cls=='complete': assert '不足45秒' in result
-for source_ms in (144002,180000,360000):
- result=run(source_ms)
- assert '最佳成片方案' in result and '短候选' not in result,source_ms
-print('duration boundaries PASS')
+for source_ms in (144001,144002,180000,360000):
+ try:
+  run(source_ms)
+ except ValueError as exc:
+  assert '120' in str(exc), (source_ms, exc)
+ else:
+  raise AssertionError(('over-two-minute plan accepted',source_ms))
+print('duration boundaries and 120-second cap PASS')
 
 

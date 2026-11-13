@@ -1,4 +1,4 @@
-# C2 0.2.20 environment
+# C2 0.2.21 environment
 
 - Python 3.10 or newer is required for the bundled validation scripts. The package was tested with Python 3.12.
 - Runtime and validation use only the Python standard library. No `pip install` step or network access is required.

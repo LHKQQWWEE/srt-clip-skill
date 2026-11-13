@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""srt-clip-c2 C2 0.2.20 source and duration checker.
+"""srt-clip-c2 C2 0.2.21 source and duration checker.
 
 One SRT byte read/parse -> one compact model scan -> one author-selected plan
 -> source-only checked, frozen-format delivery. This deliberately DOES NOT
@@ -10,11 +10,14 @@ import argparse
 import json
 import re
 import sys
+import unicodedata
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 TIME_RE = re.compile(r'^(\d{2,}:\d\d:\d\d,\d{3})\s*-->\s*(\d{2,}:\d\d:\d\d,\d{3})(?:\s+.*)?$')
 DURATION_LINE_RE = re.compile(r'^[ \t]*(?P<id>\d+)[ \t]+(?P<duration>\d+(?:\.\d+)?)(?:s)?[ \t]+(?P<text>\S.*)$')
+MAX_FINAL_MS = 120_000
+USER_FORBIDDEN_PHRASE = re.compile(r'三醋酸(?:的)?羊绒羊毛')
 
 
 def ms(s):
@@ -32,6 +35,32 @@ def fmt(t):
 def after_1_2x(source_ms):
     """Convert source-speed milliseconds to 1.2x runtime, half-up to 1 ms."""
     return (source_ms * 5 + 3) // 6
+
+
+def contains_user_forbidden_phrase(text):
+    """Match the user's fixed phrase across spacing and punctuation variants."""
+    normalized = unicodedata.normalize('NFKC', str(text)).casefold()
+    compact = re.sub(r'[\s\W_]+', '', normalized)
+    return USER_FORBIDDEN_PHRASE.search(compact) is not None
+
+
+def check_plan_wording(plan):
+    wording = [plan['theme'], plan['title'], *plan['product_lines'], *plan['topics'], *plan['subtitle_notes']]
+    for group in plan['groups']:
+        wording.extend((group['function'], group.get('note', '')))
+    if any(contains_user_forbidden_phrase(item) for item in wording):
+        raise ValueError('Plan metadata contains a user-designated forbidden phrase')
+
+
+def check_plan_transcript(groups, sentence_edits=None):
+    edits = sentence_edits or {}
+    spoken = ''.join(
+        edits.get(str(row['id']), {}).get('kept_text', row['text'])
+        for _, _, rows, *_ in groups
+        for row in rows
+    )
+    if contains_user_forbidden_phrase(spoken):
+        raise ValueError('Selected transcript contains a user-designated forbidden phrase; remove its full sentence')
 
 
 def srt_time(t):
@@ -167,7 +196,7 @@ def covered(rows):
     return total+hi-lo
 
 
-def render(doc,plan,allow_short_report=False):
+def render(doc,plan,allow_short_report=False,sentence_edits=None):
     expected={'groups','theme','product_lines','title','topics','subtitle_notes'}
     if not isinstance(plan,dict) or not expected <= set(plan) or set(plan)-expected-{'unaccelerated_ms'}:
         raise ValueError('Plan requires exactly '+','.join(sorted(expected)))
@@ -182,6 +211,7 @@ def render(doc,plan,allow_short_report=False):
         raise ValueError('Product identification missing')
     if not isinstance(plan['topics'],list) or len(plan['topics'])!=3 or not all(isinstance(x,str) and x.strip() for x in plan['topics']):
         raise ValueError('Exactly three generated topics required')
+    check_plan_wording(plan)
     generated_topics = [x.strip() if x.strip().startswith('#') else '#' + x.strip() for x in plan['topics']]
     fixed_topics = ['#穿搭', '#时尚营销']
     if len(set(generated_topics)) != 3 or set(generated_topics) & set(fixed_topics):
@@ -208,6 +238,9 @@ def render(doc,plan,allow_short_report=False):
         groups.append((n,rawg['function'],g,a,b,raw_start,raw_end,gap))
         cumulative+=span;selected.update(ids);all_ids.extend(ids)
     final_ms=after_1_2x(cumulative)+extra_ms
+    check_plan_transcript(groups, sentence_edits)
+    if final_ms > MAX_FINAL_MS:
+        raise ValueError(f'Estimated 1.2x final duration exceeds the 120-second maximum: {fmt(final_ms)}')
     short_report = allow_short_report and 0 < final_ms <= 30000
     if final_ms <= 30000 and not short_report:
         raise ValueError('Estimated 1.2x final duration must be greater than 30 seconds unless short report is enabled')

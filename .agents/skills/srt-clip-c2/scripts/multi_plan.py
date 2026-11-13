@@ -52,12 +52,20 @@ def coverage_text(ledger, plan, doc, plan_index=1):
     current = [(_assignment(item, plan_index), item) for item in ledger['highlights']]
     selected = [(a, item) for a, item in current if a['status'] == '入选']
     selected.sort(key=lambda pair: min(order[str(i)] for i in pair[0]['retained_ids']))
-    lines = ['亮点覆盖（按成片播放顺序）：']
-    lines.extend('- ' + item['point'] + '｜序号 ' + ','.join(map(str, a['retained_ids'])) for a, item in selected)
+    lines = ['亮点覆盖与取舍（按成片播放顺序）：']
+    lines.extend('- ' + item.get('importance', '核心') + '｜' + item['point'] + '｜序号 ' + ','.join(map(str, a['retained_ids'])) for a, item in selected)
     merged = [(a, item) for a, item in current if a['status'] == '合并']
     if merged:
         lines.append('同义合并：')
         lines.extend('- ' + item['point'] + '｜保留序号 ' + ','.join(map(str, a['retained_ids'])) + '｜' + a['reason'] for a, item in merged)
+    focus_omissions = [(a, item) for a, item in current if a['status'] == '侧重点省略']
+    if focus_omissions:
+        lines.append('次要亮点按方案侧重点省略：')
+        lines.extend('- ' + item['point'] + '｜' + a['reason'] for a, item in focus_omissions)
+    duration_cuts = [(a, item) for a, item in current if a['status'] == '时长取舍']
+    if duration_cuts:
+        lines.append('因两分钟上限未编入：')
+        lines.extend('- ' + item['point'] + '｜' + a['reason'] for a, item in duration_cuts)
     exceptions = [(a, item) for a, item in current if a['status'] in ('未入选', '待核实')]
     if exceptions:
         source = {str(row['id']): row['text'] for row in doc['rows']}
@@ -105,7 +113,7 @@ def check_multi(answer, plans, ledger=None, doc=None):
             raise ValueError('plan order differs')
         end = matches[i + 1].start() if i + 1 < len(matches) else len(third)
         block = third[match.start():end].rstrip()
-        subtitle_section = block.split('亮点覆盖（按成片播放顺序）：', 1)[0]
+        subtitle_section = block.split('亮点覆盖与取舍（按成片播放顺序）：', 1)[0]
         if re.findall(r'【([1-9][0-9]*)】', subtitle_section) != ids:
             raise ValueError('third section plan order or IDs differ')
         if doc is not None:

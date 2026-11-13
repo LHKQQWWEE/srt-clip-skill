@@ -1,4 +1,4 @@
-# Blind application probes for C2 0.2.20
+# Blind application probes for C2 0.2.21
 
 These are synthetic inputs for a fresh-context evaluator. Apply the installed skill to each request and return a concise decision, proposed first group/source IDs, and any required edit notes. Do not read the expected-results file while evaluating.
 
@@ -113,4 +113,19 @@ User asks “做切片文案”, provides one clearly identified jacket, and giv
 
 ## M. Two requested plans with several highlights
 
-User explicitly requests two plans. One plan starts with a complete appearance compliment and the other with a quoted customer-pain question. The source also contains distinct garment-length, material, process, warmth, and two different outfit-pairing points, all clearly attributed, clear, and short enough to include in both versions. No item is flagged or uncertain.
+User explicitly requests two plans. One starts with a complete appearance compliment and the other with a quoted customer-pain question. The source has shared core points plus two secondary outfit pairings that fit the runtime; reuse the core points but assign the pairings by plan focus so they do not repeat automatically in both versions. No item is flagged or uncertain.
+
+## N. Hard duration boundary
+
+User requests one SRT clip. A frozen plan totals 144.001 seconds at source speed (more than 120 seconds at 1.2×), while another totals exactly 144 seconds. Reject the first during rendering and allow the second on duration grounds; include any known unaccelerated time before applying the cap.
+
+## O. User-designated forbidden phrase
+
+User says to add “三醋酸羊绒羊毛” to their prohibited wording list.
+
+```text
+1 1.2 这件是三醋酸的羊绒、羊毛材质。穿起来很轻。
+2 1.0 颜色搭配很显白。
+```
+
+The phrase-bearing sentence must be removed whole. The independent “穿起来很轻” sentence may remain if exact sentence boundaries are validated and a cut-point note is included. The phrase must not appear in selected transcript, title, or tags; if quoted for traceability, label it only as an excluded source exception and do not call it a platform finding.

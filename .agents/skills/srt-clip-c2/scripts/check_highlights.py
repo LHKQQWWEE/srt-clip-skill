@@ -9,9 +9,10 @@ import json
 import sys
 from pathlib import Path
 from sentence_edits import extract_sentence_edits
+from srt_fast import contains_user_forbidden_phrase
 
 VAGUE = {'重复','精简','时长','超时','衔接','风险','不选','无','无理由'}
-EXCEPTIONS = {'商品归属不明', '已知不实', '当前素材已拒审'}
+EXCEPTIONS = {'商品归属不明', '已知不实', '当前素材已拒审', '用户指定禁用词句'}
 
 def fail(message):
     raise ValueError(message)
@@ -63,6 +64,9 @@ def validate(snapshot, plans, ledger):
         if key in by_key:
             fail('duplicate highlight id: ' + key)
         text_value(row.get('point'), key + ' point')
+        importance = row.get('importance', '核心')
+        if importance not in ('核心', '次要'):
+            fail(key + ' importance must be 核心 or 次要')
         src = ids_value(row.get('source_ids'), key + ' source_ids')
         if not set(src) <= source_ids:
             fail(key + ' references missing snapshot IDs')
@@ -83,11 +87,11 @@ def validate(snapshot, plans, ledger):
             if not isinstance(assignment, dict):
                 fail(key + ' plan assignment must be an object')
             status = assignment.get('status')
-            if status == '侧重点省略':
-                fail(key + ' focus-only omission is not allowed; include every supported highlight or use a documented source/product exception')
-            allowed = ('入选','合并','未入选','待核实')
+            allowed = ('入选','合并','未入选','待核实','侧重点省略','时长取舍')
             if status not in allowed:
                 fail(key + ' invalid status in plan %d' % index)
+            if status == '侧重点省略' and importance != '次要':
+                fail(key + ' only secondary highlights may be omitted by plan focus')
             if status in ('入选','合并'):
                 kept = ids_value(assignment.get('retained_ids'), key + ' retained_ids')
                 if not set(kept) <= selected:
@@ -96,7 +100,7 @@ def validate(snapshot, plans, ledger):
                     fail(key + ' retained IDs absent from its source_ids')
             else:
                 kept = []
-            if status in ('合并','未入选','待核实'):
+            if status in ('合并','未入选','待核实','侧重点省略','时长取舍'):
                 reason = text_value(assignment.get('reason'), key + ' reason')
                 if reason in VAGUE or len(reason) < 4:
                     fail(key + ' needs a specific explanation')
@@ -116,6 +120,9 @@ def validate(snapshot, plans, ledger):
                         fail(key + ' excluded sentence must be exact text from one of its source cues')
                     if sid in selected and text not in plan_edits[index-1].get(sid, {}).get('removed_sentences', []):
                         fail(key + ' selected source sentence is not removed by the plan: ' + sid)
+                if assignment.get('exception_kind') == '用户指定禁用词句':
+                    if not excluded or not any(contains_user_forbidden_phrase(item['text']) for item in excluded):
+                        fail(key + ' user-forbidden exception must identify an exact sentence containing the designated phrase')
             if status in ('未入选','待核实'):
                 overlap = set(src) & selected
                 for sid in overlap:
@@ -125,6 +132,12 @@ def validate(snapshot, plans, ledger):
                         fail(key + ' exception overlaps selected ID without explicit partial-cut instructions: ' + sid)
             checked[str(index)] = (status, assignment, kept)
         by_key[key] = (row, checked)
+    if multi:
+        for key, (row, checked) in by_key.items():
+            if row.get('importance', '核心') == '次要':
+                statuses = [checked[str(index)][0] for index in range(1, len(batch) + 1)]
+                if statuses and all(status == '侧重点省略' for status in statuses):
+                    fail(key + ' secondary highlight must appear in at least one requested plan or be marked as a duration cut')
     for index in range(1, len(batch) + 1):
         for key, (row, checked) in by_key.items():
             status, assignment, kept = checked[str(index)]

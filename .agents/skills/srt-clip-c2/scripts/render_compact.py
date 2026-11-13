@@ -34,7 +34,8 @@ def render_compact(doc: dict, plan: dict, allow_short_report: bool = False,
     validated_plan = copy.deepcopy(plan)
     for group in validated_plan.get('groups', []):
         group.pop('sentence_edits', None)
-    verified = v3.render(doc, validated_plan, allow_short_report=allow_short_report)  # raises on unverified sources, invalid groups or duration
+    verified = v3.render(doc, validated_plan, allow_short_report=allow_short_report,
+                         sentence_edits=sentence_edits)  # validates source, sentence cuts, banned wording, and duration
     pre, remainder = verified.split("\n三、最佳成片方案\n", 1)
     is_text = doc.get("input_type") == "duration_text"
     if is_text:

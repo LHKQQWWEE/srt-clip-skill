@@ -37,7 +37,7 @@ class CoverageDeliveryTests(unittest.TestCase):
         self.ledger['highlights'][2]['exception_kind']='衔接困难'
         with self.assertRaises(ValueError): validate(self.doc,self.plans,self.ledger)
 
-    def test_multi_plan_rejects_focus_only_omission(self):
+    def test_multi_plan_allocates_secondary_highlights_by_focus(self):
         second=dict(self.plan)
         second['groups']=[{'ids':['1'],'function':'开头'},{'ids':['4'],'function':'搭配'}]
         plans=[self.plan,second]
@@ -45,17 +45,17 @@ class CoverageDeliveryTests(unittest.TestCase):
             {'id':'h1','point':'轻','source_ids':['1'],'by_plan':{
                 '1':{'status':'入选','retained_ids':['1']},
                 '2':{'status':'入选','retained_ids':['1']}}},
-            {'id':'h2','point':'柔软','source_ids':['2'],'by_plan':{
+            {'id':'h2','point':'柔软','importance':'次要','source_ids':['2'],'by_plan':{
                 '1':{'status':'入选','retained_ids':['2']},
                 '2':{'status':'侧重点省略','reason':'方案二聚焦轻盈外观'}}},
             {'id':'h3','point':'归属不明','source_ids':['3'],'by_plan':{
                 '1':{'status':'待核实','exception_kind':'商品归属不明','reason':'无法确认目标商品'},
                 '2':{'status':'待核实','exception_kind':'商品归属不明','reason':'无法确认目标商品'}}},
-            {'id':'h4','point':'通勤搭配','source_ids':['4'],'by_plan':{
+            {'id':'h4','point':'通勤搭配','importance':'次要','source_ids':['4'],'by_plan':{
                 '1':{'status':'侧重点省略','reason':'方案一聚焦面料和版型'},
                 '2':{'status':'入选','retained_ids':['4']}}}
         ]}
-        with self.assertRaises(ValueError): validate(self.doc,{'plans':plans},ledger)
+        self.assertEqual(validate(self.doc,{'plans':plans},ledger),(4,4))
 
     def test_selected_doubt_is_placed_beside_group_and_coverage_follows_playback(self):
         answer=render_multi(self.doc,[self.plan],1,ledger=self.ledger)
@@ -69,7 +69,7 @@ class CoverageDeliveryTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             check_multi(answer.replace('待核实／剪辑提醒：序号2肤感待核实',''),[self.plan],self.ledger,self.doc)
         with self.assertRaises(ValueError):
-            check_multi(answer.replace('亮点覆盖（按成片播放顺序）：',''),[self.plan],self.ledger,self.doc)
+            check_multi(answer.replace('亮点覆盖与取舍（按成片播放顺序）：',''),[self.plan],self.ledger,self.doc)
 
     def test_refused_material_sentence_can_leave_clean_sentence_in_same_cue(self):
         self.doc['rows'][0]['text']='白鹅绒填充。面料还做了三防工艺。'
@@ -86,7 +86,7 @@ class CoverageDeliveryTests(unittest.TestCase):
              'excluded_sentences':[{'source_id':'1','text':'白鹅绒填充。'}]}]}
         self.assertEqual(validate(self.doc,self.plans,ledger),(4,2))
         answer=render_multi(self.doc,[self.plan],1,ledger=ledger)
-        clip_section=answer.split('亮点覆盖（按成片播放顺序）：',1)[0]
+        clip_section=answer.split('亮点覆盖与取舍（按成片播放顺序）：',1)[0]
         self.assertIn('【1】面料还做了三防工艺。',clip_section)
         self.assertNotIn('【1】白鹅绒填充。面料还做了三防工艺。',clip_section)
         self.assertIn('句间剪点待回听',clip_section)
@@ -176,7 +176,7 @@ class CoverageDeliveryTests(unittest.TestCase):
             {'id':'h1','point':'轻','source_ids':['1'],'by_plan':{
                 '1':{'status':'入选','retained_ids':['1']},
                 '2':{'status':'入选','retained_ids':['1']}}},
-            {'id':'h2','point':'柔软','source_ids':['2'],'by_plan':{
+            {'id':'h2','point':'柔软','importance':'核心','source_ids':['2'],'by_plan':{
                 '1':{'status':'入选','retained_ids':['2']},
                 '2':{'status':'入选','retained_ids':['2']}}},
             {'id':'h3','point':'归属不明','source_ids':['3'],'by_plan':{
@@ -223,13 +223,13 @@ class CoverageDeliveryTests(unittest.TestCase):
         self.assertIn('```text\n2,1\n\n1,2\n\n2,1\n```',answer)
         with self.assertRaises(ValueError): render_multi(self.doc,plans+[self.plan],1,ledger=ledger)
 
-    def test_focus_omission_never_becomes_valid_with_a_cut_note(self):
+    def test_core_highlight_cannot_be_focus_omitted_with_a_cut_note(self):
         second=dict(self.plan)
         plans=[self.plan,second]
         ledger={'highlights':[
             {'id':'h1','point':'轻','source_ids':['1'],'by_plan':{
                 '1':{'status':'入选','retained_ids':['1']},'2':{'status':'入选','retained_ids':['1']}}},
-            {'id':'h2','point':'柔软','source_ids':['2'],'by_plan':{
+            {'id':'h2','point':'柔软','importance':'核心','source_ids':['2'],'by_plan':{
                 '1':{'status':'入选','retained_ids':['2']},'2':{'status':'侧重点省略','reason':'方案二聚焦版型，不讲面料触感'}}},
             {'id':'h3','point':'归属不明','source_ids':['3'],'by_plan':{
                 '1':{'status':'待核实','exception_kind':'商品归属不明','reason':'交叉讲解指代不清'},

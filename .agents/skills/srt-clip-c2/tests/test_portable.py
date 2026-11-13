@@ -2,13 +2,15 @@
 """Synthetic fixture only: verify C2 distribution with no external source dependence."""
 from pathlib import Path
 import tempfile, subprocess, json, importlib.util
+import os
 
 ROOT=Path(__file__).resolve().parents[1]
 src=ROOT/'scripts/srt_fast.py'
 rend=ROOT/'scripts/render_compact.py'
+CHILD_ENV={**os.environ,'PYTHONIOENCODING':'utf-8'}
 
 def call(*args):
-    p=subprocess.run(['python','-S',*map(str,args)],capture_output=True,text=True,encoding='utf-8')
+    p=subprocess.run(['python','-S',*map(str,args)],capture_output=True,text=True,encoding='utf-8',env=CHILD_ENV)
     if p.returncode:raise AssertionError(f'command failed: {args}: {p.stderr}')
     return p.stdout
 
@@ -64,11 +66,11 @@ with tempfile.TemporaryDirectory(prefix='c2_skill_') as t:
     check(output.read_text(encoding='utf-8')==txt.rstrip('\n'),'output bytes match stdout except newline')
     bad=dict(payload);bad['groups']=[{'ids':[1,2,3,4,5,6],'function':'1'},{'ids':[6,7,8,9,10,11,12],'function':'2'}]
     plan.write_text(json.dumps(bad,ensure_ascii=False),encoding='utf-8')
-    reject=subprocess.run(['python','-S',str(rend),'--snapshot',str(session),'--plan',str(plan),'--stdout'],capture_output=True,text=True,encoding="utf-8")
+    reject=subprocess.run(['python','-S',str(rend),'--snapshot',str(session),'--plan',str(plan),'--stdout'],capture_output=True,text=True,encoding="utf-8",env=CHILD_ENV)
     check(reject.returncode!=0,'duplicates blocked')
     bad=dict(payload);bad['groups']=[{'ids':[1,2,3],'function':'too short'}]
     plan.write_text(json.dumps(bad,ensure_ascii=False),encoding='utf-8')
-    reject=subprocess.run(['python','-S',str(rend),'--snapshot',str(session),'--plan',str(plan),'--stdout'],capture_output=True,text=True,encoding="utf-8")
+    reject=subprocess.run(['python','-S',str(rend),'--snapshot',str(session),'--plan',str(plan),'--stdout'],capture_output=True,text=True,encoding="utf-8",env=CHILD_ENV)
     check(reject.returncode!=0,'duration blocked')
     short=call(rend,'--snapshot',session,'--plan',plan,'--stdout','--allow-short-report')
     check('三、短候选，非正式成片' in short and '时长不超过30秒' in short,'short report clearly labelled')
@@ -76,7 +78,7 @@ with tempfile.TemporaryDirectory(prefix='c2_skill_') as t:
 
     duplicate_topic=dict(payload);duplicate_topic['topics']=['#穿搭','话题乙','话题丙']
     plan.write_text(json.dumps(duplicate_topic,ensure_ascii=False),encoding='utf-8')
-    reject=subprocess.run(['python','-S',str(rend),'--snapshot',str(session),'--plan',str(plan),'--stdout'],capture_output=True,text=True,encoding='utf-8')
+    reject=subprocess.run(['python','-S',str(rend),'--snapshot',str(session),'--plan',str(plan),'--stdout'],capture_output=True,text=True,encoding='utf-8',env=CHILD_ENV)
     check(reject.returncode!=0,'generated topics cannot duplicate fixed topics')
 
     # Pasted duration-text mode uses the same snapshot and renderer, while the
@@ -104,7 +106,7 @@ with tempfile.TemporaryDirectory(prefix='c2_skill_') as t:
     check(f'【3】{phrases[2]}' in text_out,'render exact source words')
     check(text_out.strip().endswith('1,2,3,4,5,6,7,8,9,10,11,12'),'text output final source IDs')
     stdin_scan=subprocess.run(['python','-S',str(src),'scan-text','--stdin','--snapshot',str(t/'stdin.json')],
-                              input=source,capture_output=True,text=True,encoding='utf-8')
+                              input=source,capture_output=True,text=True,encoding='utf-8',env=CHILD_ENV)
     check(stdin_scan.returncode==0 and json.loads((t/'stdin.json').read_text(encoding='utf-8'))['count']==12,
           'stdin text input')
     for invalid,label,needle in [
@@ -115,7 +117,7 @@ with tempfile.TemporaryDirectory(prefix='c2_skill_') as t:
     ]:
         bad_text=t/'invalid.txt';bad_text.write_text(invalid,encoding='utf-8')
         rejected=subprocess.run(['python','-S',str(src),'scan-text',str(bad_text),'--snapshot',str(t/'invalid.json')],
-                               capture_output=True,text=True,encoding='utf-8')
+                               capture_output=True,text=True,encoding='utf-8',env=CHILD_ENV)
         check(rejected.returncode!=0 and needle in rejected.stderr,label)
     # One plan, final order and short-candidate verification.
     multi = ROOT/'scripts/multi_plan.py'

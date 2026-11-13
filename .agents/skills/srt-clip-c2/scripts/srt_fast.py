@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""srt-clip-c2 C2 0.2.19 source and duration checker.
+"""srt-clip-c2 C2 0.2.20 source and duration checker.
 
 One SRT byte read/parse -> one compact model scan -> one author-selected plan
 -> source-only checked, frozen-format delivery. This deliberately DOES NOT

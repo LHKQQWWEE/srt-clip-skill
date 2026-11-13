@@ -39,10 +39,6 @@ def coverage_text(ledger, plan, doc, plan_index=1):
     if merged:
         lines.append('同义合并：')
         lines.extend('- ' + item['point'] + '｜保留序号 ' + ','.join(map(str, a['retained_ids'])) + '｜' + a['reason'] for a, item in merged)
-    omitted = [(a, item) for a, item in current if a['status'] == '侧重点省略']
-    if omitted:
-        lines.append('本版侧重点未选亮点：')
-        lines.extend('- ' + item['point'] + '｜原因：' + a['reason'] for a, item in omitted)
     exceptions = [(a, item) for a, item in current if a['status'] in ('未入选', '待核实')]
     if exceptions:
         source = {str(row['id']): row['text'] for row in doc['rows']}

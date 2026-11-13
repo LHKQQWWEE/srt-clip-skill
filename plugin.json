@@ -1,18 +1,18 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "srt-clip-c2",
-  "version": "0.1.43",
-  "description": "直播切片文案 C2 0.2.19：按单条字幕处理明确材质违规，并优先用顾客困扰选择开头。",
+  "version": "0.1.47",
+  "description": "直播切片文案 C2 0.2.20：材质违规按标记句处理，开头比较外观吸引力、核心卖点与真实顾客困扰。",
   "extensions": {
     "com.openai": {
       "interface": {
-        "displayName": "直播切片文案 C2 0.2.19",
-        "shortDescription": "精准处理材质字幕并选择更有效的开头",
-        "longDescription": "支持 SRT、逐条时长文本及宿主可读取的视频。材质违规按平台指出的字幕整条删除，保留并逐条判断其他内容。开头优先选最能引起共鸣的商品相关顾客困扰，没有合适困扰再选核心卖点。",
+        "displayName": "直播切片文案 C2 0.2.20",
+        "shortDescription": "细分删违规句，优化高吸引力开头",
+        "longDescription": "支持 SRT、逐条时长文本及宿主可读取的视频。平台指出材质违规词句时，仅删除对应完整句，保留同字幕里的其他独立干净句和相邻字幕。开头比较好看类外观吸引力、商品核心卖点和真实顾客困扰，不固定困扰优先；每个方案覆盖所有不同亮点。",
         "developerName": "惠康 黎",
         "category": "Productivity",
         "capabilities": [],
-        "defaultPrompt": "按 C2 0.2.19 的 SKILL.md 执行。平台明确指出材质字幕违规时删除对应整条字幕，其他字幕逐条判断；开头优先选择最能引起共鸣的商品相关顾客困扰，没有合适困扰再选核心卖点。"
+        "defaultPrompt": "按 C2 0.2.20 的 srt-clip-c2 技能及其 references/editorial-policy.md 执行。平台指出材质违规词句时删除含违规内容的整句，保留同字幕其他独立干净句及相邻字幕。开头比较吸引力强的好看类外观、商品核心卖点与真实顾客困扰，不固定困扰优先；每版覆盖全部归属明确且有原话支持的不同亮点。"
       }
     }
   },

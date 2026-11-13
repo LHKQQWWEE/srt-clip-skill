@@ -80,7 +80,9 @@ def validate(snapshot, plans, ledger):
             if not isinstance(assignment, dict):
                 fail(key + ' plan assignment must be an object')
             status = assignment.get('status')
-            allowed = ('入选','合并','侧重点省略','未入选','待核实')
+            if status == '侧重点省略':
+                fail(key + ' focus-only omission is not allowed; include every supported highlight or use a documented source/product exception')
+            allowed = ('入选','合并','未入选','待核实')
             if status not in allowed:
                 fail(key + ' invalid status in plan %d' % index)
             if status in ('入选','合并'):
@@ -91,19 +93,10 @@ def validate(snapshot, plans, ledger):
                     fail(key + ' retained IDs absent from its source_ids')
             else:
                 kept = []
-            if status in ('侧重点省略','合并','未入选','待核实'):
+            if status in ('合并','未入选','待核实'):
                 reason = text_value(assignment.get('reason'), key + ' reason')
                 if reason in VAGUE or len(reason) < 4:
                     fail(key + ' needs a specific explanation')
-            if status == '侧重点省略' and assignment.get('retained_ids'):
-                fail(key + ' focus omission cannot retain source IDs')
-            if status == '侧重点省略':
-                overlap = set(src) & selected
-                for sid in overlap:
-                    groups = [g for g in batch[index-1]['groups'] if sid in set(map(str, g['ids']))]
-                    note = ' '.join(str(g.get('note', '')) for g in groups)
-                    if not (sid in note and '保留' in note and '剪除' in note and '回听' in note):
-                        fail(key + ' focus-omitted source ID is selected without explicit partial-cut instructions: ' + sid)
             if status in ('未入选','待核实') and assignment.get('exception_kind') not in EXCEPTIONS:
                 fail(key + ' needs an allowed exception_kind; timing or transition alone is not an exception')
             if status in ('未入选','待核实'):

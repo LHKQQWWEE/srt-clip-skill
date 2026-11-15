@@ -16,3 +16,11 @@ Start with `skills/srt-clip-c2/SKILL.md` (plugin package) or `.agents/skills/srt
 - All future updates follow `skills/srt-clip-c2/references/update-protocol.md` (development/release only).
 
 - Category routing: footwear → `categories/shoes.md`; scarves/neckwear → `categories/scarves.md`; otherwise women/fashion as applicable.
+
+## Single active version policy (2026-11-15)
+
+- **Only one live C2 Universal release and one governing source**: the current `main` branch Skill; baseline at this cleanup: **0.3.7**.
+- Future improvements must extend this same C2 Universal line, not revive C2 0.1.x/0.2.x, parallel v5.x workflows, or maintain competing active rule sets.
+- A future published update may increment the semantic version (for example 0.3.8), at which point it becomes the sole active version and 0.3.7 becomes historical. Do not keep two releases labelled current.
+- Historical benchmarks, audit records, and commits remain for traceability only, and must not be loaded as executable rules. No old ZIP, cache, release note or host startup hint may override `SKILL.md` plus its current `references/`.
+- Preserve AI-First Constitution and `references/update-protocol.md` governance; verify source, plugin, portable pack and Drive independently before claiming them synchronized.

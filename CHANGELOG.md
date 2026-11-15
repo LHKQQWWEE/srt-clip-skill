@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.8
+- Simplified global banned-claim maintenance to two user-driven inputs: audit screenshots and explicitly specified phrases; no automated official-policy lookup in normal tasks.
+- One shared prohibition library across all product categories. Confirmed matches exclude entire original subtitle cue IDs; continuous cross-cue matches only exclude contributing IDs.
+- Incorporated identifiable historic material proof rejection wording as user clipping bans without broadening to unrelated materials.
+- Reconciled main skill, womens-fashion, shoes, scarves, editorial policy, offline evidence, final check, launcher, and portable distribution. Preserved AI-First, one analysis/one final check, 1.2x/120s, original-source fidelity, five-part delivery.
+- Publication status and regression results tracked by verified channel only.
+
+
 ## 0.3.7
 - Added `categories/shoes.md` for all footwear: dynamic hooks, full core-selling-point coverage, size/foot-shape restrictions, claim classification, shoe variant attribution and video-context uncertainty.
 - Added `categories/scarves.md` for scarves, fur neck warmers, silk scarves, shawls and neckwear: visual/feel/warmth/tying and layering, material attribution, care/sensitivity limits, and multi-item sales vs distinct buying reasons.

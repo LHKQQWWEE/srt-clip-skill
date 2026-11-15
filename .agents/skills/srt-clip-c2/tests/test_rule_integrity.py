@@ -11,7 +11,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_skill_frontmatter_and_version(self):
         text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
         self.assertTrue(text.startswith("---\nname: srt-clip-c2\n"))
-        self.assertIn("SRT Clip C2 Universal 0.3.0", text)
+        self.assertIn("SRT Clip C2 Universal 0.3.1", text)
         front = text.split("---", 2)[1]
         for trigger in ["srt文案", "srt切片文案", "str文案", "C2完整精简版"]:
             self.assertIn(trigger, front)
@@ -56,10 +56,16 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertEqual(len(re.findall(r"\| B\d{2} \|", text)), 10)
         self.assertIn("不包含任何原始SRT行", text)
 
+    def test_duplicate_highlight_policy(self):
+        text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+        detail = (SKILL_DIR / "references/highlight-selection.md").read_text(encoding="utf-8")
+        self.assertIn("最多保留两处", text)
+        self.assertIn("先保不同卖点覆盖，再删重复强化", detail)
+
     def test_plugin_manifest(self):
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["name"], "srt-clip-c2")
-        self.assertEqual(manifest["version"], "0.3.0")
+        self.assertEqual(manifest["version"], "0.3.1")
         self.assertEqual(manifest["extensions"]["com.openai"]["interface"]["shortDescription"], "AI主导，跨平台带货剪辑")
 
 if __name__ == "__main__":

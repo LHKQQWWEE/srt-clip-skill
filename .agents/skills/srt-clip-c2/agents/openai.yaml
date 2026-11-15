@@ -1,4 +1,4 @@
 interface:
-  display_name: "SRT Clip C2 Universal 0.3.0"
+  display_name: "SRT Clip C2 Universal 0.3.1"
   short_description: "AI主导，跨平台带货剪辑"
-  default_prompt: "按 SRT Clip C2 Universal 0.3.0 的 SKILL.md 和 references 执行。仅正式支持 SRT 与逐条时长文本；四个触发词为 srt文案、srt切片文案、str文案、C2完整精简版。默认不调用 Python，不建立逐条 JSON 台账，不执行多轮工作流门槛。自动识别商品类别并加载已建立的专项模块。完整盘点目标商品亮点，保留原话和原始序号，按1.2倍速120秒上限编排，执行一次反向终检，输出固定五部分。"
+  default_prompt: "按 SRT Clip C2 Universal 0.3.1 的 SKILL.md 和 references 执行。仅正式支持 SRT 与逐条时长文本；四个触发词为 srt文案、srt切片文案、str文案、C2完整精简版。AI主导，不强制Python或JSON工作流。优先在1.2倍速120秒上限内尽可能覆盖全部不同卖点和亮点；同一卖点有强化价值时最多保留两处不同原话。保留原话和原始序号，执行一次反向终检，输出固定五部分。"

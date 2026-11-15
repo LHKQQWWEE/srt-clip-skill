@@ -1,12 +1,12 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "srt-clip-c2",
-  "version": "0.3.5",
-  "description": "SRT Clip C2 Universal 0.3.5：AI-First 通用带货视频文本剪辑技能，支持长文本分层处理与一次分析多方案；支持SRT与逐条时长文本。",
+  "version": "0.3.6",
+  "description": "SRT Clip C2 Universal 0.3.6：AI-First 通用带货视频文本剪辑技能，支持长文本分层处理与一次分析多方案；支持SRT与逐条时长文本。",
   "extensions": {
     "com.openai": {
       "interface": {
-        "displayName": "SRT Clip C2 Universal 0.3.5",
+        "displayName": "SRT Clip C2 Universal 0.3.6",
         "shortDescription": "AI主导，跨平台带货剪辑",
         "longDescription": "面向所有带货类目的AI-First通用剪辑核心。正式支持SRT与逐条时长文本；新增Long Context Mode，通过全局扫描、商品窗口地图、目标精读、单一卖点池和反向漏检处理超长素材。所有语义决策由AI负责，Python和外部工具仅作机械辅助且不得成为硬依赖。保留原话、来源序号、1.2倍速120秒上限、离线合规基线和固定五部分交付。",
         "developerName": "惠康 黎",

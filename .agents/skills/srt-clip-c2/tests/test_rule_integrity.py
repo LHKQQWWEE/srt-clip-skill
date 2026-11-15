@@ -11,7 +11,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_skill_frontmatter_and_version(self):
         text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
         self.assertTrue(text.startswith("---\nname: srt-clip-c2\n"))
-        self.assertIn("SRT Clip C2 Universal 0.3.4", text)
+        self.assertIn("SRT Clip C2 Universal " + (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), text)
         front = text.split("---", 2)[1]
         for trigger in ["srt文案", "srt切片文案", "str文案", "C2完整精简版"]:
             self.assertIn(trigger, front)
@@ -70,6 +70,19 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertIn("不能替代这些语义决策", text)
         self.assertIn("工具不可用", constitution)
 
+    def test_update_protocol_governance_only(self):
+        protocol = (SKILL_DIR / "references/update-protocol.md").read_text(encoding="utf-8")
+        skill = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+        portable = (SKILL_DIR / "C2-Universal-Portable.md").read_text(encoding="utf-8")
+        for token in ["六项固定审查", "三条一票否决", "质量不退步", "环境零强制", "仅约束未来版本"]:
+            if token == "仅约束未来版本":
+                self.assertIn("不增加每次使用", protocol)
+            else:
+                self.assertIn(token, protocol)
+        self.assertIn("references/update-protocol.md", skill)
+        self.assertIn("## 附录｜固定版本更新协议", portable)
+        self.assertIn("固定五部分交付", skill)
+
     def test_long_context_mode(self):
         text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
         long_mode = (SKILL_DIR / "references/long-context-mode.md").read_text(encoding="utf-8")
@@ -109,7 +122,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_plugin_manifest(self):
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["name"], "srt-clip-c2")
-        self.assertEqual(manifest["version"], "0.3.4")
+        self.assertEqual(manifest["version"], (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip())
         self.assertEqual(manifest["extensions"]["com.openai"]["interface"]["shortDescription"], "AI主导，跨平台带货剪辑")
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-# SRT Clip C2 Universal 0.3.5
+# SRT Clip C2 Universal 0.3.6
 
 AI 主导的跨平台带货视频文本剪辑 Skill。首版正式支持 SRT 与逐条时长文本，覆盖所有带货类目；通用核心与类目专项模块分离。
 

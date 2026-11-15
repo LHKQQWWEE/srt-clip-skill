@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.6
+- Publication-consistency patch: synchronized the complete portable single-file pack, Agent Skills launcher metadata, tests, and release ZIP with the 0.3.5 AI-First governance protocol.
+- No new SRT editing semantics, tools, environment prerequisites, or daily workflow gates.
+- Added explicit governance-only regression checks; historical 0.3.4/0.3.5 changelog sections remain immutable.
+
 ## 0.3.5
 - Added permanent AI-first version update protocol with six checks, three release vetoes, degradation path and explicit channel verification.
 - Kept all SRT business rules and ordinary runtime path unchanged; this is a governance-only release.

@@ -54,7 +54,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_benchmark_has_ten_cases_and_no_raw_transcripts(self):
         text = (SKILL_DIR / "tests/benchmark-cases.md").read_text(encoding="utf-8")
         self.assertEqual(len(re.findall(r"\| B\d{2} \|", text)), 10)
-        self.assertIn("不包含任何原始 SRT 行", text)
+        self.assertIn("不包含任何原始SRT行", text)
 
     def test_plugin_manifest(self):
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))

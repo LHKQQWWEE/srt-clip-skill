@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.5
+- Added permanent AI-first version update protocol with six checks, three release vetoes, degradation path and explicit channel verification.
+- Kept all SRT business rules and ordinary runtime path unchanged; this is a governance-only release.
+- Source of truth remains SKILL.md and AI-First Constitution; no new Python or environment prerequisites.
+
 ## 0.3.4
 - Sync-integrity patch only; business behavior is unchanged from the fully tested 0.3.2 AI-First / Long Context release.
 - Resolved plugin-publisher version auto-increment mismatch so plugin source, GitHub main, Drive current routing, and release ZIP use one active version.

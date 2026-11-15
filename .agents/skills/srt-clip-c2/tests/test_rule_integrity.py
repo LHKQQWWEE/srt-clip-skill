@@ -49,7 +49,9 @@ class C2UniversalIntegrityTests(unittest.TestCase):
 
     def test_offline_compliance_trigger(self):
         text = (SKILL_DIR / "references/qianchuan-offline.md").read_text(encoding="utf-8")
-        self.assertIn("更新违禁词", text)
+        self.assertIn("审核截图", text)
+        self.assertIn("明确指定词句", text)
+        self.assertIn("日常离线使用", text)
 
     def test_benchmark_has_ten_cases_and_no_raw_transcripts(self):
         text = (SKILL_DIR / "tests/benchmark-cases.md").read_text(encoding="utf-8")
@@ -102,6 +104,17 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         for token in forbidden:
             self.assertNotIn(token, active)
 
+    def test_global_cue_exclusion_contract(self):
+        skill = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+        global_rules = (SKILL_DIR / "references/global-rules.md").read_text(encoding="utf-8")
+        women = (SKILL_DIR / "categories/womens-fashion.md").read_text(encoding="utf-8")
+        for content in [skill, global_rules, women]:
+            self.assertIn("原始字幕序号", content)
+        self.assertIn("审核截图", skill)
+        self.assertIn("语义", global_rules)
+        self.assertNotIn("只删除含违规内容的句子", women)
+        self.assertNotIn("命中时按完整句删除", global_rules)
+
     def test_universal_topic_policy(self):
         core = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
         global_rules = (SKILL_DIR / "references/global-rules.md").read_text(encoding="utf-8")
@@ -114,7 +127,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_publisher_default_prompt_compatibility(self):
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         prompt = manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"]
-        self.assertIn("C2 Universal 0.3.2", prompt)
+        self.assertIn("C2 Universal " + (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), prompt)
         self.assertIn("Long Context Mode", prompt)
         skill = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("发布兼容字段", skill)

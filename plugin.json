@@ -1,18 +1,18 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "srt-clip-c2",
-  "version": "0.3.0",
-  "description": "SRT Clip C2 Universal 0.3.0：AI主导的跨平台带货视频文本剪辑技能，支持SRT与逐条时长文本，按需加载类目专项规则。",
+  "version": "0.3.1",
+  "description": "SRT Clip C2 Universal 0.3.1：AI主导的跨平台带货视频文本剪辑技能，支持SRT与逐条时长文本，按需加载类目专项规则。",
   "extensions": {
     "com.openai": {
       "interface": {
-        "displayName": "SRT Clip C2 Universal 0.3.0",
+        "displayName": "SRT Clip C2 Universal 0.3.1",
         "shortDescription": "AI主导，跨平台带货剪辑",
         "longDescription": "面向所有带货类目的通用剪辑核心。正式支持SRT与逐条时长文本；自动识别商品类别并加载已建立的专项规则。AI主导执行，Python和外部工具按需使用，不是普通任务的前置条件。保留原话、来源序号、亮点完整性、1.2倍速120秒上限、离线合规基线及固定五部分交付。",
         "developerName": "惠康 黎",
         "category": "Productivity",
         "capabilities": [],
-        "defaultPrompt": "按 C2 0.2.26 的 srt-clip-c2 技能及其 references 执行。逐条记录快照原话、语义及商品归属，归属依据要对应本句或可核对上下文锚点，同一窗口不得复制套话；原声转写或商品事实待核的亮点单独标记。结构PASS不代表语义完整。每条1.2倍速预计不超过120秒，输出五部分并保留来源。"
+        "defaultPrompt": "按 SRT Clip C2 Universal 0.3.1 的 SKILL.md 及 references 执行。普通任务由 AI 主导，不强制 Python 或 JSON 工作流。优先在 1.2 倍速预计 120 秒上限内尽可能覆盖目标商品全部不同卖点和亮点；同一卖点在时长允许且表达有强化价值时，最多保留两处不同原话。保留原话、原始序号、商品归属，执行一次最终反向检查并输出固定五部分。"
       }
     }
   },

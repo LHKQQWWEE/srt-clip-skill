@@ -1,4 +1,4 @@
-# SRT Clip C2 Universal 0.3.1
+# SRT Clip C2 Universal 0.3.2
 
 AI 主导的跨平台带货视频文本剪辑 Skill。首版正式支持 SRT 与逐条时长文本，覆盖所有带货类目；通用核心与类目专项模块分离。
 
@@ -14,3 +14,6 @@ AI 主导的跨平台带货视频文本剪辑 Skill。首版正式支持 SRT 与
 
 ## 唯一规则入口
 从 `SKILL.md` 开始；详细规则按需读取 `references/` 和 `categories/`。本 README 不另设业务规则。
+
+- Long Context Mode：超长文本采用全局扫描→窗口地图→目标精读→单一卖点池→反向漏检→一次分析多方案；不强制依赖Python或环境。
+- AI-First Constitution：所有语义决策必须由AI完成，工具只能辅助机械读取/定位/计算。

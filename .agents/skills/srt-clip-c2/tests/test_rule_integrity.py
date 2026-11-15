@@ -11,7 +11,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_skill_frontmatter_and_version(self):
         text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
         self.assertTrue(text.startswith("---\nname: srt-clip-c2\n"))
-        self.assertIn("SRT Clip C2 Universal 0.3.1", text)
+        self.assertIn("SRT Clip C2 Universal 0.3.2", text)
         front = text.split("---", 2)[1]
         for trigger in ["srt文案", "srt切片文案", "str文案", "C2完整精简版"]:
             self.assertIn(trigger, front)
@@ -54,7 +54,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_benchmark_has_ten_cases_and_no_raw_transcripts(self):
         text = (SKILL_DIR / "tests/benchmark-cases.md").read_text(encoding="utf-8")
         self.assertEqual(len(re.findall(r"\| B\d{2} \|", text)), 10)
-        self.assertIn("不包含任何原始SRT行", text)
+        self.assertIn("不包含任何原始 SRT 行", text)
 
     def test_duplicate_highlight_policy(self):
         text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
@@ -62,10 +62,46 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertIn("最多保留两处", text)
         self.assertIn("先保不同卖点覆盖，再删重复强化", detail)
 
+    def test_ai_first_constitution(self):
+        text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+        constitution = (SKILL_DIR / "references/ai-first-constitution.md").read_text(encoding="utf-8")
+        self.assertIn("AI-First Constitution", text)
+        self.assertIn("最高架构约束", constitution)
+        self.assertIn("不能替代这些语义决策", text)
+        self.assertIn("工具不可用", constitution)
+
+    def test_long_context_mode(self):
+        text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+        long_mode = (SKILL_DIR / "references/long-context-mode.md").read_text(encoding="utf-8")
+        self.assertIn("Long Context Mode", text)
+        self.assertIn("2000条", long_mode)
+        self.assertIn("Single Analysis, Multi Output", long_mode)
+        self.assertIn("反向漏检", long_mode)
+        self.assertNotIn("必须调用 Python", long_mode)
+
+    def test_no_hard_tool_dependency_language(self):
+        active = "\n".join([
+            (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8"),
+            (SKILL_DIR / "references/ai-first-constitution.md").read_text(encoding="utf-8"),
+            (SKILL_DIR / "references/long-context-mode.md").read_text(encoding="utf-8"),
+        ])
+        forbidden = ["Python 不可用则无法交付", "必须运行脚本后才能", "未运行程序不得交付"]
+        for token in forbidden:
+            self.assertNotIn(token, active)
+
+    def test_universal_topic_policy(self):
+        core = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+        global_rules = (SKILL_DIR / "references/global-rules.md").read_text(encoding="utf-8")
+        fashion = (SKILL_DIR / "categories/womens-fashion.md").read_text(encoding="utf-8")
+        self.assertIn("通用核心不得强制加入其他类目的话题", core)
+        self.assertIn("不是 Universal 全局固定话题", global_rules)
+        self.assertIn("#穿搭", fashion)
+        self.assertIn("#时尚营销", fashion)
+
     def test_plugin_manifest(self):
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["name"], "srt-clip-c2")
-        self.assertEqual(manifest["version"], "0.3.1")
+        self.assertEqual(manifest["version"], "0.3.2")
         self.assertEqual(manifest["extensions"]["com.openai"]["interface"]["shortDescription"], "AI主导，跨平台带货剪辑")
 
 if __name__ == "__main__":

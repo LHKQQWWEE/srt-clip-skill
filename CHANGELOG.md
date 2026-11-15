@@ -1,14 +1,21 @@
 # Changelog
 
+## 0.3.7
+- Added `categories/shoes.md` for all footwear: dynamic hooks, full core-selling-point coverage, size/foot-shape restrictions, claim classification, shoe variant attribution and video-context uncertainty.
+- Added `categories/scarves.md` for scarves, fur neck warmers, silk scarves, shawls and neckwear: visual/feel/warmth/tying and layering, material attribution, care/sensitivity limits, and multi-item sales vs distinct buying reasons.
+- Updated category routing to make shoes and scarves exclusive of womens-fashion editorial defaults; preserved two historical fashion hashtags for compatibility.
+- Kept AI-First, tool-optional, source fidelity, same-selling-point two-excerpt cap, 1.2x 120-second hard cap, five-part output and offline compliance. No new daily tool or environment prerequisites.
+- Rebuilt portable distribution and added focused route/scenario regression tests; manual real-video validation remains unverified.
+
 ## 0.3.6
 - Publication-consistency patch: synchronized the complete portable single-file pack, Agent Skills launcher metadata, tests, and release ZIP with the 0.3.5 AI-First governance protocol.
 - No new SRT editing semantics, tools, environment prerequisites, or daily workflow gates.
 - Added explicit governance-only regression checks; historical 0.3.4/0.3.5 changelog sections remain immutable.
 
 ## 0.3.5
-- Added permanent AI-first version update protocol with six checks, three release vetoes, degradation path and explicit channel verification.
-- Kept all SRT business rules and ordinary runtime path unchanged; this is a governance-only release.
-- Source of truth remains SKILL.md and AI-First Constitution; no new Python or environment prerequisites.
+- Added a permanent AI-First version update protocol: six required checks, three veto rules, release records, and honest per-channel sync status.
+- Governance-only update. No changes to the ordinary clipping execution flow, semantic decision ownership, 1.2x 120-second hard cap, or five-part delivery.
+- Kept Python, scripts, and external environments optional for daily text tasks.
 
 ## 0.3.4
 - Sync-integrity patch only; business behavior is unchanged from the fully tested 0.3.2 AI-First / Long Context release.

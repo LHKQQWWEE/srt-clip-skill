@@ -1,3 +1,5 @@
+> ARCHIVED_DO_NOT_EXECUTE — historical evidence only; statements below describe that release, not current status. Current routing: main SKILL.md (0.3.9; business baseline 0.3.8).
+
 # C2 Universal 0.3.4｜同步一致性补丁回归
 
 - 业务规则与0.3.2完全一致；0.3.4不是新的剪辑策略版本。

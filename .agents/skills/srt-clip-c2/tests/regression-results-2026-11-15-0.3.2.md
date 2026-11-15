@@ -1,3 +1,5 @@
+> ARCHIVED_DO_NOT_EXECUTE — historical evidence only; statements below describe that release, not current status. Current routing: main SKILL.md (0.3.9; business baseline 0.3.8).
+
 # C2 Universal 0.3.2｜Long Context / AI-First 增量回归
 
 日期：2026-11-15

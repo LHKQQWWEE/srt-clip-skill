@@ -1,3 +1,7 @@
+## 0.3.9 (2026-11-16)
+
+Synchronization and cleanup only; business rules unchanged from 0.3.8. See docs/release-0.3.9.md.
+
 # Changelog
 
 ## 0.3.8

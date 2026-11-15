@@ -5,7 +5,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL_DIR = ROOT
-PLUGIN_ROOT = ROOT.parents[1]
+PLUGIN_ROOT = next(p for p in ROOT.parents if (p / "plugin.json").is_file())
 
 class C2UniversalIntegrityTests(unittest.TestCase):
     def test_skill_frontmatter_and_version(self):
@@ -127,7 +127,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_publisher_default_prompt_compatibility(self):
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         prompt = manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"]
-        self.assertIn("C2 Universal " + (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), prompt)
+        self.assertIn("C2 Universal 0.3.8", prompt)  # immutable publisher defaultPrompt baseline
         self.assertIn("Long Context Mode", prompt)
         skill = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("发布兼容字段", skill)

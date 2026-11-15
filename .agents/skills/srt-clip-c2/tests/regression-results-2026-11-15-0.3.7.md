@@ -1,3 +1,5 @@
+> ARCHIVED_DO_NOT_EXECUTE — historical evidence only; statements below describe that release, not current status. Current routing: main SKILL.md (0.3.9; business baseline 0.3.8).
+
 # C2 Universal 0.3.7｜鞋类/围巾专项回归记录（2026-11-15）
 
 - 命令：`python -m unittest discover -s skills/srt-clip-c2/tests -p 'test_*.py' -v`

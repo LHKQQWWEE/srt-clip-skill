@@ -1,3 +1,5 @@
+> ARCHIVED_DO_NOT_EXECUTE — historical evidence only; statements below describe that release, not current status. Current routing: main SKILL.md (0.3.9; business baseline 0.3.8).
+
 # C2 Universal 0.3.6｜治理协议与发行一致性回归
 
 - 规则完整性/治理协议检查：14/14 PASS。

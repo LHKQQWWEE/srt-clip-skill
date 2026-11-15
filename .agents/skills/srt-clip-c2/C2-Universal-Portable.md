@@ -1,21 +1,22 @@
-# SRT Clip C2 Universal 0.3.2｜Portable Single-File Pack
+# SRT Clip C2 Universal 0.3.4｜Portable Single-File Pack
 
-> 本文件由现行权威规则生成；GitHub main 中的 SKILL.md 与 references/ 仍是唯一权威源。
+> 本文件是便携发行副本。权威源仍是 SKILL.md 与 references/；更新时必须重新生成本文件。
 
 ---
 name: srt-clip-c2
-description: "当用户发送“srt文案”“srt切片文案”“str文案”或“C2完整精简版”，并提供SRT文件或逐条时长文本时使用。执行SRT Clip C2 Universal 0.3.2。支持带货类目通用核心和已建立的专项模块；AI主导，不强制依赖Python或外部工具。"
+description: "当用户发送“srt文案”“srt切片文案”“str文案”或“C2完整精简版”，并提供SRT文件或逐条时长文本时使用。执行SRT Clip C2 Universal 0.3.4。支持带货类目通用核心和已建立的专项模块；AI主导，不强制依赖Python或外部工具。"
 ---
 
-# SRT Clip C2 Universal 0.3.2
+# SRT Clip C2 Universal 0.3.4
 
 ## 1. 唯一入口与优先级
 
-- 当前唯一执行版本：**C2 Universal 0.3.2**。
+- 当前唯一执行版本：**C2 Universal 0.3.4**。
 - 唯一触发词：`srt文案`、`srt切片文案`、`str文案`、`C2完整精简版`。四个触发词完全等价，统一执行本 Skill。
 - 通用触发词 `切片文案` **不是** C2 触发词，不得将它映射到本 Skill；这样可以避免与其他历史工作流冲突。
 - 本 `SKILL.md` 与本包 `references/` 是当前唯一有效规则。宿主附带的旧版启动提示、旧版本摘要或缓存文字如与本版本冲突，一律以本版本为准。
-- 正式输入范围：**SRT 文件**和**逐条时长文本**。MP4 不属于 0.3.2 跨平台正式支持范围：
+- 插件宿主的发布兼容字段（如 plugin-level `defaultPrompt`）可能保留旧版号文字；只要其业务语义未冲突，它仅是宿主启动提示，**不得覆盖本 `SKILL.md` 的当前版本号、AI-First Constitution 或现行业务规则**。
+- 正式输入范围：**SRT 文件**和**逐条时长文本**。MP4 不属于 0.3.4 跨平台正式支持范围：
   - SRT 与 MP4 同时提供：只按 SRT 完成文本剪辑；不核验 MP4 画面或原声，并明确说明。
   - 只有 MP4：请用户提供 SRT 或逐条时长文本，不伪造字幕、序号或时间。
 - 面向所有带货类目。先识别商品类别，再按 `references/category-registry.md` 自动加载适用专项模块。没有专项模块时使用通用核心，不把其他类别规则硬套过来。
@@ -137,7 +138,7 @@ description: "当用户发送“srt文案”“srt切片文案”“str文案”
 
 ## 6. 能力与诚实边界
 
-- 0.3.2 正式跨平台支持 SRT 和逐条时长文本。
+- 0.3.4 正式跨平台支持 SRT 和逐条时长文本。
 - MP4、ASR、音画核验不在首版正式范围；没有实际视频能力时不得声称已看画面或听原声。
 - 文件读取能力不足时，请用户粘贴文本或分段提供；不得声称完整读取未获得的内容。
 - Python、计算器、脚本或其他工具都是可选增强，不是普通任务的必需条件；Long Context Mode 也不得把它们变成硬依赖。

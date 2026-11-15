@@ -11,7 +11,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_skill_frontmatter_and_version(self):
         text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
         self.assertTrue(text.startswith("---\nname: srt-clip-c2\n"))
-        self.assertIn("SRT Clip C2 Universal 0.3.2", text)
+        self.assertIn("SRT Clip C2 Universal 0.3.4", text)
         front = text.split("---", 2)[1]
         for trigger in ["srt文案", "srt切片文案", "str文案", "C2完整精简版"]:
             self.assertIn(trigger, front)
@@ -98,10 +98,18 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertIn("#穿搭", fashion)
         self.assertIn("#时尚营销", fashion)
 
+    def test_publisher_default_prompt_compatibility(self):
+        manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
+        prompt = manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"]
+        self.assertIn("C2 Universal 0.3.2", prompt)
+        self.assertIn("Long Context Mode", prompt)
+        skill = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("发布兼容字段", skill)
+
     def test_plugin_manifest(self):
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["name"], "srt-clip-c2")
-        self.assertEqual(manifest["version"], "0.3.2")
+        self.assertEqual(manifest["version"], "0.3.4")
         self.assertEqual(manifest["extensions"]["com.openai"]["interface"]["shortDescription"], "AI主导，跨平台带货剪辑")
 
 if __name__ == "__main__":

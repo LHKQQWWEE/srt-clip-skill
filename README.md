@@ -1,4 +1,4 @@
-# SRT Clip C2 Universal 0.3.2
+# SRT Clip C2 Universal 0.3.4
 
 AI-first, cross-platform commerce video clipping skill.
 

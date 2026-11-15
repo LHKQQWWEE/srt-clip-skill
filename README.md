@@ -1,4 +1,4 @@
-# SRT Clip C2 Universal 0.3.6
+# SRT Clip C2 Universal 0.3.7
 
 AI-first, cross-platform commerce video clipping skill.
 
@@ -11,7 +11,8 @@ AI-first, cross-platform commerce video clipping skill.
 
 Start with `skills/srt-clip-c2/SKILL.md` (plugin package) or `.agents/skills/srt-clip-c2/SKILL.md` (GitHub/Codex repository).
 
-- Long Context Mode：超长文本采用全局扫描→窗口地图→目标精读→单一卖点池→反向漏检→一次分析多方案；不强制依赖Python或环境。
-- AI-First Constitution：所有语义决策必须由AI完成，工具只能辅助机械读取/定位/计算。
+- Long Context Mode: global scan → product window map → target deep read → single selling-point pool → reverse coverage audit → single analysis/multi output.
+- AI-First Constitution retains final semantic authority.
+- All future updates follow `skills/srt-clip-c2/references/update-protocol.md` (development/release only).
 
-- 版本治理：未来升级遵守 `references/update-protocol.md` 的六项审查与三条一票否决（仅针对开发/发布，不增加日常执行负担）。
+- Category routing: footwear → `categories/shoes.md`; scarves/neckwear → `categories/scarves.md`; otherwise women/fashion as applicable.

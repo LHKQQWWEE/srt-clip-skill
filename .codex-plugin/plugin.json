@@ -1,20 +1,25 @@
 {
   "interface": {
-    "displayName": "直播切片文案 C2 0.2.19",
-    "shortDescription": "精准处理材质字幕并选择更有效的开头",
-    "longDescription": "支持 SRT、逐条时长文本及宿主可读取的视频。材质违规按平台指出的字幕整条删除，保留并逐条判断其他内容。开头优先选最能引起共鸣的商品相关顾客困扰，没有合适困扰再选核心卖点。",
-    "developerName": "惠康 黎",
+    "displayName": "SRT Clip C2 Universal 0.3.0",
+    "shortDescription": "AI\u4e3b\u5bfc\uff0c\u8de8\u5e73\u53f0\u5e26\u8d27\u526a\u8f91",
+    "longDescription": "\u9762\u5411\u6240\u6709\u5e26\u8d27\u7c7b\u76ee\u7684\u901a\u7528\u526a\u8f91\u6838\u5fc3\u3002\u6b63\u5f0f\u652f\u6301SRT\u4e0e\u9010\u6761\u65f6\u957f\u6587\u672c\uff1b\u81ea\u52a8\u8bc6\u522b\u5546\u54c1\u7c7b\u522b\u5e76\u52a0\u8f7d\u5df2\u5efa\u7acb\u7684\u4e13\u9879\u89c4\u5219\u3002AI\u4e3b\u5bfc\u6267\u884c\uff0cPython\u548c\u5916\u90e8\u5de5\u5177\u6309\u9700\u4f7f\u7528\uff0c\u4e0d\u662f\u666e\u901a\u4efb\u52a1\u7684\u524d\u7f6e\u6761\u4ef6\u3002\u4fdd\u7559\u539f\u8bdd\u3001\u6765\u6e90\u5e8f\u53f7\u3001\u4eae\u70b9\u5b8c\u6574\u6027\u30011.2\u500d\u901f120\u79d2\u4e0a\u9650\u3001\u79bb\u7ebf\u5408\u89c4\u57fa\u7ebf\u53ca\u56fa\u5b9a\u4e94\u90e8\u5206\u4ea4\u4ed8\u3002",
+    "developerName": "\u60e0\u5eb7 \u9ece",
     "category": "Productivity",
     "capabilities": [],
-    "defaultPrompt": "按 C2 0.2.19 的 SKILL.md 执行。平台明确指出材质字幕违规时删除对应整条字幕，其他字幕逐条判断；开头优先选择最能引起共鸣的商品相关顾客困扰，没有合适困扰再选核心卖点。"
+    "defaultPrompt": "\u6309 C2 0.2.26 \u7684 srt-clip-c2 \u6280\u80fd\u53ca\u5176 references \u6267\u884c\u3002\u9010\u6761\u8bb0\u5f55\u5feb\u7167\u539f\u8bdd\u3001\u8bed\u4e49\u53ca\u5546\u54c1\u5f52\u5c5e\uff0c\u5f52\u5c5e\u4f9d\u636e\u8981\u5bf9\u5e94\u672c\u53e5\u6216\u53ef\u6838\u5bf9\u4e0a\u4e0b\u6587\u951a\u70b9\uff0c\u540c\u4e00\u7a97\u53e3\u4e0d\u5f97\u590d\u5236\u5957\u8bdd\uff1b\u539f\u58f0\u8f6c\u5199\u6216\u5546\u54c1\u4e8b\u5b9e\u5f85\u6838\u7684\u4eae\u70b9\u5355\u72ec\u6807\u8bb0\u3002\u7ed3\u6784PASS\u4e0d\u4ee3\u8868\u8bed\u4e49\u5b8c\u6574\u3002\u6bcf\u67611.2\u500d\u901f\u9884\u8ba1\u4e0d\u8d85\u8fc7120\u79d2\uff0c\u8f93\u51fa\u4e94\u90e8\u5206\u5e76\u4fdd\u7559\u6765\u6e90\u3002"
   },
   "name": "srt-clip-c2",
-  "version": "0.1.43",
-  "description": "直播切片文案 C2 0.2.19：按单条字幕处理明确材质违规，并优先用顾客困扰选择开头。",
+  "version": "0.3.0",
+  "description": "SRT Clip C2 Universal 0.3.0\uff1aAI\u4e3b\u5bfc\u7684\u8de8\u5e73\u53f0\u5e26\u8d27\u89c6\u9891\u6587\u672c\u526a\u8f91\u6280\u80fd\uff0c\u652f\u6301SRT\u4e0e\u9010\u6761\u65f6\u957f\u6587\u672c\uff0c\u6309\u9700\u52a0\u8f7d\u7c7b\u76ee\u4e13\u9879\u89c4\u5219\u3002",
   "author": {
-    "name": "惠康 黎",
+    "name": "\u60e0\u5eb7 \u9ece",
     "email": "lihuikang23@gmail.com"
   },
-  "keywords": [],
+  "keywords": [
+    "srt",
+    "video-clipping",
+    "commerce",
+    "agent-skill"
+  ],
   "skills": "./skills"
 }

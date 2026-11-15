@@ -1,7 +1,12 @@
-# 直播切片文案 C2 0.2.19
+# SRT Clip C2 Universal 0.3.0
 
-材质违规按平台指出的字幕整条删除，并保留逐条核查同段其他字幕。开头优先选择最能引起共鸣的商品相关顾客困扰，没有合适困扰时再选择商品核心卖点。
+AI-first, cross-platform commerce video clipping skill.
 
-技能规则位于 `.agents/skills/srt-clip-c2/SKILL.md`。支持脚本和验收测试位于同一目录；环境要求见 `ENVIRONMENT.md`，安装仅需 Python 3.10+，不需要第三方依赖。
+- Formal input scope: SRT and line-by-line duration text.
+- Universal commerce core with category-specific modules loaded on demand.
+- No mandatory Python, no mandatory JSON ledgers, no repeated workflow gates.
+- 1.2x estimated final duration hard cap: 120 seconds.
+- Fixed five-part output with original wording and source cue IDs.
+- MP4/video/audio validation is deferred to future platform-specific adapters.
 
-完整读取并编排目标商品有原话、归属明确的不同亮点及配色；不设120秒上限，疑点或衔接困难标注核实/回听，三类明确例外单列。保留五部分、亮点覆盖和可复制序号。只报告实际核验范围。
+Start with `skills/srt-clip-c2/SKILL.md` (plugin package) or `.agents/skills/srt-clip-c2/SKILL.md` (GitHub/Codex repository).

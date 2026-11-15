@@ -1,7 +1,9 @@
-# C2 0.2.19 environment
+# C2 Universal 0.3.0｜运行环境
 
-- Python 3.10 or newer is required for the bundled validation scripts. The package was tested with Python 3.12.
-- Runtime and validation use only the Python standard library. No `pip install` step or network access is required.
-- Run the bundled acceptance check from this skill directory with `python -S tests/test_portable.py`.
-- The `scripts/` and `tests/` directories are included in the ZIP so parsing, source checks, rendering, and acceptance checks are available offline.
-- Video/audio decoding and speech recognition are not bundled. Video claims must be limited to media actually readable in the host environment.
+- **普通任务不要求 Python。**
+- 不需要安装第三方依赖，不需要网络或远程服务。
+- SRT 和逐条时长文本由当前 AI 宿主的文件读取与文本分析能力处理。
+- 复杂计算、文件读取或来源核验确有必要时，AI 可以使用宿主提供的计算器、代码执行或其他工具；这些工具是可选增强，不是普通任务前置条件。
+- 0.3.0 不包含 MP4 解码、ASR 或音画核验能力；视频能力后续按平台单独适配。
+- 测试脚本只用于开发/发行验收，不在每条日常任务中运行。
+- 工具不可用时，按 SKILL.md 的降级规则执行并如实说明核验范围。

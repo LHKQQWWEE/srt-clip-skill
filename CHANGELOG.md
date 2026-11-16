@@ -1,3 +1,10 @@
+## 0.3.16 (2026-11-16)
+
+- Packaging privacy repair: removed sample-specific sweater cue IDs and durations from the distributable 0.3.14 historical acceptance file; private real-text test details remain in private release records.
+- Marked 0.3.15 acceptance as historical and advanced active version pointers to 0.3.16. No C2 business rules changed from the approved 0.3.14 baseline.
+- Re-ran all 43 automated regression tests against this package; all passed.
+- Re-scanned the package for sample-specific identifiers; no matches remain.
+
 ## 0.3.15 (2026-11-16)
 
 - Synchronization-only repair based on the approved 0.3.14 rules; no clipping behavior changed.
@@ -25,7 +32,7 @@
 - Place the earliest natural, complete conversion opportunity after a purchase reason is established; later conversion nodes remain dynamic and must add value. No fixed CTA count, position, soft/hard ratio, or forced CTA ending.
 - Exclude time-sensitive transaction information by default throughout the clip, with a narrowly scoped user-confirmed, time-bound campaign exception. Mixed subtitles may retain only a complete, source-contiguous original clause; fragments are discarded without rewriting or stitching.
 - Preserved the one-pass AI-first workflow, category safeguards, original wording and cue IDs, 1.2x/120-second cap, and five-part delivery.
-- Historical 0.3.12 acceptance details remain in Git history; 0.3.14 was the current acceptance at its release, and the current acceptance is 0.3.15.
+- Historical 0.3.12 acceptance details remain in Git history; 0.3.14 was the current acceptance at its release, and the current acceptance is 0.3.16.
 
 ## 0.3.11 (2026-11-16)
 

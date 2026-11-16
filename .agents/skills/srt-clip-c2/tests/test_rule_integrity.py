@@ -17,6 +17,12 @@ class C2UniversalIntegrityTests(unittest.TestCase):
             self.assertIn(trigger, front)
         self.assertNotIn("“切片文案”", front)
 
+    def test_environment_guide_uses_current_version(self):
+        version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()
+        environment = (SKILL_DIR / "ENVIRONMENT.md").read_text(encoding="utf-8")
+        self.assertIn(f"C2 Universal {version}", environment)
+        self.assertNotIn("0.3.11", environment)
+
     def test_core_files_exist(self):
         for path in [
             "references/editorial-policy.md",
@@ -148,10 +154,23 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_publisher_default_prompt_compatibility(self):
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         prompt = manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"]
-        self.assertIn("C2 Universal 0.3.11", prompt)
+        self.assertIn("C2 Universal 0.3.12", prompt)
         self.assertIn("Long Context Mode", prompt)
+        self.assertIn("动态交易信息", prompt)
+        self.assertIn("完整子句", prompt)
+        self.assertIn("残句", prompt)
         skill = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("发布兼容字段", skill)
+
+    def test_launcher_metadata_uses_current_rules(self):
+        start = (SKILL_DIR / "START-HERE.md").read_text(encoding="utf-8")
+        launcher = (SKILL_DIR / "agents/openai.yaml").read_text(encoding="utf-8")
+        for text in [start, launcher]:
+            self.assertIn("0.3.12", text)
+            self.assertNotIn("单一卖点池", text)
+            self.assertNotIn("反向漏检", text)
+        self.assertIn("完整、连续且语义自足的子句", launcher)
+        self.assertIn("词组或残句则舍弃整条字幕", launcher)
 
     def test_plugin_manifest(self):
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))

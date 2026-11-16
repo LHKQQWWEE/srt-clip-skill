@@ -1,4 +1,4 @@
-> Historical sample index retained for traceability; historical sample notes are not executable rules. Current policy scenarios for 0.3.11 follow the decision table below.
+> Historical sample index retained for traceability only; its sample notes and 0.3.11 scenarios are not current rules or acceptance results. Current policy is defined by `SKILL.md` and its active references. The 0.3.12 acceptance record is `release-0.3.12-acceptance.md`.
 
 # C2 Universal 0.3.7｜历史素材基准集（脱敏索引）
 

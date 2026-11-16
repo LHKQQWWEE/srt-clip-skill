@@ -1,18 +1,18 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "srt-clip-c2",
-  "version": "0.3.11",
-  "description": "SRT Clip C2 Universal 0.3.11：AI-First 通用带货视频文本剪辑技能，支持 SRT 与逐条时长文本；现行跨类目购买信息覆盖和一次编排规则。",
+  "version": "0.3.12",
+  "description": "SRT Clip C2 Universal 0.3.12：AI-First 通用带货视频文本剪辑技能，支持 SRT 与逐条时长文本；购买理由递进编排与动态交易信息全局排除。",
   "extensions": {
     "com.openai": {
       "interface": {
-        "displayName": "SRT Clip C2 Universal 0.3.11",
+        "displayName": "SRT Clip C2 Universal 0.3.12",
         "shortDescription": "AI主导，跨平台带货剪辑",
-        "longDescription": "面向所有带货类目的AI-First通用剪辑核心。购买决策信息决定去留，结构只负责自然排序；多类卖点可共存，同类别不同事实不合并。长文本按窗口保证读取，目标内容在同次AI语义处理中筛选和编排，不新增日常模型轮次、Python前置或JSON台账。保留原话、来源序号、现行1.2倍速120秒上限、类目专项边界和五部分交付。",
+        "longDescription": "面向所有带货类目的AI-First通用剪辑核心。开头价值获得最小充分支撑后，购买理由成立即安排最早合理的成交机会，之后继续覆盖其他独立卖点；成交不设固定次数和结尾逼单。动态交易信息默认全片排除。保留一次语义编排、原话、来源序号、现行1.2倍速120秒上限、类目专项边界和五部分交付。",
         "developerName": "惠康 黎",
         "category": "Productivity",
         "capabilities": [],
-        "defaultPrompt": "按 SRT Clip C2 Universal 0.3.11 的 SKILL.md 及 references 执行。Long Context Mode 保留读取窗口覆盖；目标窗口的语义筛选与编排一次完成。卖点决定留不留，结构决定怎么排；保留所有提供新增购买决策信息的候选，不因主题或类别不同删除。语义去重按新增信息判断；真实反差只作轻量加权，不制造冲突。AI在现有语义筛选与编排中一次完成判断，不新增流程节点、模型轮次、Python前置或JSON台账。保持类目专项、原话、商品归属、现行1.2倍速120秒上限、开头中段结尾和固定五部分。"
+        "defaultPrompt": "按 SRT Clip C2 Universal 0.3.12 的 SKILL.md 及 references 执行。Long Context Mode只确保读取覆盖和商品窗口；商品识别、价值判断、成交编排在同一次语义处理中完成。开头核心价值先得到最小充分支撑；购买理由成立后优先安排最早合理的成交机会，成交后继续考虑其他独立卖点。成交节点不设固定次数、位置或软硬比例，不强制结尾逼单。具体价格、优惠、赠品、库存等动态交易信息默认全片排除；混合字幕仅保留原话中的完整子句，且须连续、语法完整、意思自足；仅剩词组或残句则整条舍弃，不改字、补词或拼接。不得新增日常流程节点、模型轮次、Python前置或JSON台账。保留类目专项、原话、商品归属、1.2倍速120秒上限及固定五部分。"
       }
     }
   },

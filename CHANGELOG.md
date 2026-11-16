@@ -1,3 +1,11 @@
+## 0.3.12 (2026-11-16)
+
+- Added minimum-sufficient support for the opening hook and a direct payoff relationship; other independent purchase reasons remain eligible afterward.
+- Place the earliest natural, complete conversion opportunity after a purchase reason is established; later conversion nodes remain dynamic and must add value. No fixed CTA count, position, soft/hard ratio, or forced CTA ending.
+- Exclude time-sensitive transaction information by default throughout the clip, with a narrowly scoped user-confirmed, time-bound campaign exception. Mixed subtitles may retain only a complete, source-contiguous original clause; fragments are discarded without rewriting or stitching.
+- Preserved the one-pass AI-first workflow, category safeguards, original wording and cue IDs, 1.2x/120-second cap, and five-part delivery.
+- See docs/release-0.3.12.md for acceptance and channel readback.
+
 ## 0.3.11 (2026-11-16)
 
 - Made independent purchase-decision value the eligibility rule: new information stays a candidate regardless of category or theme.

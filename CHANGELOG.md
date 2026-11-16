@@ -1,3 +1,16 @@
+## 0.3.11 (2026-11-16)
+
+- Made independent purchase-decision value the eligibility rule: new information stays a candidate regardless of category or theme.
+- Defined semantic deduplication by information gain, not shared category; added natural multi-point ordering and lightweight weighting for authentic contrasts.
+- Replaced separate selling-point-pool/reverse-omission stages in Long Context guidance with one AI semantic selection-and-arrangement pass; retained window coverage and one final output check.
+- Clarified time-cap trimming order without changing the 1.2x / 120-second rule or category-specific safeguards.
+- Synchronized current rule references, regression scenarios, plugin manifests, and regenerated portable pack.
+- See docs/release-0.3.11.md.
+
+# Historical release notes
+
+Sections below 0.3.11 document prior releases for traceability only. They are not executable rules; current behavior is defined by the active SKILL.md and references.
+
 ## 0.3.10 (2026-11-16)
 
 - Added the phrases identified in the 2026-11-16 material-proof rejection screenshot to the single global clipping prohibition library: “三股的全羊毛” and “全精纺羊毛”; “全金纺半高领” is covered only when its context makes it an animal-fiber material claim. A collar-style description alone is not prohibited.

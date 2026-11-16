@@ -62,7 +62,28 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
         detail = (SKILL_DIR / "references/highlight-selection.md").read_text(encoding="utf-8")
         self.assertIn("最多保留两处", text)
-        self.assertIn("先保不同卖点覆盖，再删重复强化", detail)
+        self.assertIn("已由更强片段充分覆盖", detail)
+
+    def test_purchase_information_priority_and_semantic_dedup(self):
+        selection = (SKILL_DIR / "references/highlight-selection.md").read_text(encoding="utf-8")
+        editorial = (SKILL_DIR / "references/editorial-policy.md").read_text(encoding="utf-8")
+        for token in ["卖点决定“留不留”，结构决定“怎么排”", "购买决策信息", "真正语义重复", "同类别的不同事实", "真实反差"]:
+            self.assertIn(token, selection)
+        self.assertIn("主题先后只影响编排，不决定卖点去留", editorial)
+        self.assertNotIn("一个商品主题通常先讲清楚", editorial)
+
+    def test_no_extra_semantic_stages(self):
+        long_mode = (SKILL_DIR / "references/long-context-mode.md").read_text(encoding="utf-8")
+        self.assertIn("不另设主题分析、卖点池建立、遗漏扫描", long_mode)
+        self.assertNotIn("单一卖点池", long_mode)
+        self.assertNotIn("反向漏检（Reverse Coverage Check）", long_mode)
+        self.assertNotIn("先建立高价值候选集", long_mode)
+
+    def test_duration_trim_order(self):
+        selection = (SKILL_DIR / "references/highlight-selection.md").read_text(encoding="utf-8")
+        order = ["真正语义重复的信息", "没有信息增量的重复夸赞", "购买决策价值较低的内容", "已由更强片段充分覆盖", "舍弃部分独立有效卖点"]
+        positions = [selection.index(term) for term in order]
+        self.assertEqual(positions, sorted(positions))
 
     def test_ai_first_constitution(self):
         text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
@@ -90,8 +111,8 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         long_mode = (SKILL_DIR / "references/long-context-mode.md").read_text(encoding="utf-8")
         self.assertIn("Long Context Mode", text)
         self.assertIn("2000条", long_mode)
-        self.assertIn("Single Analysis, Multi Output", long_mode)
-        self.assertIn("反向漏检", long_mode)
+        self.assertIn("多方案共享同一次", long_mode)
+        self.assertNotIn("反向漏检（Reverse Coverage Check）", long_mode)
         self.assertNotIn("必须调用 Python", long_mode)
 
     def test_no_hard_tool_dependency_language(self):
@@ -127,7 +148,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_publisher_default_prompt_compatibility(self):
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         prompt = manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"]
-        self.assertIn("C2 Universal 0.3.8", prompt)  # immutable publisher defaultPrompt baseline
+        self.assertIn("C2 Universal 0.3.11", prompt)
         self.assertIn("Long Context Mode", prompt)
         skill = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("发布兼容字段", skill)

@@ -1,9 +1,0 @@
-> ARCHIVED_DO_NOT_EXECUTE — historical evidence only; statements below describe that release, not current status. Current routing: main SKILL.md (0.3.9; business baseline 0.3.8).
-
-# C2 Universal 0.3.7｜鞋类/围巾专项回归记录（2026-11-15）
-
-- 命令：`python -m unittest discover -s skills/srt-clip-c2/tests -p 'test_*.py' -v`
-- 结果：24/24 通过（14 项既有规则、3 项 2000 cue/2h 合成结构测试、7 项新类目/便携一致性测试）。
-- 重点：鞋类与围巾排他路由、视觉依赖、适配/护理限制、原话约束、不同商品归属、卖点强化及便携原文包含性。
-- 手工场景文档核对已列入 docs/audit-2026-11-15-0.3.7.md；真实主播 SRT、音画、跨模型语义盲评与端到端耗时实测未进行。
-- 无新增日常 Python/JSON/联网/环境检查门槛。

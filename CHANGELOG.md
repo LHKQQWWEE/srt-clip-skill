@@ -1,10 +1,24 @@
+## 0.3.14 (2026-11-16)
+
+- Reworked opening-hook selection around first-time unfamiliar viewers rather than streamer presentation order. Hook types have no fixed rank; candidates compete on customer relevance, immediate benefit, differentiation, concreteness/credibility and downstream payoff. Differentiation is a bonus, not a hard gate.
+- Downranked pure color/general matching/generic material/general sizing as opening hooks when they do not create immediate customer value; they remain eligible when the original wording directly produces a stronger customer result.
+- Reframed conversion selection as customer decision advancement rather than buy/shoot/enter keyword detection. Value confirmation, fit/size guidance, decision simplification and action guidance can all serve conversion roles.
+- Downranked old-fan/repeat-customer-limited conversion language for cold traffic without banning it; weak/repeated/live-context CTA language cannot displace independent purchase-value content.
+- Preserved AI-First one-pass execution, all 0.3.12 source-fidelity/compliance/category rules, 1.2x/120-second cap and five-part output. No new mandatory Python, JSON ledger, workflow stage or model round.
+- Rebuilt the full portable pack from the complete current rule set, added stranger-hook/CTA regressions, and validated the supplied real sweater transcript: color remains mid-clip value, fan-only CTA no longer wins, and the selected 49-cue candidate is 82.800s raw / 69.000s at 1.2x.
+- Aligned the active business release at 0.3.14. The publisher-side 0.3.13 metadata bump did not form a distinct business-rule release.
+
+## 0.3.13 (publisher transient, 2026-11-16)
+
+- Publisher-side metadata/version bump only; no distinct C2 business-rule release. Superseded by 0.3.14 and must not be treated as an executable historical rule set.
+
 ## 0.3.12 (2026-11-16)
 
 - Added minimum-sufficient support for the opening hook and a direct payoff relationship; other independent purchase reasons remain eligible afterward.
 - Place the earliest natural, complete conversion opportunity after a purchase reason is established; later conversion nodes remain dynamic and must add value. No fixed CTA count, position, soft/hard ratio, or forced CTA ending.
 - Exclude time-sensitive transaction information by default throughout the clip, with a narrowly scoped user-confirmed, time-bound campaign exception. Mixed subtitles may retain only a complete, source-contiguous original clause; fragments are discarded without rewriting or stitching.
 - Preserved the one-pass AI-first workflow, category safeguards, original wording and cue IDs, 1.2x/120-second cap, and five-part delivery.
-- See docs/release-0.3.12.md for acceptance and channel readback.
+- Historical 0.3.12 acceptance details remain available in Git history; current acceptance is 0.3.14.
 
 ## 0.3.11 (2026-11-16)
 
@@ -13,7 +27,7 @@
 - Replaced separate selling-point-pool/reverse-omission stages in Long Context guidance with one AI semantic selection-and-arrangement pass; retained window coverage and one final output check.
 - Clarified time-cap trimming order without changing the 1.2x / 120-second rule or category-specific safeguards.
 - Synchronized current rule references, regression scenarios, plugin manifests, and regenerated portable pack.
-- See docs/release-0.3.11.md.
+- Historical 0.3.11 release details remain available in Git history.
 
 # Historical release notes
 
@@ -24,11 +38,11 @@ Sections below 0.3.11 document prior releases for traceability only. They are no
 - Added the phrases identified in the 2026-11-16 material-proof rejection screenshot to the single global clipping prohibition library: “三股的全羊毛” and “全精纺羊毛”; “全金纺半高领” is covered only when its context makes it an animal-fiber material claim. A collar-style description alone is not prohibited.
 - Updated the offline evidence reference to record the screenshot without duplicating or broadening the active prohibition rules.
 - Regenerated the portable single-file skill and synchronized release metadata. Other C2 workflow rules remain unchanged from 0.3.9.
-- See docs/release-0.3.10.md.
+- Historical 0.3.10 release details remain available in Git history.
 
 ## 0.3.9 (2026-11-16)
 
-Synchronization and cleanup only; business rules unchanged from 0.3.8. See docs/release-0.3.9.md.
+Synchronization and cleanup only; business rules unchanged from 0.3.8. Historical details remain available in Git history.
 
 # Changelog
 

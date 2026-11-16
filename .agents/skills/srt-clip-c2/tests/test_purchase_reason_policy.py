@@ -42,7 +42,13 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
 
     def test_mixed_transaction_and_product_cue_keeps_only_an_exact_complete_clause(self):
         self.assertTrue("原始连续表达" in self.editorial, "mixed cues may retain only a source-contiguous clause")
+        self.assertTrue("完整原话子句" in self.editorial, "mixed cues must retain a complete source clause, not a fragment")
+        self.assertTrue("不保留残句" in self.editorial, "mixed cues must reject leftover fragments")
         self.assertTrue("不得改字、补词或拼接不连续片段" in self.editorial, "mixed cue handling must preserve original wording")
+        for path in ["womens-fashion.md", "shoes.md", "scarves.md"]:
+            category = (ROOT / "categories" / path).read_text(encoding="utf-8")
+            with self.subTest(category=path):
+                self.assertIn("完整原话子句", category, "category summaries must use the shared exact-clause boundary")
 
     def test_category_modules_do_not_restore_dynamic_trade_or_fixed_cta_rules(self):
         self.assertFalse("用户要保留且当前信息已核实" in self.categories, "a category rule must not restore a user-verifiable promo exception")

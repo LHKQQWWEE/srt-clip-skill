@@ -17,6 +17,12 @@ class C2UniversalIntegrityTests(unittest.TestCase):
             self.assertIn(trigger, front)
         self.assertNotIn("“切片文案”", front)
 
+    def test_environment_guide_uses_current_version(self):
+        version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()
+        environment = (SKILL_DIR / "ENVIRONMENT.md").read_text(encoding="utf-8")
+        self.assertIn(f"C2 Universal {version}", environment)
+        self.assertNotIn("0.3.11", environment)
+
     def test_core_files_exist(self):
         for path in [
             "references/editorial-policy.md",
@@ -151,6 +157,8 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertIn("C2 Universal 0.3.12", prompt)
         self.assertIn("Long Context Mode", prompt)
         self.assertIn("动态交易信息", prompt)
+        self.assertIn("完整子句", prompt)
+        self.assertIn("残句", prompt)
         skill = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("发布兼容字段", skill)
 

@@ -5,7 +5,7 @@
 - Reframed conversion selection as customer decision advancement rather than buy/shoot/enter keyword detection. Value confirmation, fit/size guidance, decision simplification and action guidance can all serve conversion roles.
 - Downranked old-fan/repeat-customer-limited conversion language for cold traffic without banning it; weak/repeated/live-context CTA language cannot displace independent purchase-value content.
 - Preserved AI-First one-pass execution, all 0.3.12 source-fidelity/compliance/category rules, 1.2x/120-second cap and five-part output. No new mandatory Python, JSON ledger, workflow stage or model round.
-- Rebuilt the full portable pack from the complete current rule set, added stranger-hook/CTA regressions, and validated the supplied real sweater transcript: color remains mid-clip value, fan-only CTA no longer wins, and the selected 49-cue candidate is 82.800s raw / 69.000s at 1.2x.
+- Completed a private, user-authorized real-text semantic check for the opening-hook and conversion-decision changes. The public repository contains no supplied transcript, product identifiers, source cue IDs, selection ranges, or sample-specific duration details.
 - Aligned the active business release at 0.3.14. The publisher-side 0.3.13 metadata bump did not form a distinct business-rule release.
 
 ## 0.3.13 (publisher transient, 2026-11-16)

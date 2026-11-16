@@ -1,3 +1,10 @@
+## 0.3.10 (2026-11-16)
+
+- Added the phrases identified in the 2026-11-16 material-proof rejection screenshot to the single global clipping prohibition library: “三股的全羊毛” and “全精纺羊毛”; “全金纺半高领” is covered only when its context makes it an animal-fiber material claim. A collar-style description alone is not prohibited.
+- Updated the offline evidence reference to record the screenshot without duplicating or broadening the active prohibition rules.
+- Regenerated the portable single-file skill and synchronized release metadata. Other C2 workflow rules remain unchanged from 0.3.9.
+- See docs/release-0.3.10.md.
+
 ## 0.3.9 (2026-11-16)
 
 Synchronization and cleanup only; business rules unchanged from 0.3.8. See docs/release-0.3.9.md.

@@ -1,4 +1,4 @@
 interface:
-  display_name: "SRT Clip C2 Universal 0.3.9"
+  display_name: "SRT Clip C2 Universal 0.3.10"
   short_description: "AI主导，跨平台带货剪辑"
-  default_prompt: "按 SRT Clip C2 Universal 0.3.9 的 SKILL.md 和 references 执行。AI是所有语义决策主体，工具只作机械辅助且不得成为硬依赖。普通文本走Standard Mode；超长文本走Long Context Mode：全局覆盖扫描、窗口地图、目标精读、单一卖点池、反向漏检、一次分析多方案。1.2倍速120秒上限内优先最大化不同卖点覆盖，同一卖点最多保留两处强化原话。输出固定五部分。"
+  default_prompt: "按 SRT Clip C2 Universal 0.3.10 的 SKILL.md 和 references 执行。AI是所有语义决策主体，工具只作机械辅助且不得成为硬依赖。普通文本走Standard Mode；超长文本走Long Context Mode：全局覆盖扫描、窗口地图、目标精读、单一卖点池、反向漏检、一次分析多方案。1.2倍速120秒上限内优先最大化不同卖点覆盖，同一卖点最多保留两处强化原话。输出固定五部分。"

@@ -16,6 +16,7 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
             path.read_text(encoding="utf-8")
             for path in (ROOT / "categories").glob("*.md")
         )
+        cls.women = (ROOT / "categories/womens-fashion.md").read_text(encoding="utf-8")
 
     def test_hook_value_gets_minimal_sufficient_support(self):
         self.assertTrue("最小充分承接" in self.selection, "opening support must be minimal and sufficient")
@@ -58,6 +59,41 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
         self.assertTrue("一次分析" in self.skill, "semantic decisions remain in the existing one-pass flow")
         self.assertFalse("第七步：" in self.skill, "the update must not add a daily execution stage")
 
+
+    def test_stranger_first_without_banning_existing_fans(self):
+        self.assertIn("陌生顾客", self.skill)
+        self.assertIn("老粉兼顾", self.skill)
+        self.assertIn("不是禁止", self.editorial)
+
+    def test_hook_has_no_fixed_type_ranking(self):
+        self.assertIn("不设固定类型排序", self.skill)
+        self.assertIn("差异性是重要加分项，不是硬门槛", self.skill)
+        for token in ["顾客相关性", "即时收益", "具体与可信度", "后续承接"]:
+            self.assertIn(token, self.skill)
+
+    def test_color_is_downranked_not_banned(self):
+        self.assertIn("纯颜色介绍", self.women)
+        self.assertIn("不是关键词黑名单", self.women)
+        self.assertIn("颜色若直接带来明确顾客结果", self.skill)
+
+    def test_first_conversion_follows_valid_reason_and_stranger_fit(self):
+        self.assertIn("购买理由成立后", self.selection)
+        self.assertIn("最早合理", self.selection)
+        self.assertIn("对陌生顾客", self.selection)
+        self.assertIn("老粉、老顾客、复购限定成交话术默认降级", self.selection)
+
+    def test_weak_cta_cannot_displace_independent_value(self):
+        self.assertIn("弱成交话术不得挤占独立有效卖点", self.skill)
+        order = [
+            "真正语义重复的信息",
+            "没有信息增量的重复夸赞或情绪强化",
+            "重复或弱成交话术",
+            "购买决策价值较低的内容",
+            "已由更强片段充分覆盖的次级信息",
+            "舍弃部分独立有效卖点",
+        ]
+        positions = [self.selection.index(x) for x in order]
+        self.assertEqual(positions, sorted(positions))
 
 if __name__ == "__main__":
     unittest.main()

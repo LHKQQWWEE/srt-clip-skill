@@ -178,5 +178,17 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertEqual(manifest["version"], (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip())
         self.assertEqual(manifest["extensions"]["com.openai"]["interface"]["shortDescription"], "AI主导，跨平台带货剪辑")
 
+    def test_stranger_first_hook_and_conversion_contract(self):
+        core = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+        editorial = (SKILL_DIR / "references/editorial-policy.md").read_text(encoding="utf-8")
+        selection = (SKILL_DIR / "references/highlight-selection.md").read_text(encoding="utf-8")
+        fashion = (SKILL_DIR / "categories/womens-fashion.md").read_text(encoding="utf-8")
+        for token in ["陌生顾客", "不设固定类型排序", "差异性是重要加分项，不是硬门槛", "弱成交话术不得挤占独立有效卖点"]:
+            self.assertIn(token, core)
+        self.assertIn("限定老粉话术", editorial)
+        self.assertIn("老粉、老顾客、复购限定成交话术默认降级", selection)
+        self.assertIn("纯颜色介绍", fashion)
+        self.assertIn("不是关键词黑名单", fashion)
+
 if __name__ == "__main__":
     unittest.main()

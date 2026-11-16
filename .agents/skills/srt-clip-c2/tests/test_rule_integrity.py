@@ -87,7 +87,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
 
     def test_duration_trim_order(self):
         selection = (SKILL_DIR / "references/highlight-selection.md").read_text(encoding="utf-8")
-        order = ["真正语义重复的信息", "没有信息增量的重复夸赞", "购买决策价值较低的内容", "已由更强片段充分覆盖", "舍弃部分独立有效卖点"]
+        order = ["真正语义重复的信息", "没有信息增量的重复夸赞", "重复或弱成交话术", "购买决策价值较低的内容", "已由更强片段充分覆盖", "舍弃部分独立有效卖点"]
         positions = [selection.index(term) for term in order]
         self.assertEqual(positions, sorted(positions))
 
@@ -96,8 +96,8 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         constitution = (SKILL_DIR / "references/ai-first-constitution.md").read_text(encoding="utf-8")
         self.assertIn("AI-First Constitution", text)
         self.assertIn("最高架构约束", constitution)
-        self.assertIn("不能替代这些语义决策", text)
         self.assertIn("工具不可用", constitution)
+        self.assertIn("语义决策", text)
 
     def test_update_protocol_governance_only(self):
         protocol = (SKILL_DIR / "references/update-protocol.md").read_text(encoding="utf-8")
@@ -146,37 +146,10 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         core = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
         global_rules = (SKILL_DIR / "references/global-rules.md").read_text(encoding="utf-8")
         fashion = (SKILL_DIR / "categories/womens-fashion.md").read_text(encoding="utf-8")
-        self.assertIn("通用核心不得强制加入其他类目的话题", core)
+        self.assertIn("类目模块可固定最多两个类目话题", core)
         self.assertIn("不是 Universal 全局固定话题", global_rules)
         self.assertIn("#穿搭", fashion)
         self.assertIn("#时尚营销", fashion)
-
-    def test_publisher_default_prompt_compatibility(self):
-        manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
-        prompt = manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"]
-        self.assertIn("C2 Universal 0.3.12", prompt)
-        self.assertIn("Long Context Mode", prompt)
-        self.assertIn("动态交易信息", prompt)
-        self.assertIn("完整子句", prompt)
-        self.assertIn("残句", prompt)
-        skill = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
-        self.assertIn("发布兼容字段", skill)
-
-    def test_launcher_metadata_uses_current_rules(self):
-        start = (SKILL_DIR / "START-HERE.md").read_text(encoding="utf-8")
-        launcher = (SKILL_DIR / "agents/openai.yaml").read_text(encoding="utf-8")
-        for text in [start, launcher]:
-            self.assertIn("0.3.12", text)
-            self.assertNotIn("单一卖点池", text)
-            self.assertNotIn("反向漏检", text)
-        self.assertIn("完整、连续且语义自足的子句", launcher)
-        self.assertIn("词组或残句则舍弃整条字幕", launcher)
-
-    def test_plugin_manifest(self):
-        manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["name"], "srt-clip-c2")
-        self.assertEqual(manifest["version"], (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip())
-        self.assertEqual(manifest["extensions"]["com.openai"]["interface"]["shortDescription"], "AI主导，跨平台带货剪辑")
 
     def test_stranger_first_hook_and_conversion_contract(self):
         core = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
@@ -189,6 +162,34 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertIn("老粉、老顾客、复购限定成交话术默认降级", selection)
         self.assertIn("纯颜色介绍", fashion)
         self.assertIn("不是关键词黑名单", fashion)
+
+    def test_publisher_default_prompt_uses_current_semantics(self):
+        manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
+        codex_manifest = json.loads((PLUGIN_ROOT / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
+        prompt = manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"]
+        self.assertEqual(prompt, codex_manifest["interface"]["defaultPrompt"])
+        self.assertNotIn("0.3.12", prompt)
+        for token in ["第一次刷到视频的陌生顾客", "不设固定钩子类型排序", "老粉限定话术默认降级", "弱成交不挤占独立卖点"]:
+            self.assertIn(token, prompt)
+        self.assertIn("当前 SKILL.md", prompt)
+
+    def test_launcher_metadata_uses_current_rules(self):
+        version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()
+        start = (SKILL_DIR / "START-HERE.md").read_text(encoding="utf-8")
+        launcher = (SKILL_DIR / "agents/openai.yaml").read_text(encoding="utf-8")
+        for text in [start, launcher]:
+            self.assertIn(version, text)
+            self.assertNotIn("单一卖点池", text)
+            self.assertNotIn("反向漏检", text)
+        self.assertIn("陌生顾客", launcher)
+        self.assertIn("完整", launcher)
+        self.assertIn("残句", launcher)
+
+    def test_plugin_manifest(self):
+        manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["name"], "srt-clip-c2")
+        self.assertEqual(manifest["version"], (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip())
+        self.assertEqual(manifest["extensions"]["com.openai"]["interface"]["shortDescription"], "AI主导，跨平台带货剪辑")
 
 if __name__ == "__main__":
     unittest.main()

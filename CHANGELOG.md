@@ -1,3 +1,10 @@
+## 0.3.15 (2026-11-16)
+
+- Synchronization-only repair based on the approved 0.3.14 rules; no clipping behavior changed.
+- Removed the host defaultPrompt instruction that explicitly routed execution to the 0.3.12 SKILL. Both plugin manifests and the skill launcher now direct execution to the current package SKILL.md and current stranger-hook/conversion semantics.
+- Updated current version markers, acceptance links and launcher-integrity regression. No old rule set was restored.
+- Re-ran all 43 automated regression tests against this package; all passed.
+
 ## 0.3.14 (2026-11-16)
 
 - Reworked opening-hook selection around first-time unfamiliar viewers rather than streamer presentation order. Hook types have no fixed rank; candidates compete on customer relevance, immediate benefit, differentiation, concreteness/credibility and downstream payoff. Differentiation is a bonus, not a hard gate.
@@ -5,7 +12,7 @@
 - Reframed conversion selection as customer decision advancement rather than buy/shoot/enter keyword detection. Value confirmation, fit/size guidance, decision simplification and action guidance can all serve conversion roles.
 - Downranked old-fan/repeat-customer-limited conversion language for cold traffic without banning it; weak/repeated/live-context CTA language cannot displace independent purchase-value content.
 - Preserved AI-First one-pass execution, all 0.3.12 source-fidelity/compliance/category rules, 1.2x/120-second cap and five-part output. No new mandatory Python, JSON ledger, workflow stage or model round.
-- Completed a private, user-authorized real-text semantic check for the opening-hook and conversion-decision changes. The public repository contains no supplied transcript, product identifiers, source cue IDs, selection ranges, or sample-specific duration details.
+- Completed a private, user-authorized real-text semantic check. The public source tree contains no transcript, product label, source cue IDs, selection ranges, or sample-specific duration.
 - Aligned the active business release at 0.3.14. The publisher-side 0.3.13 metadata bump did not form a distinct business-rule release.
 
 ## 0.3.13 (publisher transient, 2026-11-16)
@@ -18,7 +25,7 @@
 - Place the earliest natural, complete conversion opportunity after a purchase reason is established; later conversion nodes remain dynamic and must add value. No fixed CTA count, position, soft/hard ratio, or forced CTA ending.
 - Exclude time-sensitive transaction information by default throughout the clip, with a narrowly scoped user-confirmed, time-bound campaign exception. Mixed subtitles may retain only a complete, source-contiguous original clause; fragments are discarded without rewriting or stitching.
 - Preserved the one-pass AI-first workflow, category safeguards, original wording and cue IDs, 1.2x/120-second cap, and five-part delivery.
-- Historical 0.3.12 acceptance details remain available in Git history; current acceptance is 0.3.14.
+- Historical 0.3.12 acceptance details remain in Git history; 0.3.14 was the current acceptance at its release, and the current acceptance is 0.3.15.
 
 ## 0.3.11 (2026-11-16)
 

@@ -1,3 +1,5 @@
+> Historical acceptance evidence for C2 Universal 0.3.14; current release is 0.3.15. This file is not an executable rule source.
+
 # C2 Universal 0.3.14｜发布验收记录
 
 日期：2026-11-16

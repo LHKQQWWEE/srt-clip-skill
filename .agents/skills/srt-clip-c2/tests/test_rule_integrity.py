@@ -169,6 +169,8 @@ class C2UniversalIntegrityTests(unittest.TestCase):
             self.assertIn("0.3.12", text)
             self.assertNotIn("单一卖点池", text)
             self.assertNotIn("反向漏检", text)
+        self.assertIn("完整、连续且语义自足的子句", launcher)
+        self.assertIn("词组或残句则舍弃整条字幕", launcher)
 
     def test_plugin_manifest(self):
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))

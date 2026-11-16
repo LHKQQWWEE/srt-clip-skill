@@ -1,4 +1,4 @@
-> Historical sample index retained for traceability only; its sample notes and 0.3.11 scenarios are not current rules or acceptance results. Current policy is defined by `SKILL.md` and its active references. The 0.3.12 acceptance record is `release-0.3.12-acceptance.md`.
+> Historical sample index retained for traceability only; its sample notes and 0.3.11 scenarios are not current rules or acceptance results. Current policy is defined by `SKILL.md` and its active references. The 0.3.12 acceptance record is `release-0.3.14-acceptance.md`.
 
 # C2 Universal 0.3.7｜历史素材基准集（脱敏索引）
 
@@ -28,7 +28,7 @@
 | 大量重复表达 | “特别显瘦；真的很显瘦；穿起来非常显瘦” | 无新增信息的重复夸赞择优留一处 |
 | 真实冲突/反差 | “担心小个子压身高；高腰线配短上衣更显腿长” | 可把顾虑与原文回应相邻，轻量提高承接优先级，不扩大为保证 |
 | 无冲突/反差 | “颜色柔和；面料有垂感；适合通勤” | 直接按购买价值编排，不补造问题或故事 |
-| 超时多卖点 | 独立版型、材质、舒适度、搭配、场景、限制均超过时长容纳 | 依次去重、删无新增夸赞、低价值、已覆盖次级信息；仅最后因硬上限舍弃独立信息并说明 |
+| 陌生顾客钩子竞争 | “四个颜色都好看；整体小巧精致不肥大；丰满身材更适合软垂纱线” | 不按类型固定排序；纯颜色默认降级，优先比较顾客结果、相关性、差异性和承接，差异性不作硬门槛 |\n| 限定老粉成交 | “老粉推荐两个颜色；普通顾客可按需求选基础色” | 老粉限定话术默认降级，不把陌生用户排除在首要成交节点之外 |\n| 超时多卖点 | 独立版型、材质、舒适度、搭配、场景、限制均超过时长容纳 | 依次去重、删无新增夸赞、低价值、已覆盖次级信息；仅最后因硬上限舍弃独立信息并说明 |
 | 短文本 | 一句完整的商品效果与真实收尾，约20秒 | 保持短候选标记，不为凑时长添加内容 |
 | 长文本 | 多商品交替、目标商品多次回场，后段新增护理限制 | 先保证窗口覆盖；目标窗口内一次语义处理，保留后段新信息及条件 |
 | 多商品 | 外套与围巾交替讲解，用户指定围巾 | 只编排围巾购买信息；外套独立规格不混入 |

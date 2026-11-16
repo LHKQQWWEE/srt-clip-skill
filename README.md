@@ -1,4 +1,4 @@
-# SRT Clip C2 Universal 0.3.12
+# SRT Clip C2 Universal 0.3.14
 
 AI-first, cross-platform commerce video clipping skill.
 
@@ -8,6 +8,7 @@ AI-first, cross-platform commerce video clipping skill.
 - 1.2x estimated final duration hard cap: 120 seconds.
 - Fixed five-part output with original wording and source cue IDs.
 - MP4/video/audio validation is deferred to future platform-specific adapters.
+- Opening and conversion selection default to first-time unfamiliar viewers: hook types have no fixed ranking, and fan-limited CTA language is downranked for cold traffic rather than banned.
 
 Start with `skills/srt-clip-c2/SKILL.md` (plugin package) or `.agents/skills/srt-clip-c2/SKILL.md` (GitHub/Codex repository).
 
@@ -19,7 +20,8 @@ Start with `skills/srt-clip-c2/SKILL.md` (plugin package) or `.agents/skills/srt
 
 ## Single active version policy (2026-11-16)
 
-- **Only one live C2 Universal release and one governing source**: the current `main` branch Skill; active release: **0.3.12**; business baseline: **0.3.11**.
+- **Only one live C2 Universal release and one governing source**: the current `main` branch Skill; active release: **0.3.14**; business baseline: **0.3.12**.
+- The publisher-side 0.3.13 metadata bump did not form a distinct business-rule release and is superseded by 0.3.14.
 - Future improvements must extend this same C2 Universal line, not revive C2 0.1.x/0.2.x, parallel v5.x workflows, or maintain competing active rule sets.
 - Later releases supersede the active release only after independent publication and readback. Do not keep two releases labelled current.
 - Historical benchmarks, audit records, and commits remain for traceability only, and must not be loaded as executable rules. No old ZIP, cache, release note or host startup hint may override `SKILL.md` plus its current `references/`.

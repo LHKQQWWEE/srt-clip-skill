@@ -1,14 +1,14 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "srt-clip-c2",
-  "version": "0.3.12",
-  "description": "SRT Clip C2 Universal 0.3.12：AI-First 通用带货视频文本剪辑技能，支持 SRT 与逐条时长文本；购买理由递进编排与动态交易信息全局排除。",
+  "version": "0.3.14",
+  "description": "SRT Clip C2 Universal 0.3.14：AI-First 通用带货视频文本剪辑技能，支持 SRT 与逐条时长文本；陌生顾客钩子、购买决策成交与多卖点覆盖。",
   "extensions": {
     "com.openai": {
       "interface": {
-        "displayName": "SRT Clip C2 Universal 0.3.12",
+        "displayName": "SRT Clip C2 Universal 0.3.14",
         "shortDescription": "AI主导，跨平台带货剪辑",
-        "longDescription": "面向所有带货类目的AI-First通用剪辑核心。开头价值获得最小充分支撑后，购买理由成立即安排最早合理的成交机会，之后继续覆盖其他独立卖点；成交不设固定次数和结尾逼单。动态交易信息默认全片排除。保留一次语义编排、原话、来源序号、现行1.2倍速120秒上限、类目专项边界和五部分交付。",
+        "longDescription": "面向所有带货类目的AI-First通用剪辑核心。默认以第一次刷到视频的陌生顾客判断钩子和通用成交：钩子类型不设固定排序，比较顾客相关性、即时收益、差异性、具体可信度和后续承接；成交按购买决策推进价值判断，限定老粉话术默认降级，弱成交不挤占独立卖点。动态交易信息默认全片排除。保留一次语义编排、原话、来源序号、现行1.2倍速120秒上限、类目专项边界和五部分交付。",
         "developerName": "惠康 黎",
         "category": "Productivity",
         "capabilities": [],

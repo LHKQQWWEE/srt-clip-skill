@@ -148,10 +148,19 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_publisher_default_prompt_compatibility(self):
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         prompt = manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"]
-        self.assertIn("C2 Universal 0.3.11", prompt)
+        self.assertIn("C2 Universal 0.3.12", prompt)
         self.assertIn("Long Context Mode", prompt)
+        self.assertIn("动态交易信息", prompt)
         skill = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("发布兼容字段", skill)
+
+    def test_launcher_metadata_uses_current_rules(self):
+        start = (SKILL_DIR / "START-HERE.md").read_text(encoding="utf-8")
+        launcher = (SKILL_DIR / "agents/openai.yaml").read_text(encoding="utf-8")
+        for text in [start, launcher]:
+            self.assertIn("0.3.12", text)
+            self.assertNotIn("单一卖点池", text)
+            self.assertNotIn("反向漏检", text)
 
     def test_plugin_manifest(self):
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))

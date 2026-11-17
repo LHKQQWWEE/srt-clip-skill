@@ -117,5 +117,10 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
         self.assertIn("不输出机械覆盖率百分比", self.skill)
         self.assertIn("不为生成摘要另建卖点台账或新增模型轮次", self.skill)
 
+    def test_requested_plan_count_does_not_force_weak_outputs(self):
+        self.assertIn("以指定数量为目标", self.skill)
+        self.assertIn("只交付能够独立成立的最大数量", self.skill)
+        self.assertIn("不为凑数量制造弱方案", self.skill)
+
 if __name__ == "__main__":
     unittest.main()

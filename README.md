@@ -1,17 +1,16 @@
-# SRT Clip C2 Universal 0.3.19
+# SRT Clip C2 Universal 0.4.0
 
-AI-first, cross-platform commerce video clipping skill.
+C2 is one AI-led purchase-decision editor organized around clear internal responsibilities. In one semantic analysis, the Chief Decision Editor coordinates a Product Purchase-Decision Architect, a Product Facts & Boundaries Officer and a Purchase-Decision Editor; a Final Quality Auditor performs the existing single final check.
 
-- Formal input scope: SRT and line-by-line duration text.
-- Universal commerce core with category-specific modules loaded on demand.
-- No mandatory Python, JSON ledger, repeated workflow gates, or extra semantic pass.
-- 1.2x estimated final duration hard cap: 120 seconds.
-- Fixed five-part output with original wording and source cue IDs.
-- Audio, visual, and product-fact validation are reported only when actually verified.
-- Highlight coverage follows **single-plan optimum, multi-plan complement**: each clip must stand on its own; core reasons may be shared while secondary valid reasons add distinct decision value.
+## What changed in 0.4.0
 
-Start with .agents/skills/srt-clip-c2/SKILL.md in the GitHub/Codex repository or skills/srt-clip-c2/SKILL.md in the plugin package.
+- The AI dynamically builds each product's content path from the customer's decision, the transcript evidence, relevant conditions and independent purchase reasons.
+- Product Knowledge Packs provide factual reminders and boundaries only. They do not supply category templates, content order, hooks, conversion placement, tags or duration rules.
+- The role model adds no other model, agent call, semantic round, ledger or ordinary-task tool requirement.
+- Existing rules remain: SRT and line-by-line duration text, original wording and cue IDs, product attribution, global prohibitions, estimated 45–120 seconds at 1.2x, and the fixed five-part output.
 
-Category routing: footwear → categories/shoes.md; scarves and neckwear → categories/scarves.md; other fashion items → categories/womens-fashion.md.
+## Start here
 
-The current distribution contains only the active skill, its references, category modules, current tests, and current release record.
+Use the current Skill at .agents/skills/srt-clip-c2/SKILL.md. The portable single-file version is .agents/skills/srt-clip-c2/C2-Universal-Portable.md. Read only current referenced files for active rules; prior release notes and tests are historical evidence, not execution sources.
+
+The repository includes the release acceptance record and development tests. Their execution is for release validation; everyday clipping remains AI-first and does not require Python or other tools.

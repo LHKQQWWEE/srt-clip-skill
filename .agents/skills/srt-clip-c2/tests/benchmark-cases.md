@@ -1,4 +1,4 @@
-> Historical sample index retained for traceability only; its sample notes and older scenarios are not current rules or acceptance results. Current policy is defined by `SKILL.md` and its active references. The current acceptance record is `release-0.3.16-acceptance.md`.
+> Historical sample index retained for traceability only; its sample notes and older scenarios are not current rules or acceptance results. Current policy is defined by `SKILL.md` and its active references. The current acceptance record is `release-0.3.17-acceptance.md`.
 
 # C2 Universal｜历史素材基准集（脱敏索引）
 

@@ -2,10 +2,13 @@
 
 - Added the approved **single-plan optimum, multi-plan complement** highlight-coverage policy. A single clip prioritizes its own retention, persuasion and purchase-decision quality before breadth; multi-output runs may share indispensable core reasons while distributing secondary valid reasons to create real decision-value differences.
 - Clarified that the same-selling-point two-excerpt cap is a **per-plan** deduplication rule, not a task-wide cap across multiple plans. Multi-plan output may include a lightweight overall coverage summary, but no mechanical coverage percentage, new ledger, coverage matrix, extra semantic stage or extra model round is introduced.
+- Resolved the requested-count/quality conflict: 2–3 outputs are the target, while insufficient source material yields only the strong, independently useful plans the transcript supports, with a short explanation instead of weak filler.
 - Promoted multi-plan complement behavior to Universal Core; women/fashion, shoes and scarves inherit the shared allocation logic while retaining category-specific judgment.
-- Kept the global prohibition library limited to already confirmed user/audit rules. During implementation an unconfirmed historical no-pilling proposal was detected and removed before release; no new banned phrase was added without a current confirmed source.
+- Kept the global prohibition library limited to already confirmed user/audit rules; no new banned phrase was added without a current confirmed source.
 - Repaired a pre-existing publisher-version drift where `.codex-plugin/plugin.json` still reported 0.3.15 while the repository was on 0.3.16, and advanced current version surfaces to 0.3.17.
-- Added regressions for single-plan quality-before-density, complementary multi-output, per-plan duplicate scope, lightweight coverage summaries and publisher-version alignment. Runtime acceptance results are recorded separately.
+- Added regressions for single-plan quality-before-density, complementary multi-output, per-plan duplicate scope, lightweight coverage summaries and publisher-version alignment. Completed private real-text semantic review for dense and sparse source material. See `tests/release-0.3.17-acceptance.md` for verified results and limits.
+
+## Historical release notes (0.3.16 and earlier; not active rules)
 
 ## 0.3.16 (2026-11-16)
 
@@ -41,7 +44,7 @@
 - Place the earliest natural, complete conversion opportunity after a purchase reason is established; later conversion nodes remain dynamic and must add value. No fixed CTA count, position, soft/hard ratio, or forced CTA ending.
 - Exclude time-sensitive transaction information by default throughout the clip, with a narrowly scoped user-confirmed, time-bound campaign exception. Mixed subtitles may retain only a complete, source-contiguous original clause; fragments are discarded without rewriting or stitching.
 - Preserved the one-pass AI-first workflow, category safeguards, original wording and cue IDs, 1.2x/120-second cap, and five-part delivery.
-- Historical 0.3.12 acceptance details remain in Git history; 0.3.14 was the current acceptance at its release, and the current acceptance is 0.3.16.
+- Historical 0.3.12 acceptance details remain in Git history; 0.3.14 was the current acceptance at its release, and the current acceptance is 0.3.17.
 
 ## 0.3.11 (2026-11-16)
 
@@ -52,7 +55,7 @@
 - Synchronized current rule references, regression scenarios, plugin manifests, and regenerated portable pack.
 - Historical 0.3.11 release details remain available in Git history.
 
-# Historical release notes
+## Historical notes before 0.3.11
 
 Sections below 0.3.11 document prior releases for traceability only. They are not executable rules; current behavior is defined by the active SKILL.md and references.
 

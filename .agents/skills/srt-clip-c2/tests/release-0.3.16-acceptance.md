@@ -1,9 +1,11 @@
+> Historical acceptance evidence for C2 Universal 0.3.16; current release is 0.3.17. This file is not an executable rule source.
+
 # C2 Universal 0.3.16｜发布验收记录
 
 日期：2026-11-16
 
 ## 版本范围
-- 当前版本：C2 Universal 0.3.16。
+- 验收目标版本：C2 Universal 0.3.16（现行版本为 0.3.17）。
 - 业务规则基准：0.3.14 已确认的陌生顾客开头钩子、成交决策与多卖点保留规则。
 - 本次仅修复历史验收材料中混入样本专属字幕序号与时长的问题；同时把 0.3.15 标记为历史版本。
 - 不改变剪辑行为、常规执行流程、模型轮次、工具依赖或输出结构。

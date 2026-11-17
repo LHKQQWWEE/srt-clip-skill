@@ -54,8 +54,8 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
 
     def test_trim_order_puts_weak_cta_before_independent_high_value(self):
         order = [
-            "真正语义重复",
-            "无信息增量的重复夸赞",
+            "机械性重复与过度性重复",
+            "无明显信息增量或说服增量的夸赞/情绪强化",
             "弱/重复成交话术",
             "弱增量和低决策价值内容",
             "已被更强信息充分覆盖",

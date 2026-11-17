@@ -2,16 +2,16 @@
   "interface": {
     "capabilities": [],
     "category": "Productivity",
-    "defaultPrompt": "按当前 C2 Universal 0.4.0 的 SKILL.md 与其引用文件执行；采用同一AI的逻辑职责分工和动态购买决策结构；不要读取或混用旧版副本。",
+    "defaultPrompt": "按当前 C2 Universal 0.4.1 的 SKILL.md 与其引用文件执行；采用同一AI的逻辑职责分工和动态购买决策结构；按信息/说服增量语义判断重复，不读取或混用旧版副本。",
     "developerName": "惠康 黎",
-    "displayName": "SRT Clip C2 Universal 0.4.0",
-    "longDescription": "由一个AI在一次语义分析中承担总决策、动态购买决策架构、商品事实边界和原话剪辑职责。内容路径按商品、顾客逻辑、字幕证据与独立购买理由动态构建；商品知识包只提供事实提醒和边界，不预设剪辑模板。详细规则以当前SKILL.md及其引用文件为准。",
+    "displayName": "SRT Clip C2 Universal 0.4.1",
+    "longDescription": "由一个AI在一次语义分析中承担总决策、动态购买决策架构、商品事实边界和原话剪辑职责。内容路径按商品、顾客逻辑、字幕证据与独立购买理由动态构建；商品知识包只提供事实提醒和边界，不预设剪辑模板。重复判断兼顾信息与说服增量。详细规则以当前SKILL.md及其引用文件为准。",
     "shortDescription": "AI组织分工，动态构建购买决策内容",
     "version": null
   },
   "name": "srt-clip-c2",
-  "version": "0.4.0",
-  "description": "SRT Clip C2 Universal 0.4.0：一个AI组织式逻辑职责框架，动态构建适配商品与顾客决策的跨平台带货剪辑内容，支持SRT与逐条时长文本。",
+  "version": "0.4.1",
+  "description": "SRT Clip C2 Universal 0.4.1：重复判断兼顾信息与说服增量，一个AI组织式逻辑职责框架，动态构建适配商品与顾客决策的跨平台带货剪辑内容，支持SRT与逐条时长文本。",
   "author": {
     "name": "惠康 黎",
     "email": "lihuikang23@gmail.com"

@@ -1,3 +1,12 @@
+## 0.4.1 (2026-11-17)
+
+- Added contextual repetition judgment within the existing responsibilities: mechanical restart, persuasive emphasis, progressive explanation and over-repetition.
+- Compare information gain and persuasion gain; do not use lexical similarity or fixed repeat counts as deletion thresholds.
+- Preserve useful emphasis only when its memory/persuasion gain justifies the time and attention cost and does not displace a more important independent purchase reason.
+- Added an explicit rule that the 45-second floor never justifies retaining mechanical or over-repeated lines.
+- Added human-reviewed real-transcript semantic regression fixtures for the shoe restart at cues 20/21, fit progression, redundant repeats and an effective pants emphasis; kept original wording and existing duration/output contracts.
+- No new role, agent, model round, mandatory tool, input type or daily workflow was added.
+
 ## 0.4.0 (2026-11-17)
 
 - Replaced the single-role framing with one AI organized around five logical responsibilities: Chief Decision Editor, Product Purchase-Decision Architect, Product Facts & Boundaries Officer, Purchase-Decision Editor, and Final Quality Auditor. The Constitution remains the governing charter.

@@ -191,5 +191,22 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertEqual(manifest["version"], (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip())
         self.assertEqual(manifest["extensions"]["com.openai"]["interface"]["shortDescription"], "AI主导，跨平台带货剪辑")
 
+    def test_absolute_no_pilling_global_ban_boundary(self):
+        global_rules = (SKILL_DIR / "references/global-rules.md").read_text(encoding="utf-8")
+        for token in ["保证永久不起球", "绝对不起球", "永远不会起球", "永远不起球"]:
+            self.assertIn(token, global_rules)
+        for allowed in ["不太容易起球", "起球情况比较少", "不易起球"]:
+            self.assertIn(allowed, global_rules)
+        self.assertIn("不能仅因出现“100”自动判禁", global_rules)
+
+    def test_all_publish_surfaces_use_current_version(self):
+        version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()
+        manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
+        codex_manifest = json.loads((PLUGIN_ROOT / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["version"], version)
+        self.assertEqual(codex_manifest["version"], version)
+        self.assertIn(version, manifest["extensions"]["com.openai"]["interface"]["displayName"])
+        self.assertIn(version, codex_manifest["interface"]["displayName"])
+
 if __name__ == "__main__":
     unittest.main()

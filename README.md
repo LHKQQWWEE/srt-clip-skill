@@ -22,7 +22,7 @@ Start with `skills/srt-clip-c2/SKILL.md` (plugin package) or `.agents/skills/srt
 ## Single active version policy (2026-11-16)
 
 - **Only one live C2 Universal release and one governing source**: the current `main` branch Skill; active release: **0.3.17**; business baseline: **0.3.17**.
-- 0.3.17 adds the approved single-plan optimum / multi-plan complement coverage policy and restores a previously confirmed absolute no-pilling user ban that was missing from the active global library. Earlier releases remain historical.
+- 0.3.17 adds the approved single-plan optimum / multi-plan complement coverage policy and synchronizes the existing confirmed global prohibition library without inventing new banned phrases. Earlier releases remain historical.
 - Future improvements must extend this same C2 Universal line, not revive C2 0.1.x/0.2.x, parallel v5.x workflows, or maintain competing active rule sets.
 - Later releases supersede the active release only after independent publication and readback. Do not keep two releases labelled current.
 - Historical benchmarks, audit records, and commits remain for traceability only, and must not be loaded as executable rules. No old ZIP, cache, release note or host startup hint may override `SKILL.md` plus its current `references/`.

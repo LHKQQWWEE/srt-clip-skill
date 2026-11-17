@@ -1,6 +1,6 @@
 # C2 Universal｜未来平台适配器接口（仅规格，不实现）
 
-状态：DESIGN ONLY｜适用于 C2 Universal 0.3.18 后续平台适配。
+状态：DESIGN ONLY｜适用于 C2 Universal 0.3.19 后续平台适配。
 
 ## 目标
 
@@ -64,7 +64,7 @@ source_order: 原始顺序号
 
 ## Evidence Packet（未来视频能力）
 
-当前 0.3.18 不实现视频适配。后续若平台具备视频能力，只允许适配器返回已实际读取的证据：
+当前 0.3.19 不实现视频适配。后续若平台具备视频能力，只允许适配器返回已实际读取的证据：
 
 ```text
 evidence_type: visual | audio | asr | timing
@@ -114,4 +114,4 @@ confidence: host-provided | adapter-derived
 - Gemini Adapter
 - Generic File/Prompt Adapter
 
-当前状态：均未实现。0.3.18 正式支持仍以 SRT 和逐条时长文本为准。
+当前状态：均未实现。0.3.19 正式支持仍以 SRT 和逐条时长文本为准。

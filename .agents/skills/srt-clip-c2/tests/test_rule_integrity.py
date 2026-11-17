@@ -40,7 +40,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         acceptance_files = sorted(
             path.name for path in (SKILL_DIR / "tests").glob("release-*-acceptance.md")
         )
-        self.assertEqual(acceptance_files, ["release-0.3.18-acceptance.md"])
+        self.assertEqual(acceptance_files, ["release-0.3.19-acceptance.md"])
         for directory in [PLUGIN_ROOT / "archive", PLUGIN_ROOT / "docs" / "history"]:
             if directory.exists():
                 self.assertFalse(any(path.is_file() for path in directory.rglob("*")), str(directory))
@@ -68,10 +68,8 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertIn("明确指定词句", text)
         self.assertIn("日常离线使用", text)
 
-    def test_benchmark_has_ten_cases_and_no_raw_transcripts(self):
-        text = (SKILL_DIR / "tests/benchmark-cases.md").read_text(encoding="utf-8")
-        self.assertEqual(len(re.findall(r"\| B\d{2} \|", text)), 10)
-        self.assertIn("不包含任何原始 SRT 行", text)
+    def test_historical_sample_index_is_not_distributed(self):
+        self.assertFalse((SKILL_DIR / "tests/benchmark-cases.md").exists())
 
     def test_duplicate_highlight_policy(self):
         text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")

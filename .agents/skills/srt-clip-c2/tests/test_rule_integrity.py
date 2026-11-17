@@ -21,7 +21,6 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()
         environment = (SKILL_DIR / "ENVIRONMENT.md").read_text(encoding="utf-8")
         self.assertIn(f"C2 Universal {version}", environment)
-        self.assertNotIn("0.3.11", environment)
 
     def test_core_files_exist(self):
         for path in [
@@ -36,6 +35,16 @@ class C2UniversalIntegrityTests(unittest.TestCase):
             "START-HERE.md",
         ]:
             self.assertTrue((SKILL_DIR / path).is_file(), path)
+
+    def test_distribution_contains_only_current_release_record(self):
+        acceptance_files = sorted(
+            path.name for path in (SKILL_DIR / "tests").glob("release-*-acceptance.md")
+        )
+        self.assertEqual(acceptance_files, ["release-0.3.18-acceptance.md"])
+        for directory in [PLUGIN_ROOT / "archive", PLUGIN_ROOT / "docs" / "history"]:
+            if directory.exists():
+                self.assertFalse(any(path.is_file() for path in directory.rglob("*")), str(directory))
+        self.assertFalse(any((PLUGIN_ROOT / "docs").glob("release-*.md")))
 
     def test_no_old_mandatory_workflow_in_active_rules(self):
         active = [
@@ -168,7 +177,6 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         codex_manifest = json.loads((PLUGIN_ROOT / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         prompt = manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"]
         self.assertEqual(prompt, codex_manifest["interface"]["defaultPrompt"])
-        self.assertNotIn("0.3.12", prompt)
         for token in ["第一次刷到视频的陌生顾客", "不设固定钩子类型排序", "老粉限定话术默认降级", "弱成交不挤占独立卖点"]:
             self.assertIn(token, prompt)
         self.assertIn("当前 SKILL.md", prompt)

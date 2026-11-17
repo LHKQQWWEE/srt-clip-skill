@@ -1,4 +1,4 @@
-# SRT Clip C2 Universal 0.3.16
+# SRT Clip C2 Universal 0.3.17
 
 AI-first, cross-platform commerce video clipping skill.
 
@@ -9,6 +9,7 @@ AI-first, cross-platform commerce video clipping skill.
 - Fixed five-part output with original wording and source cue IDs.
 - MP4/video/audio validation is deferred to future platform-specific adapters.
 - Opening and conversion selection default to first-time unfamiliar viewers: hook types have no fixed ranking, and fan-limited CTA language is downranked for cold traffic rather than banned.
+- Highlight coverage follows **single-plan optimum, multi-plan complement**: each clip must stand on its own; core reasons may be shared across plans while secondary valid reasons are distributed where they add the most decision value.
 
 Start with `skills/srt-clip-c2/SKILL.md` (plugin package) or `.agents/skills/srt-clip-c2/SKILL.md` (GitHub/Codex repository).
 
@@ -20,8 +21,8 @@ Start with `skills/srt-clip-c2/SKILL.md` (plugin package) or `.agents/skills/srt
 
 ## Single active version policy (2026-11-16)
 
-- **Only one live C2 Universal release and one governing source**: the current `main` branch Skill; active release: **0.3.16**; business baseline: **0.3.14**.
-- The publisher-side 0.3.13 metadata bump did not form a distinct business-rule release; 0.3.14 remains the business-rule baseline for 0.3.16.
+- **Only one live C2 Universal release and one governing source**: the current `main` branch Skill; active release: **0.3.17**; business baseline: **0.3.17**.
+- 0.3.17 adds the approved single-plan optimum / multi-plan complement coverage policy and restores a previously confirmed absolute no-pilling user ban that was missing from the active global library. Earlier releases remain historical.
 - Future improvements must extend this same C2 Universal line, not revive C2 0.1.x/0.2.x, parallel v5.x workflows, or maintain competing active rule sets.
 - Later releases supersede the active release only after independent publication and readback. Do not keep two releases labelled current.
 - Historical benchmarks, audit records, and commits remain for traceability only, and must not be loaded as executable rules. No old ZIP, cache, release note or host startup hint may override `SKILL.md` plus its current `references/`.

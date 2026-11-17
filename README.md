@@ -19,7 +19,7 @@ Start with `skills/srt-clip-c2/SKILL.md` (plugin package) or `.agents/skills/srt
 
 - Category routing: footwear → `categories/shoes.md`; scarves/neckwear → `categories/scarves.md`; otherwise women/fashion as applicable.
 
-## Single active version policy (2026-11-16)
+## Single active version policy (2026-11-17)
 
 - **Only one live C2 Universal release and one governing source**: the current `main` branch Skill; active release: **0.3.17**; business baseline: **0.3.17**.
 - 0.3.17 adds the approved single-plan optimum / multi-plan complement coverage policy and synchronizes the existing confirmed global prohibition library without inventing new banned phrases. Earlier releases remain historical.

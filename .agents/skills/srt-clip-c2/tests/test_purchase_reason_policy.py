@@ -95,5 +95,27 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
         positions = [self.selection.index(x) for x in order]
         self.assertEqual(positions, sorted(positions))
 
+    def test_single_plan_quality_precedes_coverage_density(self):
+        self.assertIn("单条最优，多条互补", self.selection)
+        self.assertIn("覆盖不是塞满", self.selection)
+        self.assertIn("120秒是硬上限，不是目标时长", self.selection)
+        self.assertIn("进入候选不等于必须无条件进入最终成片", self.skill)
+
+    def test_multi_output_requires_complementary_decision_value(self):
+        self.assertIn("Single Analysis, Complementary Multi Output", self.skill)
+        self.assertIn("每增加一条正式方案都应带来新的购买决策价值", self.skill)
+        self.assertIn("不能只更换第一句而让主体长期高度同质", self.skill)
+        self.assertIn("单条质量 > 多条价值差异 > 形式上的低重复", self.selection)
+
+    def test_core_reasons_may_repeat_across_plans(self):
+        self.assertIn("不是整个多方案任务的累计上限", self.selection)
+        self.assertIn("核心购买理由若对不同方案都不可替代", self.selection)
+        self.assertIn("核心购买理由和必要承接可以共享", self.editorial)
+
+    def test_multi_plan_summary_is_lightweight_not_a_new_ledger(self):
+        self.assertIn("简短的整体覆盖摘要", self.skill)
+        self.assertIn("不输出机械覆盖率百分比", self.skill)
+        self.assertIn("不为生成摘要另建卖点台账或新增模型轮次", self.skill)
+
 if __name__ == "__main__":
     unittest.main()

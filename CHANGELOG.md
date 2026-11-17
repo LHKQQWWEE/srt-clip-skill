@@ -1,3 +1,12 @@
+## 0.3.17 (2026-11-17)
+
+- Added the approved **single-plan optimum, multi-plan complement** highlight-coverage policy. A single clip prioritizes its own retention, persuasion and purchase-decision quality before breadth; multi-output runs may share indispensable core reasons while distributing secondary valid reasons to create real decision-value differences.
+- Clarified that the same-selling-point two-excerpt cap is a **per-plan** deduplication rule, not a task-wide cap across multiple plans. Multi-plan output may include a lightweight overall coverage summary, but no mechanical coverage percentage, new ledger, coverage matrix, extra semantic stage or extra model round is introduced.
+- Promoted multi-plan complement behavior to Universal Core; women/fashion, shoes and scarves inherit the shared allocation logic while retaining category-specific judgment.
+- Kept the global prohibition library limited to already confirmed user/audit rules. During implementation an unconfirmed historical no-pilling proposal was detected and removed before release; no new banned phrase was added without a current confirmed source.
+- Repaired a pre-existing publisher-version drift where `.codex-plugin/plugin.json` still reported 0.3.15 while the repository was on 0.3.16, and advanced current version surfaces to 0.3.17.
+- Added regressions for single-plan quality-before-density, complementary multi-output, per-plan duplicate scope, lightweight coverage summaries and publisher-version alignment. Runtime acceptance results are recorded separately.
+
 ## 0.3.16 (2026-11-16)
 
 - Packaging privacy repair: removed sample-specific sweater cue IDs and durations from the distributable 0.3.14 historical acceptance file; private real-text test details remain in private release records.

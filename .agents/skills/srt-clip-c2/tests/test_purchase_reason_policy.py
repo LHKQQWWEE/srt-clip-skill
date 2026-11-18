@@ -66,7 +66,9 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
 
     def test_global_bans_remain_scoped_and_category_neutral(self):
         self.assertIn("全商品通用的用户剪辑禁用库", self.global_rules)
-        self.assertIn("全羊毛材质声明", self.global_rules)
+        self.assertIn("历史审核案例与默认取舍（非永久禁词）", self.global_rules)
+        self.assertIn("全羊毛", self.global_rules)
+        self.assertIn("对应质检证明条件", self.global_rules)
         self.assertIn("不同成分比例", self.global_rules)
         self.assertIn("动态生成", self.global_rules)
 

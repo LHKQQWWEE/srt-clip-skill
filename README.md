@@ -1,17 +1,13 @@
-# SRT Clip C2 Universal 0.3.19
+# SRT Clip C2 Universal 0.3.20
 
-AI-first, cross-platform commerce video clipping skill.
+AI-first, cross-platform commerce video clipping skill. Its single function is a **short-video purchase decision editor**: select, compare, trim, and reorder the speaker's original words so an unfamiliar customer can understand and decide.
 
-- Formal input scope: SRT and line-by-line duration text.
-- Universal commerce core with category-specific modules loaded on demand.
-- No mandatory Python, JSON ledger, repeated workflow gates, or extra semantic pass.
-- 1.2x estimated final duration hard cap: 120 seconds.
-- Fixed five-part output with original wording and source cue IDs.
-- Audio, visual, and product-fact validation are reported only when actually verified.
-- Highlight coverage follows **single-plan optimum, multi-plan complement**: each clip must stand on its own; core reasons may be shared while secondary valid reasons add distinct decision value.
+- Formal input: SRT and line-by-line duration text.
+- Universal Core owns the opening, purchase-decision chain, conversion closure, value hierarchy, duration, and complementary paths.
+- Formal clips target 45–120 seconds at 1.2x; 45–90 seconds is preferred, and 90–120 seconds requires additional independent high-value information.
+- No mandatory Python, JSON ledger, network access, repeated workflow gate, or extra semantic pass.
+- Original wording, source cue IDs, product attribution, category-specific judgments, and the fixed five-part output remain in force.
 
-Start with .agents/skills/srt-clip-c2/SKILL.md in the GitHub/Codex repository or skills/srt-clip-c2/SKILL.md in the plugin package.
+Start from `.agents/skills/srt-clip-c2/SKILL.md` in this repository or `skills/srt-clip-c2/SKILL.md` in the plugin package. Universal structure is governed by `references/editorial-policy.md` and `references/highlight-selection.md`; category modules keep only product-specific judgments.
 
-Category routing: footwear → categories/shoes.md; scarves and neckwear → categories/scarves.md; other fashion items → categories/womens-fashion.md.
-
-The current distribution contains only the active skill, its references, category modules, current tests, and current release record.
+Current distribution includes only the active Skill, its current references and categories, current tests, and the 0.3.20 release acceptance record. Do not use older same-name copies as an execution source.

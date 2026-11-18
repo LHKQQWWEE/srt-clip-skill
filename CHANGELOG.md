@@ -1,3 +1,8 @@
+## Plugin package 0.4.7 / C2 Universal core 0.4.1 (2026-11-18)
+
+- Synchronized the repetition-boundary strengthening across the active package, portable rules, and release surfaces.
+- Kept the existing one-AI, one-analysis, one-final-check architecture and did not add agents, model rounds, or mandatory tools.
+
 ## Plugin package 0.4.6 / C2 Universal core 0.4.1 (2026-11-18)
 
 - Clarified that the screenshot-backed proof condition applies to animal-hair fibers promoted as garment fabric or yarn; down filling such as goose down is outside this rule.

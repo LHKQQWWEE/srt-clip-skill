@@ -2,7 +2,7 @@
 
 Date: 2026-11-18
 
-This is the sole active release acceptance record for core 0.4.2 / plugin package 0.4.8.
+This is the sole active release acceptance record for core 0.4.2 / plugin package 0.4.9.
 
 ## Acceptance scope
 

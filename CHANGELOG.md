@@ -1,4 +1,9 @@
-## Plugin package 0.4.8 / C2 Universal core 0.4.2 (2026-11-18)
+## Plugin package 0.4.9 / C2 Universal core 0.4.2 (2026-11-18)
+
+- Repacked the validated 0.4.2 rules without test-generated Python bytecode; C2 behavior is unchanged from package 0.4.8.
+- The current package retains only the active 0.4.2 acceptance record; older acceptance files are archived and are not default rule inputs.
+
+## Plugin package 0.4.8 / C2 Universal core 0.4.2 (2026-11-18; superseded)
 
 - Added attention-decay guidance and the minimum sufficient purchase unit; a complete reason requires a concrete customer result/use/problem, enough source evidence, and necessary conditions before it triggers a search for the earliest natural purchase opportunity.
 - Added dynamic reassessment after later independent reasons, with no fixed CTA count, position, or soft/hard ratio; before moving an action line, check its full meaning and local setup as well as product, color, audience, conditions, and factual dependencies.

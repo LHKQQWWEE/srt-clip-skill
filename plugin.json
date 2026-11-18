@@ -2,19 +2,19 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "author": {
     "email": "lihuikang23@gmail.com",
-    "name": "惠康 黎"
+    "name": "\u60e0\u5eb7 \u9ece"
   },
-  "description": "SRT Clip C2 Universal 0.3.20：AI 主导的跨平台带货短视频购买决策编辑器，支持 SRT 与逐条时长文本。",
+  "description": "SRT Clip C2 Universal 0.4.1\uff1a\u91cd\u590d\u5224\u65ad\u517c\u987e\u4fe1\u606f\u4e0e\u8bf4\u670d\u589e\u91cf\uff0c\u4e00\u4e2aAI\u7ec4\u7ec7\u5f0f\u903b\u8f91\u804c\u8d23\u6846\u67b6\uff0c\u52a8\u6001\u6784\u5efa\u9002\u914d\u5546\u54c1\u4e0e\u987e\u5ba2\u51b3\u7b56\u7684\u8de8\u5e73\u53f0\u5e26\u8d27\u526a\u8f91\u5185\u5bb9\uff0c\u652f\u6301SRT\u4e0e\u9010\u6761\u65f6\u957f\u6587\u672c\u3002",
   "extensions": {
     "com.openai": {
       "interface": {
         "capabilities": [],
         "category": "Productivity",
-        "defaultPrompt": "按当前 C2 Universal 0.3.20 的 SKILL.md 与其引用文件执行；不要读取或混用旧版副本。",
-        "developerName": "惠康 黎",
-        "displayName": "SRT Clip C2 Universal 0.3.20",
-        "longDescription": "帮助陌生顾客理解商品购买理由并做出决定。通用结构、价值层级、信息密度、时长与类目专项边界均以当前 SKILL.md 和 references 为准。",
-        "shortDescription": "AI主导，购买决策剪辑",
+        "defaultPrompt": "\u6309\u5f53\u524d C2 Universal 0.4.1 \u7684 SKILL.md \u4e0e\u5176\u5f15\u7528\u6587\u4ef6\u6267\u884c\uff1b\u91c7\u7528\u540c\u4e00AI\u7684\u903b\u8f91\u804c\u8d23\u5206\u5de5\u548c\u52a8\u6001\u8d2d\u4e70\u51b3\u7b56\u7ed3\u6784\uff1b\u6309\u4fe1\u606f/\u8bf4\u670d\u589e\u91cf\u8bed\u4e49\u5224\u65ad\u91cd\u590d\uff0c\u4e0d\u8bfb\u53d6\u6216\u6df7\u7528\u65e7\u7248\u526f\u672c\u3002",
+        "developerName": "\u60e0\u5eb7 \u9ece",
+        "displayName": "SRT Clip C2 Universal 0.4.1",
+        "longDescription": "\u7531\u4e00\u4e2aAI\u5728\u4e00\u6b21\u8bed\u4e49\u5206\u6790\u4e2d\u627f\u62c5\u603b\u51b3\u7b56\u3001\u52a8\u6001\u8d2d\u4e70\u51b3\u7b56\u67b6\u6784\u3001\u5546\u54c1\u4e8b\u5b9e\u8fb9\u754c\u548c\u539f\u8bdd\u526a\u8f91\u804c\u8d23\u3002\u5185\u5bb9\u8def\u5f84\u6309\u5546\u54c1\u3001\u987e\u5ba2\u903b\u8f91\u3001\u5b57\u5e55\u8bc1\u636e\u4e0e\u72ec\u7acb\u8d2d\u4e70\u7406\u7531\u52a8\u6001\u6784\u5efa\uff1b\u5546\u54c1\u77e5\u8bc6\u5305\u53ea\u63d0\u4f9b\u4e8b\u5b9e\u63d0\u9192\u548c\u8fb9\u754c\uff0c\u4e0d\u9884\u8bbe\u526a\u8f91\u6a21\u677f\u3002\u8be6\u7ec6\u89c4\u5219\u4ee5\u5f53\u524dSKILL.md\u53ca\u5176\u5f15\u7528\u6587\u4ef6\u4e3a\u51c6\u3002",
+        "shortDescription": "AI\u7ec4\u7ec7\u5206\u5de5\uff0c\u52a8\u6001\u6784\u5efa\u8d2d\u4e70\u51b3\u7b56\u5185\u5bb9",
         "version": null
       }
     }
@@ -27,5 +27,5 @@
   ],
   "name": "srt-clip-c2",
   "skills": "./skills",
-  "version": "0.3.20"
+  "version": "0.4.6"
 }

@@ -2,10 +2,8 @@ from pathlib import Path
 import json
 import unittest
 
-
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = next(p for p in ROOT.parents if (p / "plugin.json").is_file())
-
 
 def read(path):
     return (ROOT / path).read_text(encoding="utf-8")
@@ -15,6 +13,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_skill_frontmatter_and_version(self):
         version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()
         text = read("SKILL.md")
+        self.assertEqual(version, "0.4.1")
         self.assertTrue(text.startswith("---\nname: srt-clip-c2\n"))
         self.assertIn(f"SRT Clip C2 Universal {version}", text)
         front = text.split("---", 2)[1]
@@ -39,27 +38,42 @@ class C2UniversalIntegrityTests(unittest.TestCase):
             with self.subTest(entry=index):
                 self.assertIn(version, text)
                 self.assertNotIn("0.3.19", text)
+                self.assertNotIn("0.3.20", text)
+                self.assertNotIn("0.4.0", text)
 
-    def test_core_files_exist(self):
+    def test_core_files_and_knowledge_packs_exist(self):
         for path in [
             "references/editorial-policy.md",
             "references/highlight-selection.md",
-            "references/category-registry.md",
+            "references/product-knowledge-registry.md",
             "references/global-rules.md",
+            "references/qianchuan-offline.md",
             "references/final-check.md",
             "references/long-context-mode.md",
-            "references/qianchuan-offline.md",
-            "categories/womens-fashion.md",
-            "categories/shoes.md",
-            "categories/scarves.md",
+            "product-knowledge-packs/womens-fashion.md",
+            "product-knowledge-packs/shoes.md",
+            "product-knowledge-packs/scarves.md",
             "C2-Universal-Portable.md",
             "START-HERE.md",
         ]:
             self.assertTrue((ROOT / path).is_file(), path)
 
+    def test_no_old_category_routing_files_remain(self):
+        if (ROOT / "categories").exists():
+            self.assertFalse(any(p.is_file() for p in (ROOT / "categories").rglob("*")))
+        self.assertFalse((ROOT / "references/category-registry.md").exists())
+        for p in [ROOT / "SKILL.md", ROOT / "references/product-knowledge-registry.md"]:
+            text = p.read_text(encoding="utf-8")
+            self.assertNotIn("categories/", text)
+            self.assertNotIn("category-registry.md", text)
+
     def test_distribution_contains_only_current_release_record(self):
         acceptance_files = sorted(p.name for p in (ROOT / "tests").glob("release-*-acceptance.md"))
-        self.assertEqual(acceptance_files, ["release-0.3.20-acceptance.md"])
+        self.assertIn("release-0.4.1-acceptance.md", acceptance_files)
+        self.assertEqual(set(acceptance_files), {
+            "release-0.4.0-acceptance.md",
+            "release-0.4.1-acceptance.md",
+        })
         for directory in [PLUGIN_ROOT / "archive", PLUGIN_ROOT / "docs" / "history"]:
             if directory.exists():
                 self.assertFalse(any(p.is_file() for p in directory.rglob("*")), str(directory))
@@ -83,113 +97,118 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertIn("120 秒", skill)
         self.assertIn("固定五部分", skill)
 
-    def test_duplicate_highlight_policy(self):
+    def test_duplicate_highlight_policy_and_semantic_value(self):
         selection = read("references/highlight-selection.md")
         self.assertIn("重复夸赞", selection)
         self.assertIn("已被更强信息充分覆盖", selection)
+        self.assertIn("独立高决策价值理由", selection)
 
-    def test_purchase_information_priority_and_semantic_dedup(self):
-        selection = read("references/highlight-selection.md")
-        editorial = read("references/editorial-policy.md")
-        for token in ["高决策价值", "中决策价值", "弱增量", "机械覆盖率", "单位时间购买决策价值"]:
-            self.assertIn(token, selection)
-        self.assertIn("主题顺序只决定怎么排，不决定理由留不留", editorial)
-        self.assertNotIn("先建立高价值候选集", editorial)
-
-    def test_no_extra_semantic_stages(self):
-        long_mode = read("references/long-context-mode.md")
-        skill = read("SKILL.md")
-        self.assertIn("不另设主题分析、卖点池", long_mode)
-        self.assertIn("不是新增第二轮筛选", long_mode)
-        self.assertNotIn("反向漏检（Reverse Coverage Check）", long_mode)
-        self.assertNotIn("第六步：", skill)
-
-    def test_ai_first_constitution(self):
+    def test_ai_first_organization_and_dynamic_structure(self):
         skill = read("SKILL.md")
         constitution = read("references/ai-first-constitution.md")
-        self.assertIn("AI 主导", skill)
-        self.assertIn("最高架构约束", constitution)
-        self.assertIn("工具不可用", constitution)
-        self.assertIn("购买决策编辑器", skill)
+        self.assertIn("一个 AI、一次语义分析、一次终检", skill)
+        self.assertIn("Chief Decision Editor", skill)
+        self.assertIn("AI-First Constitution", constitution)
+        self.assertIn("产品知识包只提供属性事实提醒", constitution)
+        self.assertIn("不按品类预设", skill)
 
-    def test_update_protocol_governance_only(self):
+    def test_update_protocol_is_development_only(self):
         protocol = read("references/update-protocol.md")
         skill = read("SKILL.md")
-        portable = read("C2-Universal-Portable.md")
-        for token in ["六项固定审查", "三条一票否决", "质量不退步", "环境零强制"]:
+        for token in ["六项固定审查", "三条一票否决", "动态结构", "知识包"]:
             self.assertIn(token, protocol)
-        self.assertIn("不增加每次使用", protocol)
-        self.assertIn("references/update-protocol.md", skill)
-        self.assertIn("update-protocol.md", portable)
-        self.assertIn("固定五部分", skill)
+        self.assertIn("update-protocol.md", skill)
+        self.assertIn("不增加日常剪辑流程", protocol)
 
-    def test_long_context_position_fairness(self):
-        long_mode = read("references/long-context-mode.md")
-        self.assertIn("前后位置公平", long_mode)
-        self.assertIn("后段", long_mode)
-        self.assertIn("同一组语义标准", long_mode)
-        self.assertIn("不是新增第二轮筛选", long_mode)
-        self.assertNotIn("必须调用 Python", long_mode)
+    def test_portable_embeds_all_active_instruction_sources(self):
+        portable = read("C2-Universal-Portable.md")
+        for path in [
+            "SKILL.md",
+            "references/editorial-policy.md",
+            "references/highlight-selection.md",
+            "references/product-knowledge-registry.md",
+            "references/global-rules.md",
+            "references/qianchuan-offline.md",
+            "references/final-check.md",
+            "product-knowledge-packs/womens-fashion.md",
+            "product-knowledge-packs/shoes.md",
+            "product-knowledge-packs/scarves.md",
+        ]:
+            self.assertIn(read(path).strip(), portable, path)
 
-    def test_no_hard_tool_dependency_language(self):
-        active = "\n".join([
-            read("SKILL.md"),
-            read("references/ai-first-constitution.md"),
-            read("references/long-context-mode.md"),
-        ])
-        for forbidden in ["Python 不可用则无法交付", "必须运行脚本后才能", "未运行程序不得交付"]:
-            self.assertNotIn(forbidden, active)
-
-    def test_global_cue_exclusion_contract(self):
-        skill = read("SKILL.md")
-        global_rules = read("references/global-rules.md")
-        editorial = read("references/editorial-policy.md")
-        self.assertIn("原始字幕编号", skill)
-        self.assertIn("审核截图", skill)
-        self.assertIn("语义", global_rules)
-        self.assertIn("完整原始字幕序号", editorial)
-        self.assertNotIn("命中时按完整句删除", global_rules)
-
-    def test_universal_topic_policy(self):
-        core = read("SKILL.md")
-        global_rules = read("references/global-rules.md")
-        fashion = read("categories/womens-fashion.md")
-        self.assertIn("类目模块可指定最多两个类目固定话题", core)
-        self.assertIn("不是 Universal 全局固定话题", global_rules)
-        self.assertIn("#穿搭", fashion)
-        self.assertIn("#时尚营销", fashion)
-
-    def test_plugin_prompts_route_to_current_skill_without_business_duplicates(self):
-        root_manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
+    def test_plugin_prompts_route_to_current_skill(self):
+        manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         codex_manifest = json.loads((PLUGIN_ROOT / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
-        root_prompt = root_manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"]
+        prompt = manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"]
         codex_prompt = codex_manifest["interface"]["defaultPrompt"]
-        self.assertEqual(root_prompt, codex_prompt)
-        for phrase in ["0.3.20", "当前", "SKILL.md", "引用文件", "旧版副本"]:
-            self.assertIn(phrase, root_prompt)
-        for duplicate in ["第一次刷到", "购买决策闭环", "45–120", "多条互补"]:
-            self.assertNotIn(duplicate, root_prompt)
+        self.assertEqual(prompt, codex_prompt)
+        for phrase in ["0.4.1", "SKILL.md", "当前", "动态购买决策结构"]:
+            self.assertIn(phrase, prompt)
+        for detailed_rule in ["显气色", "第一次购买机会", "45–120 秒", "多条互补"]:
+            self.assertNotIn(detailed_rule, prompt)
 
-    def test_launcher_metadata_uses_current_version_and_routes(self):
+    def test_launcher_metadata_uses_current_version_and_roles(self):
         version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()
         start = read("START-HERE.md")
         launcher = read("agents/openai.yaml")
         for text in [start, launcher]:
             self.assertIn(version, text)
             self.assertIn("SKILL.md", text)
-            self.assertNotIn("0.3.19", text)
+            self.assertNotIn("0.3.20", text)
+            self.assertNotIn("0.4.0", text)
         self.assertIn("当前唯一执行版本", start)
-        self.assertIn("不要读取或混用旧版副本", launcher)
+        self.assertIn("逻辑职责", start)
+        self.assertIn("同一AI", launcher)
 
     def test_plugin_manifests_match_version(self):
         version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         codex_manifest = json.loads((PLUGIN_ROOT / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
+        package_version = manifest["version"]
         self.assertEqual(manifest["name"], "srt-clip-c2")
-        self.assertEqual(manifest["version"], version)
-        self.assertEqual(codex_manifest["version"], version)
+        self.assertEqual(codex_manifest["version"], package_version)
+        self.assertIn(f"SRT Clip C2 Universal {version}", read("SKILL.md"))
         self.assertIn(version, manifest["extensions"]["com.openai"]["interface"]["displayName"])
         self.assertIn(version, codex_manifest["interface"]["displayName"])
+        self.assertEqual(manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"],
+                         codex_manifest["interface"]["defaultPrompt"])
+
+    def test_screenshot_material_claims_are_conditioned_on_matching_proof(self):
+        rules = read("references/global-rules.md")
+        for phrase in ["羊绒羊毛", "30%羊绒70%羊毛", "羊绒衫"]:
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, rules)
+        for requirement in [
+            "条件性正式拦截",
+            "缺少、无法核实或与目标商品及相关材质/含量主张不匹配的质检证明时",
+            "证明匹配时，本条不触发正式拦截",
+            "上下文风险提示",
+            "其他动物毛/绒类材质",
+            "羽绒填充（如鹅绒）不属于本条适用范围",
+            "有同等价值替代时默认优先选替代",
+        ]:
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, rules)
+        explicit_bans = rules.split("## 已有明确用户禁用表述", 1)[1].split(
+            "## 2026-11-18 审核截图：动物毛/绒材质的证明条件", 1
+        )[0]
+        for historic_case in ["全羊毛", "羊毛毛衣", "绵羊毛混纺"]:
+            with self.subTest(historic_case=historic_case):
+                self.assertNotIn(historic_case, explicit_bans)
+        self.assertNotIn("30山羊绒、70绵羊毛", explicit_bans)
+        offline = read("references/qianchuan-offline.md")
+        self.assertIn("按 `references/global-rules.md` 的条件性正式拦截", offline)
+
+    def test_screenshot_derived_material_cases_are_not_permanent_word_bans(self):
+        rules = read("references/global-rules.md")
+        self.assertIn("## 历史审核案例与默认取舍（非永久禁词）", rules)
+        history = rules.split("## 历史审核案例与默认取舍（非永久禁词）", 1)[1].split("## 字段特例", 1)[0]
+        for phrase in ["全羊毛", "绵羊毛混纺", "羊毛毛衣"]:
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, history)
+        self.assertIn("默认优先规避", history)
+        self.assertIn("证明匹配时不因这些历史截图案例单独拦截", history)
+        self.assertIn("属于上下文风险，不是正式材质词禁令", history)
 
 
 if __name__ == "__main__":

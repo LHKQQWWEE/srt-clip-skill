@@ -1,13 +1,17 @@
-# SRT Clip C2 Universal 0.3.20
+# SRT Clip C2 Universal 0.4.1
 
-AI-first, cross-platform commerce video clipping skill. Its single function is a **short-video purchase decision editor**: select, compare, trim, and reorder the speaker's original words so an unfamiliar customer can understand and decide.
+C2 is one AI-led purchase-decision editor organized around clear internal responsibilities. In one semantic analysis, the Chief Decision Editor coordinates a Product Purchase-Decision Architect, a Product Facts & Boundaries Officer and a Purchase-Decision Editor; a Final Quality Auditor performs the existing single final check.
 
-- Formal input: SRT and line-by-line duration text.
-- Universal Core owns the opening, purchase-decision chain, conversion closure, value hierarchy, duration, and complementary paths.
-- Formal clips target 45–120 seconds at 1.2x; 45–90 seconds is preferred, and 90–120 seconds requires additional independent high-value information.
-- No mandatory Python, JSON ledger, network access, repeated workflow gate, or extra semantic pass.
-- Original wording, source cue IDs, product attribution, category-specific judgments, and the fixed five-part output remain in force.
+## What changed in 0.4.1
 
-Start from `.agents/skills/srt-clip-c2/SKILL.md` in this repository or `skills/srt-clip-c2/SKILL.md` in the plugin package. Universal structure is governed by `references/editorial-policy.md` and `references/highlight-selection.md`; category modules keep only product-specific judgments.
+- Added contextual repetition judgment: mechanical restarts are removed; emphasis may remain when it adds memory or persuasion; progressive explanations and conditions are preserved; overemphasis is compressed.
+- Decisions compare information gain and persuasion gain, then account for time and the opportunity cost of independent purchase reasons. No word-similarity threshold or fixed repeat count is used.
+- Valid emphasis cannot displace a more important independent reason, and repetitions cannot be kept to reach the 45-second duration floor.
+- The organization, AI-First principles, dynamic purchase logic, one semantic analysis, one final check, and no-tool-gate workflow remain unchanged.
+- Existing rules remain: SRT and line-by-line duration text, original wording and cue IDs, product attribution, global prohibitions, estimated 45–120 seconds at 1.2x, and the fixed five-part output.
 
-Current distribution includes only the active Skill, its current references and categories, current tests, and the 0.3.20 release acceptance record. Do not use older same-name copies as an execution source.
+## Start here
+
+Use the current Skill at .agents/skills/srt-clip-c2/SKILL.md. The portable single-file version is .agents/skills/srt-clip-c2/C2-Universal-Portable.md. Read only current referenced files for active rules; prior release notes and tests are historical evidence, not execution sources.
+
+The repository includes the current release acceptance record and development tests. Their execution is for release validation; everyday clipping remains AI-first and does not require Python or other tools.

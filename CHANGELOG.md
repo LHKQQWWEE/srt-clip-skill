@@ -1,3 +1,9 @@
+## Rule maintenance (2026-11-18; C2 Universal core 0.4.1)
+
+- Added the three screenshot-identified expressions and semantic equivalents under a corresponding-proof condition for animal-hair fibers promoted as garment fabric or yarn.
+- Reclassified older wool/cashmere screenshot cases as evidence-conditioned; kept hand-feel comparisons as contextual risk and a soft selection preference. Down filling such as goose down is outside this rule.
+- Added regression coverage for missing/matching proof, semantic variants, split cues, negation/quotation, and unrelated materials; C2 roles and daily workflow are unchanged.
+
 ## 0.4.1 (2026-11-17)
 
 - Added contextual repetition judgment within the existing responsibilities: mechanical restart, persuasive emphasis, progressive explanation and over-repetition.

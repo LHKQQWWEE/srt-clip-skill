@@ -13,7 +13,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_skill_frontmatter_and_version(self):
         version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()
         text = read("SKILL.md")
-        self.assertEqual(version, "0.4.2")
+        self.assertEqual(version, "0.4.3")
         self.assertTrue(text.startswith("---\nname: srt-clip-c2\n"))
         self.assertIn(f"SRT Clip C2 Universal {version}", text)
         front = text.split("---", 2)[1]
@@ -70,11 +70,11 @@ class C2UniversalIntegrityTests(unittest.TestCase):
 
     def test_distribution_contains_only_current_release_record(self):
         acceptance_files = sorted(p.name for p in (ROOT / "tests").glob("release-*-acceptance.md"))
-        self.assertEqual(set(acceptance_files), {"release-0.4.2-acceptance.md"})
+        self.assertEqual(set(acceptance_files), {"release-0.4.3-acceptance.md"})
         history = PLUGIN_ROOT / "docs" / "history" / "releases"
         self.assertEqual(
             {p.name for p in history.glob("release-*-acceptance.md")},
-            {"release-0.4.0-acceptance.md", "release-0.4.1-acceptance.md"},
+            {"release-0.4.0-acceptance.md", "release-0.4.1-acceptance.md", "release-0.4.2-acceptance.md"},
         )
         self.assertNotIn("docs/history", read("SKILL.md"))
         archive = PLUGIN_ROOT / "archive"
@@ -94,10 +94,15 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_duration_and_output_rules(self):
         skill = read("SKILL.md")
         selection = read("references/highlight-selection.md")
+        adapter = (PLUGIN_ROOT / "docs/platform-adapter-interface.md").read_text(encoding="utf-8")
         self.assertIn("1.2 倍速", skill)
-        for phrase in ["45–120 秒", "45–90 秒", "90–120 秒"]:
-            self.assertIn(phrase, selection)
-        self.assertIn("120 秒", skill)
+        self.assertIn("45 秒是一般成片的合理下限参考", selection)
+        self.assertIn("不设固定时长上限", selection)
+        self.assertIn("短时长例外", selection)
+        self.assertIn("取消 120 秒硬上限", skill)
+        self.assertNotIn("45–120 秒", selection)
+        self.assertIn("按购买价值与节奏动态确定时长", adapter)
+        self.assertNotIn("45–120秒规则", adapter)
         self.assertIn("固定五部分", skill)
 
     def test_duplicate_highlight_policy_and_semantic_value(self):
@@ -145,9 +150,9 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         prompt = manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"]
         codex_prompt = codex_manifest["interface"]["defaultPrompt"]
         self.assertEqual(prompt, codex_prompt)
-        for phrase in ["0.4.2", "SKILL.md", "当前", "动态购买决策", "注意力衰减", "低完播截断"]:
+        for phrase in ["0.4.3", "SKILL.md", "当前", "动态购买决策", "注意力衰减", "低完播截断"]:
             self.assertIn(phrase, prompt)
-        for detailed_rule in ["显气色", "第一次购买机会", "45–120 秒", "多条互补"]:
+        for detailed_rule in ["显气色", "第一次购买机会", "45秒", "多条互补"]:
             self.assertNotIn(detailed_rule, prompt)
 
     def test_launcher_metadata_uses_current_version_and_roles(self):

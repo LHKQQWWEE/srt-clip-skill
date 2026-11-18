@@ -63,10 +63,10 @@ class EarlyPurchaseOpportunityTests(unittest.TestCase):
         core_version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()
         package = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         manifest = json.loads((PLUGIN_ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))
-        self.assertEqual(core_version, "0.4.2")
+        self.assertEqual(core_version, "0.4.3")
         self.assertIn(f"SRT Clip C2 Universal {core_version}", self.skill)
-        self.assertEqual(package["version"], "0.4.9")
-        self.assertEqual(manifest["version"], "0.4.9")
+        self.assertEqual(package["version"], "0.4.10")
+        self.assertEqual(manifest["version"], "0.4.10")
 
     def test_trade_information_exclusions_and_existing_output_contract_remain(self):
         for phrase in ["动态价格", "优惠", "库存", "限时", "直播专属福利"]:

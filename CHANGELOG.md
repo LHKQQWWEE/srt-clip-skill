@@ -1,7 +1,15 @@
-## Plugin package 0.4.9 / C2 Universal core 0.4.2 (2026-11-18)
+## Plugin package 0.4.10 / C2 Universal core 0.4.3 (2026-11-19)
 
-- Repacked the validated 0.4.2 rules without test-generated Python bytecode; C2 behavior is unchanged from package 0.4.8.
-- The current package retains only the active 0.4.2 acceptance record; older acceptance files are archived and are not default rule inputs.
+- Removed the 120-second hard cap. At 1.2x, 45 seconds is a general lower-bound guide; genuinely short material may qualify for a quality-gated short-cut exception.
+- Added qualitative assessment of important independent purchase reasons: avoid unreasonable omissions without forcing 100% coverage, percentage scores, a ledger, or another analysis pass.
+- Kept one best cut as the default. When source supports distinct independent videos, proactively mention the available paths; generate multiple complete cuts only after the user asks. A 120-second duration is not a split trigger.
+- Preserved dynamic structure, early purchase opportunities, repetition judgment, organizational responsibilities, AI-First operation, original wording, and the five-part output. No Agent, model round, or mandatory tool was added.
+- Promoted the 0.4.3 acceptance record and moved 0.4.2 acceptance into release history.
+
+## Plugin package 0.4.9 / C2 Universal core 0.4.2 (2026-11-18; superseded)
+
+- Repacked the validated 0.4.2 rules without test-generated Python bytecode; C2 behavior was unchanged from package 0.4.8.
+- That package retained only its active 0.4.2 acceptance record; older acceptance files were archived and were not default rule inputs.
 
 ## Plugin package 0.4.8 / C2 Universal core 0.4.2 (2026-11-18; superseded)
 

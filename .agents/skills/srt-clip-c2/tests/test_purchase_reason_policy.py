@@ -39,7 +39,7 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
             self.assertIn(phrase, self.editorial)
 
     def test_first_purchase_opportunity_does_not_end_high_value_selection(self):
-        self.assertIn("尚未利用的高决策价值独立理由", self.selection)
+        self.assertIn("尚未利用的独立高决策价值理由", self.selection)
         self.assertIn("首次购买机会", self.selection)
 
     def test_value_tiers_and_information_density(self):
@@ -48,18 +48,24 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
         self.assertIn("不设机械覆盖率", self.selection)
         self.assertIn("不得无理由遗漏", self.selection)
 
-    def test_duration_floor_ceiling_and_no_padding(self):
-        for phrase in ["45–120 秒", "45–90 秒", "90–120 秒", "禁止为凑 45 秒", "短候选，非正式成片"]:
+    def test_duration_has_general_floor_no_ceiling_and_short_exception(self):
+        for phrase in ["45 秒是一般成片的合理下限参考", "不设固定时长上限", "取消 120 秒硬上限", "短时长例外", "质量合格", "不得为达到某个时长"]:
             self.assertIn(phrase, self.selection)
+        self.assertNotIn("45–120 秒", self.selection)
+        self.assertNotIn("120 秒硬上限确实无法满足", self.selection)
 
-    def test_trim_order_puts_weak_cta_before_independent_high_value(self):
+    def test_important_reason_coverage_is_qualitative(self):
+        for phrase in ["定性覆盖判断", "改变是否购买", "不设机械覆盖率", "不得为追求 100% 覆盖", "真实原因"]:
+            self.assertIn(phrase, self.selection)
+        self.assertNotIn("覆盖百分比", self.selection.split("## 时长下限与动态取舍", 1)[1])
+
+    def test_trim_order_prioritizes_low_value_without_a_ceiling_gate(self):
         order = [
             "机械性重复与过度性重复",
             "无明显信息增量或说服增量的夸赞/情绪强化",
             "弱/重复成交话术",
             "弱增量和低决策价值内容",
             "已被更强信息充分覆盖",
-            "独立高决策价值理由只可在 120 秒硬上限",
         ]
         positions = [self.selection.index(term) for term in order]
         self.assertEqual(positions, sorted(positions))
@@ -72,8 +78,10 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
         self.assertIn("不同成分比例", self.global_rules)
         self.assertIn("动态生成", self.global_rules)
 
-    def test_multi_output_requires_complementary_decision_paths(self):
-        for phrase in ["购买决策路径", "只换开头", "实质互补", "核心理由、必要证明"]:
+    def test_multi_output_defaults_to_one_and_proactively_prompts(self):
+        for phrase in ["默认只生成一条最佳成片", "主动提示", "用户要求后", "不默认同时输出多版完整脚本", "不得把 120 秒当成拆分门槛", "独立成片"]:
+            self.assertIn(phrase, self.selection)
+        for phrase in ["购买决策路径", "只换开头", "实质差异", "核心理由、必要证明"]:
             self.assertIn(phrase, self.selection)
 
     def test_no_extra_semantic_stage_or_tool_gate(self):

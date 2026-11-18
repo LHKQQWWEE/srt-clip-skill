@@ -1,8 +1,8 @@
-# SRT Clip C2 Universal 0.4.2
+# SRT Clip C2 Universal 0.4.3
 
 C2 is one AI-led purchase-decision editor organized around clear internal responsibilities. In one semantic analysis, the Chief Decision Editor coordinates a Product Purchase-Decision Architect, a Product Facts & Boundaries Officer and a Purchase-Decision Editor; a Final Quality Auditor performs the existing single final check.
 
-## What changed in 0.4.2
+## What changed in 0.4.3
 
 - Added attention-decay and minimum-sufficient-unit guidance: a complete reason must give a stranger a concrete customer outcome/use/problem, supported by enough source evidence and necessary conditions; an isolated attribute, broad fit claim or CTA alone does not trigger a purchase push.
 - Move the first natural purchase opportunity to the earliest context-valid point after a complete reason; check the action sentence's local setup as well as product/color/person/condition dependencies. Reassess after later independent reasons without increasing CTA density.
@@ -15,7 +15,7 @@ C2 is one AI-led purchase-decision editor organized around clear internal respon
 - Decisions compare information gain and persuasion gain, then account for time and the opportunity cost of independent purchase reasons. No word-similarity threshold or fixed repeat count is used.
 - Valid emphasis cannot displace a more important independent reason, and repetitions cannot be kept to reach the 45-second duration floor.
 - Contextual repetition judgment compares information gain and persuasion gain, preserves useful progression and emphasis, and accounts for opportunity cost.
-- Existing rules remain: SRT and line-by-line duration text, original wording and cue IDs, product attribution, global prohibitions, estimated 45–120 seconds at 1.2x, and the fixed five-part output.
+- Existing rules remain: SRT and line-by-line duration text, original wording and cue IDs, product attribution, global prohibitions, a general 45-second lower-bound guide at 1.2x, with a quality-gated short-material exception and no fixed upper cap, and the fixed five-part output.
 
 ## Start here
 

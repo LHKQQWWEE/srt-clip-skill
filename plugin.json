@@ -4,15 +4,15 @@
     "email": "lihuikang23@gmail.com",
     "name": "惠康 黎"
   },
-  "description": "SRT Clip C2 Universal 0.4.2：注意力衰减、最小充分购买单元、最早自然购买机会与低完播检查；保留一个AI的组织式职责和固定五部分输出。",
+  "description": "SRT Clip C2 Universal 0.4.3：动态时长、重要购买理由覆盖与独立多成片提示；保留一个AI的组织式职责、动态内容结构和固定五部分输出。",
   "extensions": {
     "com.openai": {
       "interface": {
         "capabilities": [],
         "category": "Productivity",
-        "defaultPrompt": "按当前 C2 Universal 0.4.2 的 SKILL.md 与其引用文件执行；采用同一AI的逻辑职责和动态购买决策；按注意力衰减与理由进展安排最早自然购买机会，并检查低完播截断与上下文依赖；不读取或混用旧版副本。",
+        "defaultPrompt": "按当前 C2 Universal 0.4.3 的 SKILL.md 与其引用文件执行；采用同一AI的组织式职责和动态购买决策；按重要理由价值、注意力衰减与原话证据动态编排，并检查低完播截断与上下文依赖；默认输出一条最佳成片，有独立路径时主动提示，用户要求后再生成多条；不读取或混用旧版副本。",
         "developerName": "惠康 黎",
-        "displayName": "SRT Clip C2 Universal 0.4.2",
+        "displayName": "SRT Clip C2 Universal 0.4.3",
         "longDescription": "由一个AI在一次语义分析中承担总决策、动态购买决策架构、商品事实边界和原话剪辑职责。内容路径按商品、顾客逻辑、字幕证据与独立购买理由动态构建；商品知识包只提供事实提醒和边界，不预设剪辑模板。详细规则以当前SKILL.md及其引用文件为准。",
         "shortDescription": "AI组织分工，动态构建购买决策内容",
         "version": null
@@ -27,5 +27,5 @@
   ],
   "name": "srt-clip-c2",
   "skills": "./skills",
-  "version": "0.4.9"
+  "version": "0.4.10"
 }

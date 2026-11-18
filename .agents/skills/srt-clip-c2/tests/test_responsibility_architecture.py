@@ -80,7 +80,7 @@ class ResponsibilityArchitectureTests(unittest.TestCase):
 
     def test_existing_output_duration_and_source_contract_remain(self):
         self.assertIn("固定五部分交付", self.skill)
-        self.assertIn("45–120 秒", self.skill)
+        self.assertIn("不设固定时长上限", self.skill)
         self.assertIn("保留原始字幕编号", self.skill)
 
 

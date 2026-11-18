@@ -1,8 +1,8 @@
-# C2 Universal 0.4.2 Release Acceptance
+# C2 Universal 0.4.2 Release Acceptance (Archived)
 
 Date: 2026-11-18
 
-This is the sole active release acceptance record for core 0.4.2 / plugin package 0.4.9.
+Archived historical acceptance record for core 0.4.2 / plugin package 0.4.9. It is not an active rule source or the current release acceptance record.
 
 ## Acceptance scope
 

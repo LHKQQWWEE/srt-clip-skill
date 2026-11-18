@@ -123,6 +123,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
             "references/highlight-selection.md",
             "references/product-knowledge-registry.md",
             "references/global-rules.md",
+            "references/qianchuan-offline.md",
             "references/final-check.md",
             "product-knowledge-packs/womens-fashion.md",
             "product-knowledge-packs/shoes.md",
@@ -166,6 +167,43 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertEqual(manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"],
                          codex_manifest["interface"]["defaultPrompt"])
 
+
+    def test_screenshot_material_claims_are_conditioned_on_matching_proof(self):
+        rules = read("references/global-rules.md")
+        for phrase in ["羊绒羊毛", "30%羊绒70%羊毛", "羊绒衫"]:
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, rules)
+        for requirement in [
+            "条件性正式拦截",
+            "缺少、无法核实或与目标商品及相关材质/含量主张不匹配的质检证明时",
+            "证明匹配时，本条不触发正式拦截",
+            "上下文风险提示",
+            "其他动物毛/绒类材质",
+            "羽绒填充（如鹅绒）不属于本条适用范围",
+            "有同等价值替代时默认优先选替代",
+        ]:
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, rules)
+        explicit_bans = rules.split("## 已有明确用户禁用表述", 1)[1].split(
+            "## 2026-11-18 审核截图：动物毛/绒材质的证明条件", 1
+        )[0]
+        for historic_case in ["全羊毛", "羊毛毛衣", "绵羊毛混纺"]:
+            with self.subTest(historic_case=historic_case):
+                self.assertNotIn(historic_case, explicit_bans)
+        self.assertNotIn("30山羊绒、70绵羊毛", explicit_bans)
+        offline = read("references/qianchuan-offline.md")
+        self.assertIn("按 `references/global-rules.md` 的条件性正式拦截", offline)
+
+    def test_screenshot_derived_material_cases_are_not_permanent_word_bans(self):
+        rules = read("references/global-rules.md")
+        self.assertIn("## 历史审核案例与默认取舍（非永久禁词）", rules)
+        history = rules.split("## 历史审核案例与默认取舍（非永久禁词）", 1)[1].split("## 字段特例", 1)[0]
+        for phrase in ["全羊毛", "绵羊毛混纺", "羊毛毛衣"]:
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, history)
+        self.assertIn("默认优先规避", history)
+        self.assertIn("证明匹配时不因这些历史截图案例单独拦截", history)
+        self.assertIn("属于上下文风险，不是正式材质词禁令", history)
 
 if __name__ == "__main__":
     unittest.main()

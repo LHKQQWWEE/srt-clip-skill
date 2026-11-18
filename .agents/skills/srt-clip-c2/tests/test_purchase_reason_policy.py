@@ -35,7 +35,7 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
         self.assertIn("显气色、不沉闷、显瘦", self.editorial)
 
     def test_purchase_opportunity_requires_a_reason_and_is_flexible(self):
-        for phrase in ["购买理由尚未成立前", "低阻力", "弱逼单", "不是必须完整出现的流水线"]:
+        for phrase in ["购买理由尚未成立前", "低阻力", "弱逼单", "可按依赖关系重排，也可在素材不支持时省略某一环节"]:
             self.assertIn(phrase, self.editorial)
 
     def test_first_purchase_opportunity_does_not_end_high_value_selection(self):

@@ -41,7 +41,7 @@ class ProductKnowledgePackTests(unittest.TestCase):
         skill = read("SKILL.md")
         editorial = read("references/editorial-policy.md")
         self.assertIn("动态决定内容路径", skill)
-        self.assertIn("不存在所有商品通用的固定卖点顺序", editorial)
+        self.assertIn("不存在所有商品通用的段落成交模板、卖点顺序、成交次数或成交位置", editorial)
         self.assertIn("购买决策架构师", editorial)
 
     def test_no_old_category_routing_paths_remain(self):

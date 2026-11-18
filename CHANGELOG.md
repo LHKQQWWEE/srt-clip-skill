@@ -1,3 +1,11 @@
+## Plugin package 0.4.8 / C2 Universal core 0.4.2 (2026-11-18)
+
+- Added attention-decay guidance and the minimum sufficient purchase unit; a complete reason requires a concrete customer result/use/problem, enough source evidence, and necessary conditions before it triggers a search for the earliest natural purchase opportunity.
+- Added dynamic reassessment after later independent reasons, with no fixed CTA count, position, or soft/hard ratio; before moving an action line, check its full meaning and local setup as well as product, color, audience, conditions, and factual dependencies.
+- Added a non-mechanical low-completion check over content-dependent cumulative prefixes within the existing final check; the number and position of checks vary, with no fixed three-point, time, or percentage template. No new Agent, model round, or mandatory tool was added.
+- Clarified that later content mainly adds certainty, answers concerns, and helps with fit/size/selection; it must not carry the first persuasion.
+- Kept original wording, attribution, semantic repetition judgment, independent-value coverage, dynamic transaction exclusions, compliance, and the five-part output unchanged.
+
 ## Plugin package 0.4.7 / C2 Universal core 0.4.1 (2026-11-18)
 
 - Synchronized the repetition-boundary strengthening across the active package, portable rules, and release surfaces.

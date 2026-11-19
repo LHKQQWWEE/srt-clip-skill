@@ -1,4 +1,13 @@
-## Plugin package 0.4.10 / C2 Universal core 0.4.3 (2026-11-19)
+## Plugin package 0.4.11 / C2 Universal core 0.4.4 (2026-11-19)
+
+- Formalized exact prohibited-cue scope: exclude only the complete subtitle cue(s) that match a registered term; do not extend to neighboring cues, a segment, or a candidate. Contextual risk alone does not trigger deletion.
+- Fixed defensive over-rejection that treated one local match or risk note as grounds to reject a larger candidate.
+- Require full identification of valid selling points, then independent reassessment of the full set for each candidate video's own core purchase angle.
+- A single video should cover useful, supported selling points as fully as it can; multiple complete videos should use differentiated combinations and improve overall coverage. Explicit multi-video requests receive complete plans directly.
+- Made purchase prompts optional and removed early-CTA and truncation-prefix requirements. Kept the existing five-part output, one-AI architecture, source fidelity, and no fixed duration ceiling.
+- Validated against the user-provided 572-cue vest transcript; detailed acceptance, test counts, package verification, and unverified boundaries are recorded in the current acceptance file.
+
+## Plugin package 0.4.10 / C2 Universal core 0.4.3 (2026-11-19; superseded)
 
 - Removed the 120-second hard cap. At 1.2x, 45 seconds is a general lower-bound guide; genuinely short material may qualify for a quality-gated short-cut exception.
 - Added qualitative assessment of important independent purchase reasons: avoid unreasonable omissions without forcing 100% coverage, percentage scores, a ledger, or another analysis pass.

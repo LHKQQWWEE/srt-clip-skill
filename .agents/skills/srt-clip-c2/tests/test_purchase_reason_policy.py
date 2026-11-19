@@ -34,19 +34,19 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
         self.assertIn("颜色、搭配、材质或外观表达不按关键词禁用", self.editorial)
         self.assertIn("显气色、不沉闷、显瘦", self.editorial)
 
-    def test_purchase_opportunity_requires_a_reason_and_is_flexible(self):
-        for phrase in ["购买理由尚未成立前", "低阻力", "弱逼单", "可按依赖关系重排，也可在素材不支持时省略某一环节"]:
+    def test_complete_reason_still_has_evidence_and_conditions_without_forcing_cta(self):
+        for phrase in ["具体结果/用途/问题", "必要依据和条件", "孤立属性", "购买推动是可选项", "强制提前安排购买机会"]:
             self.assertIn(phrase, self.editorial)
 
-    def test_first_purchase_opportunity_does_not_end_high_value_selection(self):
-        self.assertIn("尚未利用的独立高决策价值理由", self.selection)
-        self.assertIn("首次购买机会", self.selection)
+    def test_all_points_are_reassessed_for_each_angle(self):
+        for phrase in ["完整识别目标商品的全部有效卖点", "逐项判断它对本条角度", "同一卖点在不同成片中可以有不同价值等级"]:
+            self.assertIn(phrase, self.selection)
 
     def test_value_tiers_and_information_density(self):
         for phrase in ["高决策价值", "中决策价值", "弱增量", "单位时间购买决策价值", "信息密度"]:
             self.assertIn(phrase, self.selection)
-        self.assertIn("不设机械覆盖率", self.selection)
-        self.assertIn("不得无理由遗漏", self.selection)
+        self.assertIn("单条成片尽可能完整覆盖", self.selection)
+        self.assertIn("多条整体尽可能覆盖全部有效卖点", self.selection)
 
     def test_duration_has_general_floor_no_ceiling_and_short_exception(self):
         for phrase in ["45 秒是一般成片的合理下限参考", "不设固定时长上限", "取消 120 秒硬上限", "短时长例外", "质量合格", "不得为达到某个时长"]:
@@ -54,10 +54,11 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
         self.assertNotIn("45–120 秒", self.selection)
         self.assertNotIn("120 秒硬上限确实无法满足", self.selection)
 
-    def test_important_reason_coverage_is_qualitative(self):
-        for phrase in ["定性覆盖判断", "改变是否购买", "不设机械覆盖率", "不得为追求 100% 覆盖", "真实原因"]:
+    def test_important_reason_coverage_is_complete_as_possible(self):
+        for phrase in ["完整识别", "逐项复评", "重要卖点未采用时", "具体原因"]:
             self.assertIn(phrase, self.selection)
-        self.assertNotIn("覆盖百分比", self.selection.split("## 时长下限与动态取舍", 1)[1])
+        self.assertNotIn("不设机械覆盖率", self.selection)
+        self.assertNotIn("不得为追求 100% 覆盖", self.selection)
 
     def test_trim_order_prioritizes_low_value_without_a_ceiling_gate(self):
         order = [
@@ -78,11 +79,16 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
         self.assertIn("不同成分比例", self.global_rules)
         self.assertIn("动态生成", self.global_rules)
 
-    def test_multi_output_defaults_to_one_and_proactively_prompts(self):
-        for phrase in ["默认只生成一条最佳成片", "主动提示", "用户要求后", "不默认同时输出多版完整脚本", "不得把 120 秒当成拆分门槛", "独立成片"]:
+    def test_multi_output_is_differentiated_and_covers_collectively(self):
+        for phrase in ["用户明确要求多条时，每条都交付完整成片方案", "差异化组合", "整体尽可能覆盖", "不等待用户二次确认", "不得把 120 秒当成删减或拆分门槛", "独立成立"]:
             self.assertIn(phrase, self.selection)
-        for phrase in ["购买决策路径", "只换开头", "实质差异", "核心理由、必要证明"]:
+        for phrase in ["核心购买角度", "不得只更换开头", "实质差异", "核心理由、必要证明"]:
             self.assertIn(phrase, self.selection)
+
+    def test_cta_is_optional_and_not_a_timing_gate(self):
+        self.assertIn("购买推动是可选项", self.editorial)
+        self.assertIn("不强制提前安排购买机会", self.editorial)
+        self.assertIn("不因 CTA 较晚或某条成片没有 CTA 而判定失败", self.editorial)
 
     def test_no_extra_semantic_stage_or_tool_gate(self):
         self.assertIn("一次语义分析", self.skill)

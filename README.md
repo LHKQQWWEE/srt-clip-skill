@@ -1,13 +1,14 @@
-# SRT Clip C2 Universal 0.4.3
+# SRT Clip C2 Universal 0.4.4
 
 C2 is one AI-led purchase-decision editor organized around clear internal responsibilities. In one semantic analysis, the Chief Decision Editor coordinates a Product Purchase-Decision Architect, a Product Facts & Boundaries Officer and a Purchase-Decision Editor; a Final Quality Auditor performs the existing single final check.
 
-## What changed in 0.4.3
+## Current editing rules
 
-- Added attention-decay and minimum-sufficient-unit guidance: a complete reason must give a stranger a concrete customer outcome/use/problem, supported by enough source evidence and necessary conditions; an isolated attribute, broad fit claim or CTA alone does not trigger a purchase push.
-- Move the first natural purchase opportunity to the earliest context-valid point after a complete reason; check the action sentence's local setup as well as product/color/person/condition dependencies. Reassess after later independent reasons without increasing CTA density.
-- Later content adds certainty and handles concerns rather than carrying first persuasion. Low-completion checks use content-dependent cumulative prefixes; their number and positions vary, with no fixed three-point, time or percentage template.
-- Synchronized current core references, portable version, manifests, and regression coverage while keeping the one-AI, one-analysis, one-final-check architecture.
+- Identify the target product's complete set of valid selling points, then independently reassess every point for each clip's own core purchase angle.
+- A single clip should cover the useful selling points as fully as it can. Multiple clips should form differentiated combinations that collectively cover the points as fully as practical; every requested clip is a complete plan.
+- A purchase prompt is optional. Do not force it early or make it a pass condition at any prefix.
+- An explicit prohibited-term match excludes only the full matching cue number(s). Do not extend it to neighboring cues or discard the whole candidate; contextual risk alone does not trigger deletion.
+- Keep the one-AI, one-analysis, one-final-check architecture, dynamic duration without a fixed cap, and five-part delivery.
 
 ## Existing safeguards retained
 

@@ -1,4 +1,4 @@
 interface:
-  display_name: "SRT Clip C2 Universal 0.4.3"
+  display_name: "SRT Clip C2 Universal 0.4.4"
   short_description: "AI组织分工，动态构建购买决策内容"
-  default_prompt: "按当前 C2 Universal 0.4.3 的 SKILL.md 与其引用文件执行；采用同一AI的逻辑职责和动态购买决策；按重要理由价值、注意力衰减与原话证据动态编排；45秒为一般下限参考，短素材质量合格可例外，无固定上限；默认输出一条，有独立路径时提示，用户要求后再生成多条；不要读取或混用旧版副本。"
+  default_prompt: "按当前 C2 Universal 0.4.4 的 SKILL.md 与其引用文件执行；一个 AI 先完整识别全部有效卖点，再按每条视频自己的核心购买角度独立复评全部卖点；单条尽可能完整覆盖，多条差异化组合并尽可能整体覆盖；购买推动可选，不强制提前；只排除违禁词命中的完整字幕序号，不连带上下文；固定五部分输出，无固定时长上限。"

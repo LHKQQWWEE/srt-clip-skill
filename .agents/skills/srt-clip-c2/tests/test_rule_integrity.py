@@ -13,7 +13,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_skill_frontmatter_and_version(self):
         version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()
         text = read("SKILL.md")
-        self.assertEqual(version, "0.4.3")
+        self.assertEqual(version, "0.4.4")  # Release number advances only after acceptance.
         self.assertTrue(text.startswith("---\nname: srt-clip-c2\n"))
         self.assertIn(f"SRT Clip C2 Universal {version}", text)
         front = text.split("---", 2)[1]
@@ -70,11 +70,11 @@ class C2UniversalIntegrityTests(unittest.TestCase):
 
     def test_distribution_contains_only_current_release_record(self):
         acceptance_files = sorted(p.name for p in (ROOT / "tests").glob("release-*-acceptance.md"))
-        self.assertEqual(set(acceptance_files), {"release-0.4.3-acceptance.md"})
+        self.assertEqual(set(acceptance_files), {"release-0.4.4-acceptance.md"})
         history = PLUGIN_ROOT / "docs" / "history" / "releases"
         self.assertEqual(
             {p.name for p in history.glob("release-*-acceptance.md")},
-            {"release-0.4.0-acceptance.md", "release-0.4.1-acceptance.md", "release-0.4.2-acceptance.md"},
+            {"release-0.4.0-acceptance.md", "release-0.4.1-acceptance.md", "release-0.4.2-acceptance.md", "release-0.4.3-acceptance.md"},
         )
         self.assertNotIn("docs/history", read("SKILL.md"))
         archive = PLUGIN_ROOT / "archive"
@@ -107,9 +107,10 @@ class C2UniversalIntegrityTests(unittest.TestCase):
 
     def test_duplicate_highlight_policy_and_semantic_value(self):
         selection = read("references/highlight-selection.md")
-        self.assertIn("重复夸赞", selection)
+        self.assertIn("过度夸赞", selection)
         self.assertIn("已被更强信息充分覆盖", selection)
-        self.assertIn("独立高决策价值理由", selection)
+        self.assertIn("单条成片尽可能完整覆盖", selection)
+        self.assertIn("逐条复评", selection)
 
     def test_ai_first_organization_and_dynamic_structure(self):
         skill = read("SKILL.md")
@@ -150,9 +151,9 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         prompt = manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"]
         codex_prompt = codex_manifest["interface"]["defaultPrompt"]
         self.assertEqual(prompt, codex_prompt)
-        for phrase in ["0.4.3", "SKILL.md", "当前", "动态购买决策", "注意力衰减", "低完播截断"]:
+        for phrase in ["SKILL.md", "当前", "全部有效卖点", "独立复评", "购买推动可选", "五部分输出"]:
             self.assertIn(phrase, prompt)
-        for detailed_rule in ["显气色", "第一次购买机会", "45秒", "多条互补"]:
+        for detailed_rule in ["显气色", "45秒", "多条互补"]:
             self.assertNotIn(detailed_rule, prompt)
 
     def test_launcher_metadata_uses_current_version_and_roles(self):
@@ -167,7 +168,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
             self.assertNotIn("0.4.1", text)
         self.assertIn("当前唯一执行版本", start)
         self.assertIn("逻辑职责", start)
-        self.assertIn("同一AI", launcher)
+        self.assertIn("一个 AI", launcher)
 
     def test_plugin_manifests_match_version(self):
         version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()

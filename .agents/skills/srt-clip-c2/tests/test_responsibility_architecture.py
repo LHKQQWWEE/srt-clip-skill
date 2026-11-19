@@ -56,9 +56,9 @@ class ResponsibilityArchitectureTests(unittest.TestCase):
         self.assertIn("不等于认定合规", global_rules)
 
     def test_existing_roles_cover_context_and_audit_without_new_agents(self):
-        self.assertIn("设计正式禁词命中与上下文风险提示的判断边界", self.skill)
-        self.assertIn("按唯一正式词库匹配原词与真正语义等价表达", self.skill)
-        self.assertIn("检查重复取舍", self.skill)
+        self.assertIn("设计正式命中与风险提示的判断边界", self.skill)
+        self.assertIn("不以词语相似度、单个字眼或绝对措辞自动扩禁", self.skill)
+        self.assertIn("先判同事实→判新增信息→判说服增量→最后取舍", self.skill)
         self.assertIn("擅自扩围", self.skill)
         self.assertIn("不是多个 Agent", self.skill)
 
@@ -70,8 +70,9 @@ class ResponsibilityArchitectureTests(unittest.TestCase):
 
     def test_editor_uses_source_words_and_auditor_returns_local_fixes(self):
         self.assertIn("不润色或拼接造句", self.skill)
-        self.assertIn("通过，或将具体问题退回局部修复", self.skill)
-        self.assertIn("不另做全文卖点扫描", self.final_check)
+        self.assertIn("发现失败项时退回具体部分", self.skill)
+        self.assertIn("局部修复", self.skill)
+        self.assertIn("每条成片都按自己的核心购买角度逐项重评全部卖点", self.final_check)
         self.assertIn("总决策编辑不得跳过硬性失败项", self.final_check)
 
     def test_unregistered_category_does_not_block_processing(self):
@@ -82,6 +83,13 @@ class ResponsibilityArchitectureTests(unittest.TestCase):
         self.assertIn("固定五部分交付", self.skill)
         self.assertIn("不设固定时长上限", self.skill)
         self.assertIn("保留原始字幕编号", self.skill)
+
+    def test_all_points_reassessed_without_expanding_a_local_ban(self):
+        self.assertIn("完整识别目标商品的全部有效卖点", self.skill)
+        self.assertIn("按其核心购买角度，重新评估全部卖点", self.skill)
+        global_rules = read("references/global-rules.md")
+        self.assertIn("只排除命中的完整字幕序号", global_rules)
+        self.assertIn("不能把前后字幕当作“上下文窗口”连带删除", global_rules)
 
 
 if __name__ == "__main__":

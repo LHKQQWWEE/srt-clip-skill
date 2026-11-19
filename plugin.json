@@ -4,16 +4,16 @@
     "email": "lihuikang23@gmail.com",
     "name": "惠康 黎"
   },
-  "description": "SRT Clip C2 Universal 0.4.3：动态时长、重要购买理由覆盖与独立多成片提示；保留一个AI的组织式职责、动态内容结构和固定五部分输出。",
+  "description": "SRT Clip C2 Universal：先完整识别卖点、逐条角度重评、单条尽可能完整、多条差异化整体覆盖；购买推动可选，固定五部分输出。",
   "extensions": {
     "com.openai": {
       "interface": {
         "capabilities": [],
         "category": "Productivity",
-        "defaultPrompt": "按当前 C2 Universal 0.4.3 的 SKILL.md 与其引用文件执行；采用同一AI的组织式职责和动态购买决策；按重要理由价值、注意力衰减与原话证据动态编排，并检查低完播截断与上下文依赖；默认输出一条最佳成片，有独立路径时主动提示，用户要求后再生成多条；不读取或混用旧版副本。",
+        "defaultPrompt": "按当前 SKILL.md 与其引用文件执行；一个 AI 先识别目标商品全部有效卖点，再按每条成片自己的核心角度独立复评全部卖点；单条尽可能完整覆盖，多条差异化组合并尽可能整体覆盖；购买推动可选，不强制提前 CTA；正式禁词只排除命中的完整字幕序号，不连带邻近字幕或整段候选；取消120秒硬上限，按固定五部分输出；不读取或混用旧版副本。",
         "developerName": "惠康 黎",
-        "displayName": "SRT Clip C2 Universal 0.4.3",
-        "longDescription": "由一个AI在一次语义分析中承担总决策、动态购买决策架构、商品事实边界和原话剪辑职责。内容路径按商品、顾客逻辑、字幕证据与独立购买理由动态构建；商品知识包只提供事实提醒和边界，不预设剪辑模板。详细规则以当前SKILL.md及其引用文件为准。",
+        "displayName": "SRT Clip C2 Universal 0.4.4",
+        "longDescription": "由一个AI在一次语义分析中承担总决策、动态购买决策架构、商品事实边界和原话剪辑职责。先识别全部有效卖点，再对每条视频角度逐项独立复评；单条尽可能完整，多条差异化组合并整体覆盖。购买推动可选，不强制提前。正式禁词只排除命中的字幕序号，不连带上下文。详细规则以当前SKILL.md及其引用文件为准。",
         "shortDescription": "AI组织分工，动态构建购买决策内容",
         "version": null
       }
@@ -27,5 +27,5 @@
   ],
   "name": "srt-clip-c2",
   "skills": "./skills",
-  "version": "0.4.10"
+  "version": "0.4.11"
 }

@@ -49,8 +49,8 @@ class PurchasePromptNeutralityTests(unittest.TestCase):
         self.assertIn("CTA 是可选项", self.environment)
         self.assertNotIn("低完播截断压力测试", self.environment)
         prompt = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))["extensions"]["com.openai"]["interface"]["defaultPrompt"]
-        self.assertIn("多条差异化组合", prompt)
-        self.assertIn("不强制提前 CTA", prompt)
+        self.assertIn("每条多视频方案都覆盖全量卖点", prompt)
+        self.assertIn("等待用户选择", prompt)
 
     def test_no_hard_duration_ceiling(self):
         self.assertIn("取消 120 秒硬上限", self.selection)
@@ -58,8 +58,8 @@ class PurchasePromptNeutralityTests(unittest.TestCase):
         self.assertNotIn("45–120 秒", self.selection)
 
     def test_current_core_and_package_versions(self):
-        self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.4")
-        self.assertEqual((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8").count('"version": "0.4.11"'), 1)
+        self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.6")
+        self.assertEqual((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8").count('"version": "0.4.13"'), 1)
 
 
 if __name__ == "__main__":

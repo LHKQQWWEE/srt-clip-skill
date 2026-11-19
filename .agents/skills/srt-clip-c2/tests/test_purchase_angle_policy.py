@@ -1,6 +1,5 @@
 from pathlib import Path
 import json
-import re
 import unittest
 
 
@@ -30,10 +29,14 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
     def test_identify_all_points_and_rerate_them_for_each_video_angle(self):
         active = "\n".join([self.skill, self.editorial, self.selection, self.final_check])
         for phrase in [
-            "完整识别目标商品的全部有效卖点",
-            "对每条成片按其核心购买角度，重新评估全部卖点",
-            "单条成片尽可能完整覆盖",
-            "多条成片采用差异化组合，并尽可能完整覆盖全部卖点",
+            "先完整读取目标商品全部上下文",
+            "识别全部有效独立购买信息并控制粒度",
+            "每个候选都逐条复评并完整编排全部有效卖点",
+            "单条正式方案必须覆盖全部已确认有效独立卖点",
+            "每条多视频方案也都必须覆盖同一完整卖点池",
+            "禁止边读取边锁定最终核心角度",
+            "候选资格门槛",
+            "评分对象是完整候选成片",
         ]:
             with self.subTest(phrase=phrase):
                 assert_has(self, active, phrase)
@@ -46,10 +49,10 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
                 assert_has(self, self.selection, phrase)
 
     def test_multi_clip_output_is_complete_and_differentiated(self):
-        for phrase in ["多条完整方案", "差异化组合", "整体覆盖", "不得只更换开头"]:
+        for phrase in ["每条都交付完整", "差异化组合", "每条方案必须各自覆盖全部有效独立卖点", "不得只更换开头"]:
             with self.subTest(phrase=phrase):
                 assert_has(self, self.selection, phrase)
-        assert_has(self, self.skill, "用户明确要求多条时，每条都交付完整方案")
+        assert_has(self, self.skill, "用户明确要求多条时，每条都须完整覆盖同一商品的全部有效卖点")
 
     def test_purchase_prompt_is_optional_and_never_forced_early(self):
         active = "\n".join([
@@ -72,27 +75,23 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
                 self.assertFalse(obsolete in active, f"obsolete active rule remains: {obsolete}")
 
     def test_explicit_prohibited_term_drops_only_its_full_matching_cue(self):
-        explicit = self.global_rules.split("## 已有明确用户禁用表述", 1)[1].split(
-            "## 2026-11-18 审核截图", 1
-        )[0]
-        self.assertIn("皮草", explicit)
+        formal_list = self.global_rules.split("## 正式禁用词库", 1)[1].split("\n## ", 1)[0]
+        self.assertIn("`羊毛`", formal_list)
+        self.assertIn("`皮草`", formal_list)
         self.assertIn("只排除命中的完整字幕序号", self.global_rules)
         self.assertIn("不连带前后字幕序号", self.global_rules)
-        self.assertIn("相似字词不能扩大命中", self.global_rules)
         self.assertIn("风险提示本身不能触发删除", self.global_rules)
         self.assertIn("一次字幕命中不能触发对整段、整条候选或整份输入的防御性淘汰", self.global_rules)
-        registered_terms = [re.search(r"\*\*“?(.+?)”?\*\*", line).group(1).strip("“”") for line in explicit.splitlines() if re.match(r"^\d+\.", line)]
-        self.assertEqual(len(registered_terms), 3)
-        self.assertEqual(registered_terms[2], "皮草")
-        self.assertNotIn("皮裙", registered_terms)
-        self.assertNotIn("皮裤", registered_terms)
+        self.assertIn("不得仅凭“皮”“草”“皮裤”“皮裙”或“毛绒”扩展", formal_list)
+        self.assertIn("防静电不是正式禁词", self.global_rules)
 
     def test_current_release_versions_and_historical_0_4_3_record(self):
-        self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.4")
+        self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.6")
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["version"], "0.4.11")
-        self.assertTrue((ROOT / "tests/release-0.4.4-acceptance.md").is_file())
-        self.assertFalse((ROOT / "tests/release-0.4.3-acceptance.md").exists())
+        self.assertEqual(manifest["version"], "0.4.13")
+        self.assertTrue((ROOT / "tests/release-0.4.6-acceptance.md").is_file())
+        self.assertFalse((ROOT / "tests/release-0.4.4-acceptance.md").exists())
+        self.assertTrue((PLUGIN_ROOT / "docs/history/releases/release-0.4.4-acceptance.md").is_file())
         self.assertTrue((PLUGIN_ROOT / "docs/history/releases/release-0.4.3-acceptance.md").is_file())
 
 

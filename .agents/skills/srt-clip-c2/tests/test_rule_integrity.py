@@ -13,7 +13,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_skill_frontmatter_and_version(self):
         version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()
         text = read("SKILL.md")
-        self.assertEqual(version, "0.4.4")  # Release number advances only after acceptance.
+        self.assertEqual(version, "0.4.6")  # Release number advances only after acceptance.
         self.assertTrue(text.startswith("---\nname: srt-clip-c2\n"))
         self.assertIn(f"SRT Clip C2 Universal {version}", text)
         front = text.split("---", 2)[1]
@@ -70,12 +70,13 @@ class C2UniversalIntegrityTests(unittest.TestCase):
 
     def test_distribution_contains_only_current_release_record(self):
         acceptance_files = sorted(p.name for p in (ROOT / "tests").glob("release-*-acceptance.md"))
-        self.assertEqual(set(acceptance_files), {"release-0.4.4-acceptance.md"})
+        self.assertEqual(set(acceptance_files), {"release-0.4.6-acceptance.md"})
         history = PLUGIN_ROOT / "docs" / "history" / "releases"
         self.assertEqual(
             {p.name for p in history.glob("release-*-acceptance.md")},
-            {"release-0.4.0-acceptance.md", "release-0.4.1-acceptance.md", "release-0.4.2-acceptance.md", "release-0.4.3-acceptance.md"},
+            {"release-0.4.0-acceptance.md", "release-0.4.1-acceptance.md", "release-0.4.2-acceptance.md", "release-0.4.3-acceptance.md", "release-0.4.4-acceptance.md", "release-0.4.5-acceptance.md"},
         )
+        self.assertFalse((ROOT / "tests" / "test_early_purchase_opportunity.py").exists())
         self.assertNotIn("docs/history", read("SKILL.md"))
         archive = PLUGIN_ROOT / "archive"
         if archive.exists():
@@ -107,9 +108,10 @@ class C2UniversalIntegrityTests(unittest.TestCase):
 
     def test_duplicate_highlight_policy_and_semantic_value(self):
         selection = read("references/highlight-selection.md")
-        self.assertIn("过度夸赞", selection)
+        self.assertIn("泛夸赞", selection)
         self.assertIn("已被更强信息充分覆盖", selection)
-        self.assertIn("单条成片尽可能完整覆盖", selection)
+        self.assertIn("单条正式方案必须覆盖全部已确认有效独立卖点", selection)
+        self.assertIn("每条多视频方案也都必须覆盖同一完整卖点池", selection)
         self.assertIn("逐条复评", selection)
 
     def test_ai_first_organization_and_dynamic_structure(self):
@@ -124,7 +126,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_update_protocol_is_development_only(self):
         protocol = read("references/update-protocol.md")
         skill = read("SKILL.md")
-        for token in ["六项固定审查", "三条一票否决", "动态结构", "知识包"]:
+        for token in ["八项固定审查", "三条一票否决", "动态结构", "知识包"]:
             self.assertIn(token, protocol)
         self.assertIn("update-protocol.md", skill)
         self.assertIn("不增加日常剪辑流程", protocol)
@@ -133,12 +135,14 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         portable = read("C2-Universal-Portable.md")
         for path in [
             "SKILL.md",
+            "references/ai-first-constitution.md",
             "references/editorial-policy.md",
             "references/highlight-selection.md",
             "references/product-knowledge-registry.md",
             "references/global-rules.md",
             "references/qianchuan-offline.md",
             "references/final-check.md",
+            "references/long-context-mode.md",
             "product-knowledge-packs/womens-fashion.md",
             "product-knowledge-packs/shoes.md",
             "product-knowledge-packs/scarves.md",
@@ -183,42 +187,24 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertEqual(manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"],
                          codex_manifest["interface"]["defaultPrompt"])
 
-    def test_screenshot_material_claims_are_conditioned_on_matching_proof(self):
+    def test_user_designated_wool_term_is_unconditional_and_scoped(self):
         rules = read("references/global-rules.md")
-        for phrase in ["羊绒羊毛", "30%羊绒70%羊毛", "羊绒衫"]:
+        for phrase in ["## 正式禁用词库", "`羊毛`", "匹配证明不能豁免此词", "羊绒单独出现不命中", "防静电不是正式禁词", "只排除实际命中的完整字幕序号"]:
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, rules)
-        for requirement in [
-            "条件性正式拦截",
-            "缺少、无法核实或与目标商品及相关材质/含量主张不匹配的质检证明时",
-            "证明匹配时，本条不触发正式拦截",
-            "上下文风险提示",
-            "其他动物毛/绒类材质",
-            "羽绒填充（如鹅绒）不属于本条适用范围",
-            "有同等价值替代时默认优先选替代",
-        ]:
-            with self.subTest(requirement=requirement):
-                self.assertIn(requirement, rules)
-        explicit_bans = rules.split("## 已有明确用户禁用表述", 1)[1].split(
-            "## 2026-11-18 审核截图：动物毛/绒材质的证明条件", 1
-        )[0]
-        for historic_case in ["全羊毛", "羊毛毛衣", "绵羊毛混纺"]:
-            with self.subTest(historic_case=historic_case):
-                self.assertNotIn(historic_case, explicit_bans)
-        self.assertNotIn("30山羊绒、70绵羊毛", explicit_bans)
+        self.assertNotIn("条件性正式拦截", rules)
+        self.assertNotIn("证明匹配时，本条不触发正式拦截", rules)
         offline = read("references/qianchuan-offline.md")
-        self.assertIn("按 `references/global-rules.md` 的条件性正式拦截", offline)
+        self.assertIn("当前直接命中即排除该完整字幕", offline)
+        self.assertIn("不以证明、否定语境或引用豁免", offline)
 
-    def test_screenshot_derived_material_cases_are_not_permanent_word_bans(self):
+    def test_old_material_proof_policy_is_historical_only(self):
         rules = read("references/global-rules.md")
-        self.assertIn("## 历史审核案例与默认取舍（非永久禁词）", rules)
-        history = rules.split("## 历史审核案例与默认取舍（非永久禁词）", 1)[1].split("## 字段特例", 1)[0]
-        for phrase in ["全羊毛", "绵羊毛混纺", "羊毛毛衣"]:
-            with self.subTest(phrase=phrase):
-                self.assertIn(phrase, history)
-        self.assertIn("默认优先规避", history)
-        self.assertIn("证明匹配时不因这些历史截图案例单独拦截", history)
-        self.assertIn("属于上下文风险，不是正式材质词禁令", history)
+        history = rules.split("## 历史审核背景（已被后续授权取代）", 1)[1].split("## 字段特例", 1)[0]
+        self.assertIn("旧的“有匹配证明即可保留羊毛宣传”口径不再适用", history)
+        self.assertNotIn("匹配证明时本条不触发", history)
+        offline = read("references/qianchuan-offline.md")
+        self.assertIn("本文是历史审核背景与风险提示记录", offline)
 
 
 if __name__ == "__main__":

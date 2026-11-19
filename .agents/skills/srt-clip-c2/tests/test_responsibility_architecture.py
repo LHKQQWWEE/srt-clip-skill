@@ -57,9 +57,15 @@ class ResponsibilityArchitectureTests(unittest.TestCase):
 
     def test_existing_roles_cover_context_and_audit_without_new_agents(self):
         self.assertIn("设计正式命中与风险提示的判断边界", self.skill)
-        self.assertIn("不以词语相似度、单个字眼或绝对措辞自动扩禁", self.skill)
+        self.assertIn("读完全部目标商品上下文后", self.skill)
+        self.assertIn("禁止边读取边锁定", self.skill)
+        self.assertIn("候选资格门槛", self.skill)
+        self.assertIn("完整候选成片", self.skill)
+        self.assertIn("不因同字异义或绝对措辞扩围", self.skill)
         self.assertIn("先判同事实→判新增信息→判说服增量→最后取舍", self.skill)
-        self.assertIn("擅自扩围", self.skill)
+        self.assertIn("低决策价值≠弱增量", self.skill)
+        self.assertIn("每条独立评估、排序和组织全部卖点", self.skill)
+        self.assertIn("越权扩围", self.skill)
         self.assertIn("不是多个 Agent", self.skill)
 
     def test_architect_sets_dynamic_structure_not_category_template(self):
@@ -86,7 +92,7 @@ class ResponsibilityArchitectureTests(unittest.TestCase):
 
     def test_all_points_reassessed_without_expanding_a_local_ban(self):
         self.assertIn("完整识别目标商品的全部有效卖点", self.skill)
-        self.assertIn("按其核心购买角度，重新评估全部卖点", self.skill)
+        self.assertIn("每个候选都逐条复评并完整编排全部有效卖点", self.skill)
         global_rules = read("references/global-rules.md")
         self.assertIn("只排除命中的完整字幕序号", global_rules)
         self.assertIn("不能把前后字幕当作“上下文窗口”连带删除", global_rules)

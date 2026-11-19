@@ -1,25 +1,9 @@
-# SRT Clip C2 Universal 0.4.4
+# SRT Clip C2 Universal 0.4.6
 
-C2 is one AI-led purchase-decision editor organized around clear internal responsibilities. In one semantic analysis, the Chief Decision Editor coordinates a Product Purchase-Decision Architect, a Product Facts & Boundaries Officer and a Purchase-Decision Editor; a Final Quality Auditor performs the existing single final check.
+C2 is an AI-led purchase-decision editor with one semantic analysis and one final audit. It reads the full target-product context, identifies every valid independent purchase point, then compares complete candidate paths without anchoring on the first strong point.
 
-## Current editing rules
+Every delivered video must independently cover the full valid point set and its necessary evidence or conditions. The union of several videos is only a secondary consistency check. When multiple differentiated videos are possible and the user has not specified a count, recommend the themes and count, then wait for the user's choice before producing them.
 
-- Identify the target product's complete set of valid selling points, then independently reassess every point for each clip's own core purchase angle.
-- A single clip should cover the useful selling points as fully as it can. Multiple clips should form differentiated combinations that collectively cover the points as fully as practical; every requested clip is a complete plan.
-- A purchase prompt is optional. Do not force it early or make it a pass condition at any prefix.
-- An explicit prohibited-term match excludes only the full matching cue number(s). Do not extend it to neighboring cues or discard the whole candidate; contextual risk alone does not trigger deletion.
-- Keep the one-AI, one-analysis, one-final-check architecture, dynamic duration without a fixed cap, and five-part delivery.
+Direct formal prohibited terms are scanned against the single list in `skills/srt-clip-c2/references/global-rules.md`; only matching full cues are excluded. The user's newly designated `羊毛` term is unconditional. `羊绒` alone, static-control wording, and nearby cues remain outside that ban. The optional guard script performs literal matching only; AI remains responsible for semantic and factual judgment.
 
-## Existing safeguards retained
-
-- Added contextual repetition judgment: mechanical restarts are removed; emphasis may remain when it adds memory or persuasion; progressive explanations and conditions are preserved; overemphasis is compressed.
-- Decisions compare information gain and persuasion gain, then account for time and the opportunity cost of independent purchase reasons. No word-similarity threshold or fixed repeat count is used.
-- Valid emphasis cannot displace a more important independent reason, and repetitions cannot be kept to reach the 45-second duration floor.
-- Contextual repetition judgment compares information gain and persuasion gain, preserves useful progression and emphasis, and accounts for opportunity cost.
-- Existing rules remain: SRT and line-by-line duration text, original wording and cue IDs, product attribution, global prohibitions, a general 45-second lower-bound guide at 1.2x, with a quality-gated short-material exception and no fixed upper cap, and the fixed five-part output.
-
-## Start here
-
-Use the current Skill at .agents/skills/srt-clip-c2/SKILL.md. The portable single-file version is .agents/skills/srt-clip-c2/C2-Universal-Portable.md. Read only current referenced files for active rules; prior release notes and tests are historical evidence, not execution sources.
-
-The repository includes the current release acceptance record and development tests. Their execution is for release validation; everyday clipping remains AI-first and does not require Python or other tools.
+Duration is a planning reference, not a task completion condition. Keep the 45-second general lower-bound guidance, short-cut quality exception, and no fixed upper limit. See [START-HERE.md](START-HERE.md) and the skill references for the complete contract.

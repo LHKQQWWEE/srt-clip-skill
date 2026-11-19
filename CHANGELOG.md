@@ -1,3 +1,19 @@
+## Plugin package 0.4.13 / C2 Universal core 0.4.6 (2026-11-19)
+
+- Added an unconditional user-designated `羊毛` entry to the single formal prohibited-term list, with spacing/punctuation/number normalization, a source-preserving optional direct scanner, and exact cue-level exclusion. Cashmere alone, static-control claims and adjacent cues remain outside that formal ban.
+- Changed multi-video coverage so every video independently carries the complete valid point set; collective coverage is only a secondary consistency check. Unspecified multi-video output now pauses at a theme/count recommendation until the user chooses.
+- Made duration explicitly non-gating for task completion; retained the 45-second reference, quality-gated short exception and no fixed upper ceiling.
+- Added PASS / FAIL / BLOCKED acceptance states and a maximum of three substantive repairs per root cause, with failing checks rerun before final acceptance.
+- Removed active conditional-proof and collective-only coverage rules; added a real 296-cue coat transcript regression and release acceptance record.
+
+## Plugin package 0.4.12 / C2 Universal core 0.4.5 (2026-11-19)
+
+- Replaced best-effort coverage with a hard distinction between valid independent purchase information and decision value: value controls rank, length, placement and wording; it cannot waive coverage. A single formal cut covers every confirmed valid point; multiple selected cuts cover the complete set as a union.
+- Require complete target-product context reading, full point recognition and granularity control before generating candidates; prohibit locking the angle while reading or favoring the first strong point by position.
+- Require each candidate to independently reassess and fully arrange all valid points, pass the coverage gate, and compete as a complete cut across six dimensions. Multi-cut selection starts with the same pool's overall winner, then balances quality, substantive difference and complementary coverage instead of mechanical Top N.
+- Add time-pressure trim priority and a real stop condition; update the four existing role responsibilities and hard final-check failures. Preserve AI-First, dynamic structure, repetition judgment, optional CTA, 45-second general lower-bound reference and no 120-second ceiling.
+- Added policy regressions and recorded four user-identified real-material cases. Three source sets were unavailable in the current workspace, so they are not represented as rerun. Retained the earlier 0.4.4 acceptance record under release history.
+
 ## Plugin package 0.4.11 / C2 Universal core 0.4.4 (2026-11-19)
 
 - Formalized exact prohibited-cue scope: exclude only the complete subtitle cue(s) that match a registered term; do not extend to neighboring cues, a segment, or a candidate. Contextual risk alone does not trigger deletion.
@@ -6,6 +22,8 @@
 - A single video should cover useful, supported selling points as fully as it can; multiple complete videos should use differentiated combinations and improve overall coverage. Explicit multi-video requests receive complete plans directly.
 - Made purchase prompts optional and removed early-CTA and truncation-prefix requirements. Kept the existing five-part output, one-AI architecture, source fidelity, and no fixed duration ceiling.
 - Validated against the user-provided 572-cue vest transcript; detailed acceptance, test counts, package verification, and unverified boundaries are recorded in the current acceptance file.
+
+This 0.4.4 release entry is historical and superseded by 0.4.5; its acceptance record is preserved under `docs/history/releases/`.
 
 ## Plugin package 0.4.10 / C2 Universal core 0.4.3 (2026-11-19; superseded)
 

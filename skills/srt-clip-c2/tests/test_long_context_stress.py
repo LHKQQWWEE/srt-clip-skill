@@ -1,5 +1,15 @@
 from dataclasses import dataclass
+import json
+from pathlib import Path
 import unittest
+
+
+SKILL_ROOT = Path(__file__).resolve().parents[1]
+PLUGIN_ROOT = next(parent for parent in SKILL_ROOT.parents if (parent / "plugin.json").is_file())
+
+
+def read_skill_file(relative_path):
+    return (SKILL_ROOT / relative_path).read_text(encoding="utf-8")
 
 @dataclass
 class Cue:
@@ -73,6 +83,57 @@ class LongContextStress(unittest.TestCase):
         labels=[c.text for c in a]
         for label in ["A-fit","A-fabric","A-use","A-detail"]:
             self.assertEqual(labels.count(label),2)
+
+    def test_every_active_entry_requires_full_skill_and_required_rule_reads(self):
+        skill = read_skill_file("SKILL.md")
+        gate_heading = "## 每次触发的完整读取门禁"
+        self.assertTrue(gate_heading in skill, "full-read gate is missing")
+        self.assertLess(skill.index(gate_heading), skill.index("## 1. 唯一入口与版本优先级"))
+        for required_reference in [
+            "SKILL.md 全文",
+            "references/global-rules.md",
+            "references/editorial-policy.md",
+            "references/highlight-selection.md",
+            "references/final-check.md",
+        ]:
+            with self.subTest(required_reference=required_reference):
+                self.assertTrue(
+                    required_reference in skill[: skill.index("## 1. 唯一入口与版本优先级")],
+                    f"missing required read: {required_reference}",
+                )
+
+        manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
+        codex_manifest = json.loads((PLUGIN_ROOT / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
+        prompts = [
+            manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"],
+            codex_manifest["interface"]["defaultPrompt"],
+            read_skill_file("agents/openai.yaml"),
+        ]
+        for prompt in prompts:
+            with self.subTest(prompt=prompt[:40]):
+                self.assertTrue(
+                    "完整读取当前 SKILL.md 全文" in prompt,
+                    "active trigger prompt does not require the current Skill body",
+                )
+
+    def test_long_context_recovers_from_source_and_blocks_analysis_until_verified(self):
+        long_context = read_skill_file("references/long-context-mode.md")
+        for required_behavior in [
+            "从原始附件或可访问来源",
+            "自动续读",
+            "动态决定分段大小",
+            "原始序号、时间码和内容",
+            "首尾范围",
+            "序号覆盖",
+            "不得要求用户回复“继续”",
+            "完整读取并核验通过后",
+            "不能虚构恢复缺失内容",
+        ]:
+            with self.subTest(required_behavior=required_behavior):
+                self.assertTrue(
+                    required_behavior in long_context,
+                    f"missing long-context behavior: {required_behavior}",
+                )
 
 if __name__ == "__main__":
     unittest.main()

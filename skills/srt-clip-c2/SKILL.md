@@ -5,6 +5,12 @@ description: "当用户发送“srt文案”“srt切片文案”“str文案”
 
 # SRT Clip C2 Universal 0.4.6
 
+## 每次触发的完整读取门禁
+
+每次触发本 Skill，在读取或分析用户素材前，先从当前启用的 `srt-clip-c2` 包完整读取当前 SKILL.md 全文，再完整读取本版日常执行明确依赖的引用文件：`references/global-rules.md`、`references/editorial-policy.md`、`references/highlight-selection.md`、`references/final-check.md`。必读范围以当前 Skill 的真实定义为准，不按历史版本或文件数量推断。只有在本文件标明的条件成立时，才继续完整读取其他引用：处理长素材或发现截断/遗漏风险时读取 `references/long-context-mode.md`；商品知识包确实有助于事实核对时读取 `references/product-knowledge-registry.md` 及适用知识包；`references/update-protocol.md` 仅用于开发更新。
+
+必须实际取得每份适用文件的完整正文；文件名、目录、摘要、聊天记忆、旧缓存或上次运行结果均不算读取。单次读取被截断时，从同一当前来源续读缺失范围，直至正文结束且前后衔接核对完整。任何必读内容未完整取得前，不进入素材语义分析；若当前来源确实不可访问或工具无法继续读取，报告受阻文件及具体范围，不凭记忆补写。
+
 ## 1. 唯一入口与版本优先级
 
 - 当前唯一执行版本：**C2 Universal 0.4.6**。只读取本入口及它明确引用的当前文件；旧版、缓存、同名副本和历史发布记录不覆盖本版。

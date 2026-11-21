@@ -1,3 +1,9 @@
+## Plugin package 0.4.15 / C2 Universal core 0.4.6 (2026-11-21)
+
+- Require each trigger to load the complete current Skill and its currently defined daily references before processing material; conditional references remain conditional.
+- Add automatic long-material continuation from accessible originals, dynamically sized segments, source-order/timecode preservation, boundary context merging, completeness checks, and an honest failure path for unavailable or pre-model-truncated input.
+- Keep the existing C2 business rules and output contract unchanged; synchronize the release sources to the active 0.4.14 package and preserve the plugin identity.
+
 ## Plugin package 0.4.13 / C2 Universal core 0.4.6 (2026-11-19)
 
 - Added an unconditional user-designated `羊毛` entry to the single formal prohibited-term list, with spacing/punctuation/number normalization, a source-preserving optional direct scanner, and exact cue-level exclusion. Cashmere alone, static-control claims and adjacent cues remain outside that formal ban.

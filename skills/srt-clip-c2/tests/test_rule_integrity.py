@@ -189,7 +189,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
 
     def test_user_designated_wool_term_is_unconditional_and_scoped(self):
         rules = read("references/global-rules.md")
-        for phrase in ["## 正式禁用词库", "`羊毛`", "匹配证明不能豁免此词", "羊绒单独出现不命中", "防静电不是正式禁词", "只排除实际命中的完整字幕序号"]:
+        for phrase in ["## 正式禁用词库", "`羊毛`", "匹配证明不能豁免此词", "`羊绒`：", "直接匹配字面词及其组合", "防静电不是正式禁词", "只排除实际命中的完整字幕序号"]:
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, rules)
         self.assertNotIn("条件性正式拦截", rules)

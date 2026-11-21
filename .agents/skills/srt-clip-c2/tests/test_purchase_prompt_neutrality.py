@@ -59,7 +59,7 @@ class PurchasePromptNeutralityTests(unittest.TestCase):
 
     def test_current_core_and_package_versions(self):
         self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.6")
-        self.assertEqual((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8").count('"version": "0.4.13"'), 1)
+        self.assertEqual((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8").count('"version": "0.4.15"'), 1)
 
 
 if __name__ == "__main__":

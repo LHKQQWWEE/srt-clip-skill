@@ -1,5 +1,7 @@
 # SRT Clip C2 Universal 0.4.6
 
+Each trigger reads the complete current Skill and its required references first. Long inputs resume automatically from the accessible source after a truncated read and must pass range and sequence checks before formal analysis.
+
 C2 is an AI-led purchase-decision editor with one semantic analysis and one final audit. It reads the full target-product context, identifies every valid independent purchase point, then compares complete candidate paths without anchoring on the first strong point.
 
 Every delivered video must independently cover the full valid point set and its necessary evidence or conditions. The union of several videos is only a secondary consistency check. When multiple differentiated videos are possible and the user has not specified a count, recommend the themes and count, then wait for the user's choice before producing them.

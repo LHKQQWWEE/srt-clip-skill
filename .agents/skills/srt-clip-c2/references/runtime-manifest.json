@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "entry_file": "SKILL.md",
+  "required_files": [
+    "references/ai-first-constitution.md",
+    "references/global-rules.md",
+    "references/editorial-policy.md",
+    "references/highlight-selection.md",
+    "references/final-check.md",
+    "references/product-knowledge-registry.md"
+  ],
+  "conditional_files": [
+    {
+      "path": "references/long-context-mode.md",
+      "when": "Long Context Mode applies, or the source has truncation, omissions, or multi-window risk."
+    },
+    {
+      "path": "references/update-protocol.md",
+      "when": "Developing, testing, or releasing a C2 package."
+    },
+    {
+      "path": "product-knowledge-packs/*.md",
+      "when": "A pack is relevant to verifying the current product's facts, evidence, conditions, or attribution."
+    }
+  ]
+}

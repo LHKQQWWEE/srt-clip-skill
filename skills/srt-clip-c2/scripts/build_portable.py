@@ -9,6 +9,7 @@ SKILL_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = SKILL_ROOT.parents[1]
 SOURCES = [
     "SKILL.md",
+    "references/runtime-manifest.json",
     "references/ai-first-constitution.md",
     "references/editorial-policy.md",
     "references/highlight-selection.md",

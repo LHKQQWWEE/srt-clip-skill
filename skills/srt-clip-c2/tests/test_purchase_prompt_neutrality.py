@@ -65,8 +65,8 @@ class PurchasePromptNeutralityTests(unittest.TestCase):
         self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.6")
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         codex_manifest = json.loads((PLUGIN_ROOT / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["version"], "0.4.21")
-        self.assertEqual(codex_manifest["version"], "0.4.21")
+        self.assertEqual(manifest["version"], "0.4.23")
+        self.assertEqual(codex_manifest["version"], "0.4.23")
 
 
 if __name__ == "__main__":

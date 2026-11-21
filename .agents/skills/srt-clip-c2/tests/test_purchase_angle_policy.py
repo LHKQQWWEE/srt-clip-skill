@@ -48,6 +48,28 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 assert_has(self, self.selection, phrase)
 
+    def test_opening_compares_attention_hooks_across_the_full_transcript(self):
+        active = "\n".join([self.editorial, self.final_check])
+        for phrase in [
+            "区分吸引顾客关注的问题、回应顾客问题、提供购买依据",
+            "具体数字、使用时长、洗涤次数和主播经历不自动获得开头优先权",
+            "核心主题只决定重点展开和内容组织，不限定开头候选范围",
+            "开头与紧随其后的必要回应作为一个完整入口比较",
+        ]:
+            with self.subTest(phrase=phrase):
+                assert_has(self, active, phrase)
+
+    def test_final_check_requires_problem_response_match_and_preserves_hooks(self):
+        for phrase in [
+            "因主题名称跳过全文中更有竞争力的开头候选",
+            "仅因具体数字、使用经历或商品介绍就判定首屏价值更高",
+            "问题型开头与后续商品回应不对应",
+            "问题段较长就直接淘汰",
+            "主播设问不得写成真实顾客反馈",
+        ]:
+            with self.subTest(phrase=phrase):
+                assert_has(self, self.final_check, phrase)
+
     def test_multi_clip_output_is_complete_and_differentiated(self):
         for phrase in ["每条都交付完整", "差异化组合", "每条方案必须各自覆盖全部有效独立卖点", "不得只更换开头"]:
             with self.subTest(phrase=phrase):
@@ -88,7 +110,7 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
     def test_current_release_versions_and_only_current_acceptance(self):
         self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.6")
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["version"], "0.4.21")
+        self.assertEqual(manifest["version"], "0.4.23")
         self.assertTrue((ROOT / "tests/release-0.4.6-acceptance.md").is_file())
         self.assertFalse((ROOT / "tests/release-0.4.4-acceptance.md").exists())
         self.assertFalse((PLUGIN_ROOT / "docs/history").exists())

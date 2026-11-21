@@ -153,15 +153,10 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertEqual(prompt, codex_prompt)
         for phrase in ["SKILL.md", "当前唯一生效", "每次触发", "完整取得", "不得凭记忆输出正式成片"]:
             self.assertIn(phrase, prompt)
-        for path in [
-            "references/ai-first-constitution.md",
-            "references/global-rules.md",
-            "references/editorial-policy.md",
-            "references/highlight-selection.md",
-            "references/final-check.md",
-            "references/product-knowledge-registry.md",
-        ]:
-            self.assertIn(path, prompt)
+        self.assertIn("references/runtime-manifest.json", prompt)
+        self.assertIn("manifest.required_files", prompt)
+        runtime_manifest = json.loads(read("references/runtime-manifest.json"))
+        for path in runtime_manifest["required_files"]:
             self.assertTrue((ROOT / path).is_file(), path)
         long_description = manifest["extensions"]["com.openai"]["interface"]["longDescription"]
         self.assertIn("全部有效独立购买信息", long_description)

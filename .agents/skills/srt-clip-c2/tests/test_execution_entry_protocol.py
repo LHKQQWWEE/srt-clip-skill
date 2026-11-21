@@ -37,10 +37,14 @@ class ExecutionEntryProtocolTests(unittest.TestCase):
 
     def test_every_required_reference_is_present_in_the_active_skill(self):
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
-        prompt = manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"]
-        paths = re.findall(r"references/[a-z0-9-]+\.md", prompt)
-        self.assertEqual(len(paths), 6)
-        for relative in paths:
+        runtime_manifest = json.loads((ROOT / "references/runtime-manifest.json").read_text(encoding="utf-8"))
+        skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+        read_contract = skill.split("## 1. 唯一入口与版本优先级", 1)[0]
+        paths = set(re.findall(r"`(references/[a-z0-9-]+\.md)`", read_contract))
+        self.assertFalse(paths, "the entry must not duplicate the manifest's required file list")
+        self.assertIn("required_files", read_contract)
+        self.assertTrue(runtime_manifest["required_files"])
+        for relative in runtime_manifest["required_files"]:
             with self.subTest(path=relative):
                 self.assertTrue((ROOT / relative).is_file(), relative)
 
@@ -48,7 +52,7 @@ class ExecutionEntryProtocolTests(unittest.TestCase):
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         codex_manifest = json.loads((PLUGIN_ROOT / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.6")
-        self.assertEqual(manifest["version"], "0.4.21")
+        self.assertEqual(manifest["version"], "0.4.23")
         self.assertEqual(codex_manifest["version"], manifest["version"])
 
 

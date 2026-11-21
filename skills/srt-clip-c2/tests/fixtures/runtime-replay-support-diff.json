@@ -1,0 +1,71 @@
+{
+  "status": "PASS",
+  "same_source": true,
+  "source_sha256": "ba0f84cfdf4f4325f6dd312f6b4fd5fddbe79156b383fcd5198d1b751756d834",
+  "support_changes": [
+    {
+      "point_id": "P1",
+      "added_ids": [
+        "2"
+      ],
+      "removed_ids": []
+    }
+  ],
+  "evidence_changes": [
+    {
+      "point_id": "P1",
+      "added_ids": [],
+      "removed_ids": [
+        "2"
+      ]
+    }
+  ],
+  "condition_changes": [],
+  "point_pool_added_ids": [],
+  "point_pool_removed_ids": [],
+  "role_changes": [],
+  "flags_added": [],
+  "flags_removed": [],
+  "hard_rule_outcomes_stable": true,
+  "hard_rule_outcomes": [
+    [
+      {
+        "rule_id": "formal_direct_terms",
+        "status": "PASS",
+        "cue_ids": []
+      }
+    ],
+    [
+      {
+        "rule_id": "formal_direct_terms",
+        "status": "PASS",
+        "cue_ids": []
+      }
+    ]
+  ],
+  "hard_rule_changes": [],
+  "selected_sequences": [
+    [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    [
+      "3",
+      "1",
+      "2",
+      "4",
+      "5"
+    ]
+  ],
+  "sequence_order_changed": true,
+  "selected_added_ids": [],
+  "selected_removed_ids": [],
+  "angles": [
+    "从肩部设计、活动量到穿着细节，交代日常穿着理由。",
+    "先落在衣摆搭配，再回到肩部和活动量，兼顾穿着限制。"
+  ],
+  "semantic_review_required": true
+}

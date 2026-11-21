@@ -6,7 +6,7 @@ This portable document embeds the current 0.4.6 entry and its active instruction
 
 ## 每次执行前的完整加载协议（执行约束，不定义业务规则）
 
-【C2 Universal 每次运行强制加载协议｜仅执行约束，不定义业务规则】每次触发 srt文案、srt切片文案、str文案或 C2完整精简版时，先定位当前唯一生效的 C2 Universal Skill。正式分析素材之前，必须实际取得本插件 skills/srt-clip-c2/SKILL.md 全文，并完整取得本次适用的必读引用文件：references/ai-first-constitution.md、references/global-rules.md、references/editorial-policy.md、references/highlight-selection.md、references/final-check.md、references/product-knowledge-registry.md。其他引用文件依据 SKILL.md 指明的场景按需读取。可接受宿主完整注入文件原文或使用当前可用的读取能力；仅有文件名、目录、摘要、此前聊天记录、旧版本或上一次输出，不等于真实加载。同一对话每次触发都必须重新确认当前生效文件，不得以刚刚执行过为由跳过。若任一必读文件缺失、截断或未完整取得，先针对该文件重新读取；仍失败则如实报告受阻文件与范围，不得声称已完整加载，也不得凭记忆输出正式成片。加载完整后只按照现行 SKILL.md 及其引用规则执行，不得自行增删、简化或改写业务规则；交付前仅执行 Skill 已规定的终检，失败按 Skill 原规则局部修复复验。不新增 Agent、强制程序、独立模型轮次或第六个交付部分。业务规则的唯一来源仍是原 Skill 文件。
+【C2 Universal 每次运行强制加载协议｜仅执行约束，不定义业务规则】每次触发 srt文案、srt切片文案、str文案或 C2完整精简版时，先定位当前唯一生效的 C2 Universal Skill。正式分析素材前完整读取本插件 skills/srt-clip-c2/SKILL.md 全文与 references/runtime-manifest.json 全文；manifest.required_files 声明必读引用集合，随后一次并发读取集合内全部文件，不固定文件数量；manifest.conditional_files 按条件读取。逐份核对正文首尾、读取范围连续性与截断，截断时续读缺失范围。若任一必读文件缺失、截断或未完整取得，停止读取缺口并续读；全部必读内容完整前不得进入素材语义分析，也不得凭记忆输出正式成片。同一对话每次触发都必须重新确认当前文件。AI 保留商品归属、卖点识别、语义禁词、事实边界和候选质量判断；脚本只做机械校验和正式词库直接命中，risk_hint 只透传。脚本不可用时使用 manual，五部分交付照常完成并标“模型逐条对照”，内部仍记录 PASS/FAIL/BLOCKED，不声称机检通过。保持固定五部分输出，不新增 Agent、额外语义轮次或日常强制工具门槛。
 
 ---
 
@@ -21,7 +21,7 @@ description: "当用户发送“srt文案”“srt切片文案”“str文案”
 
 ## 每次运行前强制完整读取
 
-每次触发本 Skill，正式处理素材前必须重新完整读取本文件全文，以及以下六份必读文件的完整内容：`references/ai-first-constitution.md`、`references/global-rules.md`、`references/editorial-policy.md`、`references/highlight-selection.md`、`references/final-check.md`、`references/product-knowledge-registry.md`。仅有文件名、目录、摘要、历史对话或上次运行记录不算完整读取。任一必读文件缺失或截断时先重新读取；仍无法完整取得则停止输出正式成片并说明缺少文件。读取完成后只按当前文件内容执行，不凭记忆省略、简化或改写规则。
+每次触发本 Skill，正式处理素材前必须完整读取本文件全文与 `references/runtime-manifest.json`；两者可同批取得。随后以 manifest 的 `required_files` 为唯一必读集合，**一次并发读取其中声明的全部文件**；不在入口写死文件清单或数量。manifest 的 `conditional_files` 按条件读取。规则完整性测试校验入口遵循 manifest，且 manifest 中每条路径均可解析。仅有文件名、目录、摘要、历史对话或上次运行记录不算完整读取。逐份核对正文首尾与读取范围连续性；任一必读文件缺失或截断时续读缺失范围，全部必读内容完整取得前不得进入素材语义分析。仍无法完整取得时说明缺失文件及范围，不得输出正式成片。读取完成后只按当前文件内容执行，不凭记忆省略、简化或改写规则。
 
 ## 1. 唯一入口与版本优先级
 
@@ -35,7 +35,7 @@ description: "当用户发送“srt文案”“srt切片文案”“str文案”
 
 ## 2. 组织式职责架构与决策权限
 
-**运行方式：一个 AI、一次语义分析、一次终检。**以下身份是同一 AI 在同一次任务中的逻辑职责，不是多个 Agent、串行模型、额外提问、独立分析轮次或用户可见角色扮演。职责之间可以在同一上下文中交叉判断；不建立中间台账。
+**运行方式：一个 AI、一次语义分析、一次终检。**以下身份是同一 AI 在同一次任务中的逻辑职责，不是多个 Agent、串行模型、额外提问、独立分析轮次或用户可见角色扮演。普通任务不强制创建台账或 JSON；若选择可选脚本路径，selection JSON 只作为预处理、核验、组装与复跑 diff 的共享工具输入，不接管任何语义判断。
 
 | 身份 | 负责什么 | 权限边界 |
 |---|---|---|
@@ -71,17 +71,17 @@ description: "当用户发送“srt文案”“srt切片文案”“str文案”
 
 ### 第一步：读取与输入边界
 
-1. 完整读取本轮提供的 SRT 或逐条时长文本，读取目标商品的全部上下文与有效讲解窗口，再判断采用 **Standard Mode** 或 **Long Context Mode**。未完成全量识别前，不生成最终核心角度或锁定主线。
+1. 完整读取本轮提供的 SRT 或逐条时长文本，读取目标商品的全部上下文与有效讲解窗口，再判断采用 **Standard Mode** 或 **Long Context Mode**。可选预处理器一次报告已解析块数/总块数、精确 `parsed_ranges` / `unparsed_ranges` 与原因；任一未解析范围标为 **BLOCKED**，不得把这些范围当作已检查或据其做语义推断。已解析范围仍保留并可分别说明，不因局部错误抹成未知。未完成全量识别前，不生成最终核心角度或锁定主线。
 2. 保留原始字幕编号、原话、时间码或逐条时长；不改写、不补造、不覆盖原件。
-3. 发现缺行、重复编号、时间码倒置、非正时长、乱码或截断时，说明实际可读范围。
+3. 发现缺行、重复编号、倒置编号/时间码、非正时长、乱码或截断时，精确说明已解析与未解析范围；未解析范围未补齐前整体状态为 BLOCKED，不进入正式分析。
 4. 能可靠一次读取全文时直接处理；存在截断、遗漏、上下文污染或商品反复切换风险时，按 `references/long-context-mode.md` 确保读取首尾、段间连续性和目标商品窗口。该规则只保证覆盖，不新增语义分析轮次。
 
 ### 第二步：一次语义分析中的职责协作
 
 1. 总决策编辑确定用户目标、目标商品和交付约束；若存在多个明确商品且用户未指定目标，只列必要区分信息并询问一次。
-2. 先按 `references/global-rules.md` 扫描全部字幕并记录正式词库命中的序号，再确认商品、款式、指代、离散窗口、条件、事实依据与风险。直接匹配可使用 `scripts/prohibited_term_guard.py`；脚本不可运行时由 AI 完成同样的全量检查。只排除命中的完整字幕，不连带邻近内容，也不把风险提示当作正式拦截。
+2. 先按 `references/global-rules.md` 扫描全部字幕并记录正式词库直接命中的序号，再确认商品、款式、指代、离散窗口、条件、事实依据与风险。可选统一预处理器保留全部原文、将直接命中行标 `HIT`、输出商品窗口时间图支持数据和三列紧凑表；HIT 行仍留在表内，入选 HIT 序号即失败。脚本只认正式词库直接命中；脚本不可运行时使用 manual，由 AI 按同一直接词库逐条对照。只排除命中的完整字幕，不连带邻近内容，也不把风险提示当作正式拦截。
 3. 商品事实与边界官核实剩余素材中的商品归属、原话支持、适用条件、动态交易信息、商品事实依据和上下文合规风险。只在确有帮助时参考 `references/product-knowledge-registry.md` 中的知识包；不因缺少知识包暂停处理，也不从风险推测新增禁词。特别区分“羊毛”正式禁词与“特殊纤维/防静电”事实核验：后者不能仅因邻近羊毛字幕被判违禁。
-4. 购买决策架构师先完成全部目标商品的有效独立购买信息识别和粒度判断。按完整语义区分独立卖点、同一卖点的证据/例子/条件、递进、重复和弱增量；不得机械拆碎，也不得过度合并造成信息遗漏。之后才生成候选购买路径。每个候选须独立重评和编排全部有效信息及必要支持，通过全量覆盖资格后才能评分。
+4. 购买决策架构师先完成全部目标商品的有效独立购买信息识别和粒度判断。按完整语义区分独立卖点、同一卖点的证据/例子/条件、递进、重复和弱增量；不得机械拆碎，也不得过度合并造成信息遗漏。之后才生成候选购买路径。候选只在完整序号顺序、一句角度、`卖点 ID → 支撑序号`、必要证据/条件、跳点核验和六维结果层面对比；落选候选不展开全文，但不得省略任何卖点、条件或路径记录。selection JSON 中角色仅限独立卖点/证据/条件/必要衔接/可选行动句；事实待核实、`risk_hint`、关键限制放在独立 `flags` 字段，不得混入角色或将风险升为硬失败。跳点逐一实际对照原文，按 `prev_id → next_id` 核对指代、对象、条件是否连续；任一跳点核验不成立，该候选不合格。获选候选才扩写为片。
 5. 购买决策剪辑师按候选核心角度完整编排原始字幕。低决策价值只影响排序、篇幅和承接，不允许删除；弱增量只有在没有新增信息或说服作用时才可压缩。对疑似重复执行“先判同事实→判新增信息→判说服增量→最后取舍”。CTA 可选；不因位置、截断假设或时长要求而移动、增加或补写。正式词库未命中的风险表达只作上下文提示，不自动删除字幕或相邻内容。同一商品可重排，不跨商品/款式混编，不润色或拼接造句。
 6. 单条候选和每条多视频候选都必须覆盖全部有效独立卖点及必要证据/条件，才有资格进入比较。多视频使用同一完整卖点池，但每条独立排序和组织；禁止采用主视频优先、剩余卖点再分配的策略。
 7. 总决策编辑比较通过覆盖资格的完整候选成片，按顾客问题强度、首屏停留价值、核心理由完整度、全卖点承载自然度、叙事连贯度和购买决策效率排序。多视频建议只说明推荐数量、主题和差异；用户选择数量及主题后，再正式生成。用户选择后，每条从同一完整卖点池独立排序，禁止机械 Top N。
@@ -93,11 +93,11 @@ description: "当用户发送“srt文案”“srt切片文案”“str文案”
 - 低于 45 秒的成片，只有在真实素材较短且质量合格时才可作为“短时长例外”交付；短素材类目也须满足购买理由、证据/条件、归属和连贯性要求。达不到质量要求时标为“短候选，非正式成片”，不灌水。
 - 不因成片超过 120 秒而自动删减或拆条；按单位时间价值、节奏和重要购买理由的实际作用动态取舍。不得保留机械/过度重复凑时长。
 - 长度压力不得成为删除有效独立卖点的理由；取舍顺序见 `references/highlight-selection.md`。时长不作为任务完成条件。单条和每条多视频方案都须先覆盖全部有效卖点及必要证据/条件，之后才能压缩不增加价值的内容。
-- 时长估算按 references/highlight-selection.md。SRT 按连续组起止跨度估算并计入组内空隙；逐条时长文本按入选条目累计。字幕定位保持原素材 1.0 倍口径。
+- 时长估算按 `references/highlight-selection.md`。SRT 将播放序列拆成源序号连续组，逐组以“末条 end − 首条 start”求跨度并求和，组内空隙自然计入；逐条时长文本按入选条目时长逐条累加。统一先累计源时长，再以 1.2 倍速除一次，并按 0.5ms 进位规则舍入到毫秒一次；展示时再格式化一次。组装器产出的 `playback_duration_display` 是第一部分和第三部分引用的同一值，正文、第一部分与第三部分不得各自重算或出现不同数值。字幕定位保持原素材 1.0 倍口径。
 
 ### 第四步：一次终检与局部修复
 
-成片质量审计官按 `references/final-check.md` 检查正式禁词复扫、反锚定、卖点粒度、候选资格、完整路径比较与六维排序、单条和每条多视频方案的全量覆盖，以及来源、归属、原话、条件、时长、合规和格式。发现失败项时退回具体部分，定位根因并修复，重新运行失败检查及相关回归，再执行完整验收；同一根因最多三轮。不得降低标准、删掉有效卖点或声称未运行的检查已通过。CTA 可选；时长不作为任务完成条件。
+成片质量审计官按 `references/final-check.md` 分开完成机器判定与 AI 语义判断。工具路径可用同一 selection JSON 机械校验来源 ID、入选归属、卖点支撑结构、每条入选字幕恰有一个角色、正式词库直接命中和组装结果；机器不判断卖点池是否完整、原话是否语义支撑或商品事实是否成立。工具不可用时仍交付五部分，标“模型逐条对照”，内部记录 PASS/FAIL/BLOCKED，不称机检通过。发现失败项时退回具体部分，定位根因，只重出受影响段落并复核其衔接，不重写整份五部分；同一根因最多三轮。不得降低标准、删掉有效卖点或声称未运行的检查已通过。CTA 可选；时长不作为任务完成条件。
 
 ## 5. 合规与事实边界
 
@@ -109,7 +109,7 @@ description: "当用户发送“srt文案”“srt切片文案”“str文案”
 
 ### 一、文件解析结果
 
-写明文件名、输入类型、原始字幕条数/覆盖跨度（如可得）、Standard/Long Context 模式、目标商品窗口数量、入选条数、组数、原始选段时长、预计 1.2 倍速成片时长及实际核验方式。未运行程序时写“模型逐条对照，未运行程序”。末尾简述实际检查范围与合规风险。
+按固定短句模板填写，不展开计算过程：`文件解析：{文件名}；{SRT/逐条时长文本}；{Standard/Long Context}；窗口 {数量}；入选 {条数} 条/{组数} 组；原始选段 {源时长}；预计成片 {playback_duration_display}；{脚本核验/模型逐条对照}。范围：{已核对范围或 BLOCKED 的 parsed_ranges/unparsed_ranges}。待核：{合规风险/事实待核实/关键限制，无则写“无”}。` 工具不可用时不得声称机检通过。原始选段与预计成片时长引用同一组装结果。
 
 ### 二、商品识别
 
@@ -117,7 +117,7 @@ description: "当用户发送“srt文案”“srt切片文案”“str文案”
 
 ### 三、最佳成片方案
 
-按用户指定条数或素材适配数量，交付一条或多条完整成片。每版给出本条核心购买角度、购买决策路径、预计时长、原始选段时长、按播放顺序排列的原话和来源序号，并简要说明核心购买理由、关键补充理由、重要未采用内容及原因。多条须说明各自差异，并核对每条均已全量覆盖；可在本部分内用简洁取舍摘要帮助核对，不增加第六部分。原话逐字保留；疑点紧邻对应片段标明。
+按用户指定条数或素材适配数量，交付一条或多条完整成片。每版给出本条核心购买角度、购买决策路径、预计时长、原始选段时长、按播放顺序排列的原话和来源序号，并简要说明核心购买理由、关键补充理由、重要未采用内容及原因。普通未采用内容最多 3 条、每条一行；合规风险、事实待核实、关键限制另列，不计入三条限额且不得省略。多条须说明各自差异，并核对每条均已全量覆盖；可在本部分内用简洁取舍摘要帮助核对，不增加第六部分。原话逐字保留；疑点紧邻对应片段标明。
 
 ### 四、作品标题与话题
 
@@ -130,9 +130,39 @@ description: "当用户发送“srt文案”“srt切片文案”“str文案”
 ## 7. AI-First 与诚实边界
 
 - 只要文本可可靠读取，AI 就完成核心语义任务。Python、脚本、联网、API、JSON 台账、特定平台或环境检查都不是普通任务的开始条件。
+- 预处理、组装器和机器 gate 均可选；缺少工具不阻止五部分交付。selection JSON 只是工具路径共享输入。脚本路径第一部分写“脚本核验”，手工路径写“模型逐条对照”，不得把手工 PASS 描述成机检通过。
 - 工具仅可辅助分段、定位、累计时长、编号或格式等机械工作；工具不可用时继续处理可读文本并如实说明核验范围。
 - 没有实际运行程序，不得声称程序核验通过；没有查看视频、商品资料或平台审核结果，不得声称已核实画面、音频、商品事实或投放效果。
 - 固定五部分输出以外，不增加日常流程展示字段。业务规则与输出继续按本 Skill 和当前引用文件执行。开发与发布治理按 `references/update-protocol.md`；该协议不构成日常剪辑流程。
+
+## Embedded source: references/runtime-manifest.json
+
+{
+  "version": 1,
+  "entry_file": "SKILL.md",
+  "required_files": [
+    "references/ai-first-constitution.md",
+    "references/global-rules.md",
+    "references/editorial-policy.md",
+    "references/highlight-selection.md",
+    "references/final-check.md",
+    "references/product-knowledge-registry.md"
+  ],
+  "conditional_files": [
+    {
+      "path": "references/long-context-mode.md",
+      "when": "Long Context Mode applies, or the source has truncation, omissions, or multi-window risk."
+    },
+    {
+      "path": "references/update-protocol.md",
+      "when": "Developing, testing, or releasing a C2 package."
+    },
+    {
+      "path": "product-knowledge-packs/*.md",
+      "when": "A pack is relevant to verifying the current product's facts, evidence, conditions, or attribution."
+    }
+  ]
+}
 
 ## Embedded source: references/ai-first-constitution.md
 
@@ -204,6 +234,10 @@ AI 负责商品识别与切换、指代、归属、卖点与购买价值、重�
 
 候选必须属于目标商品，原话完整自然，离开直播前情仍可理解，并有同商品原话可以兑现。比较顾客收益、具体可信度、后续承接与兑现能力、差异性和表达完整度；这是结合素材的语义比较，不是固定分数表或按词类排序。
 
+选择开头时，区分吸引顾客关注的问题、回应顾客问题、提供购买依据；同一句可以兼有多种作用。回应和依据能支撑后续主张，但具体数字、使用时长、洗涤次数和主播经历不自动获得开头优先权。比较时还要看它能否立刻关联顾客问题、给出继续看的理由，并由同商品原话跟进兑现。
+
+开头候选从已读完的目标商品上下文中跨主题筛选。核心主题只决定重点展开和内容组织，不限定开头候选范围；其他段落中的原话只要能自然承接并在后文兑现，也要参与比较。比较问题型入口时，把开头与紧随其后的必要回应作为一个完整入口比较：顾客能否对号入座，回应是否直接对应且有原话支撑。问题段较长时先压缩重复问题、停顿和无增量口头填充，再判断节奏；不能只因问题段较长就直接淘汰。主播提出的可能困扰可以作为素材中的问题钩子，但不能改成真实顾客反馈、普遍事实或商品已存在的缺陷。
+
 - 当强候选在顾客收益、可信度和可兑现性上明显胜过弱候选时，普通颜色、普通搭配、泛材质或完整但泛泛的商品介绍不得仅凭句子完整、先出现或画面依赖而胜过它。
 - 颜色、搭配、材质或外观表达不按关键词禁用。若原话本身清楚说出显气色、不沉闷、显瘦、利落等具体顾客结果，并且来源可信、后续能兑现，它可以与其他候选公平竞争。
 - 差异性只加分，不是硬门槛。普遍但具体、可信且有支撑的购买结果仍可胜出。
@@ -240,7 +274,7 @@ AI 负责商品识别与切换、指代、归属、卖点与购买价值、重�
 
 只有完成全部目标商品窗口的读取、有效信息识别和粒度判断后，才生成候选购买路径。禁止边读边锁定最终核心角度；第一个强卖点或最先出现的完整句子不因出现顺序获得优先权。后段才出现的顾客结果、差异点、顾虑回应或有力证明，须与前段候选公平竞争。
 
-每条候选路径使用同一完整信息集，独立重新评估全部有效卖点的决策价值、补充作用、条件、证据和重复关系；完成包含所有有效卖点的完整候选编排后，才能竞争。不得只比较钩子、单个卖点或候选标题。
+每条候选路径使用同一完整信息集，独立重新评估全部有效卖点的决策价值、补充作用、条件、证据和重复关系；完成包含所有有效卖点的完整路径编排后，才能竞争。不得只比较钩子、单个卖点或候选标题。
 
 候选进入评分前须同时满足：
 
@@ -252,7 +286,11 @@ AI 负责商品识别与切换、指代、归属、卖点与购买价值、重�
 
 不满足资格的角度不因钩子吸引力而进入正式排名。边界不合格的信息从有效覆盖集合排除并按现有事实/合规规则处理；不能把低决策价值、非核心或暂时难衔接当作不合格理由。
 
-通过覆盖资格后，比较**完整候选成片**，统一按顾客问题强度、首屏停留价值、核心理由完整度、全卖点承载自然度、叙事连贯度、购买决策效率六项进行整体评分和排序。六项是同一比较框架，不设置固定权重、总分阈值或卖点固定分数；可在内部使用相对评分，普通交付不展示候选评分表。
+通过覆盖资格后，比较**完整候选路径**，统一按顾客问题强度、首屏停留价值、核心理由完整度、全卖点承载自然度、叙事连贯度、购买决策效率六项进行整体评分和排序。六项是同一比较框架，不设置固定权重、总分阈值或卖点固定分数；可在内部使用相对评分，普通交付不展示候选评分表。
+
+为降低重复展开量，候选比较采用紧凑记录：**落选候选不展开全文，也不复制原文**；每个候选仍保留完整序号顺序、一句角度、每个卖点 ID → 支撑序号、必要证据/条件、跳点核验和六维结果。AI 直接对照同一份完整原文判断每个路径能否成立；紧凑呈现不得缩小语义审查范围，也不得只比较开头或单个卖点。只有获选方案扩写成片原文。
+
+对候选序列中每一个非源序号连续的跳点，在内部逐一记录 `prev_id → next_id`，逐字对照原文，核对指代、对象和条件是否连续；需要时读取两端及相关前后文，不能只凭序号推测。跳点核验不成立，且不能通过保留必要衔接句解决时，该候选不合格。跳点记录用于候选资格和终检，不进入五部分交付。
 
 候选分数接近时依次比较：顾客问题强度 → 证据完整性 → 全卖点承载自然度 → 连贯性 → 信息密度 → 剪辑可执行性。剪辑可执行性只作文本可见范围内的次级排序因素，例如原话完整度、指代依赖、跳段与承接成本；C2不能检查画面，因此不得把它设为硬否决。
 
@@ -262,7 +300,7 @@ AI 负责商品识别与切换、指代、归属、卖点与购买价值、重�
 
 - **单条正式方案必须覆盖全部已确认有效独立卖点**，并保留让其成立所需的证据和条件。覆盖不足的候选不得进入评分和最终排名，其他维度再高也不能补偿漏点。
 - **每条多视频方案都必须覆盖同一完整卖点池**，并保留该条成立所需的必要证据和条件；不得把非核心信息分配给其他视频。方案并集覆盖全量是额外一致性检查，不能代替逐条完整覆盖。
-- 单条和每条多视频方案的有效性都决定完整覆盖义务。各条评分和排序都以完整候选成片为对象，不按最早出现的卖点或一个开头作决定。
+- 单条和每条多视频方案的有效性都决定完整覆盖义务。各条评分和排序都以完整候选路径为对象，不按最早出现的卖点或一个开头作决定；比较阶段只展开获选方案的字幕原文。
 - 用户未指定数量时，如存在多条实质差异化候选且每条均能完整覆盖，应先推荐数量与主题并说明逐条全覆盖，等待用户选择数量及主题后再正式生成；用户未选择时按单条默认完成。
 - 核心角度只有排序权、展开权、承接权和表达选择权，没有删除有效卖点的权力。
 
@@ -491,6 +529,29 @@ AI 负责商品识别与切换、指代、归属、卖点与购买价值、重�
 
 总决策编辑对最终交付负责。总决策编辑不得跳过硬性失败项。审计官只能按当前硬规则裁决，不能用个人偏好替代规则。
 
+## 机器判定与 AI 语义判断
+
+可选脚本按 selection JSON 运行时记录 `verification_mode: script`；只有实际运行后才可标“脚本核验”。工具不可用或未运行时用 `verification_mode: manual`，仍按相同内部标准记录 PASS/FAIL/BLOCKED，但标“模型逐条对照”，不得声称机检通过。工具缺失不影响五部分交付。
+
+机器只处理可确定的结构与直接匹配：
+
+- 预处理报告 `已解析块数 / 总块数`、`parsed_ranges`、`unparsed_ranges` 与行号原因；存在未解析范围时该范围为 BLOCKED，不得宣称全量检查。其余已解析范围仍保留。
+- 核对编号重复/倒置、时间码倒置和非正时长；SRT 正式选段按源序号连续组累计 `末条 end − 首条 start`，逐条时长文本按入选条目累加。
+- 对 selection JSON 的覆盖映射，机器只验结构、不判断语义，且只查四项：序号在源、序号已入选、每个卖点至少一个支撑序号、每个入选序号有且只有一个五类角色之一（独立卖点/证据/条件/必要衔接/可选行动句）。支撑、证据、条件引用均须来自源且入选。
+- 对照源 SHA-256 与 selection JSON；正文原文、组装时长和第五部分序号由同一个 selection JSON 生成。1.2 倍速只除一次，半毫秒进位到毫秒只做一次，展示舍入只做一次；第一与第三部分引用同一个 `playback_duration_display`。
+- 禁词机器 gate 只认 `references/global-rules.md` 正式词库的直接命中。`risk_hint` 只能原样透传，不得升级为硬失败（`hard_fail`）。例如“羊毛”直接命中附近出现“特殊纤维/防静电”，后两者不因此命中或连带失败；回归用例必须覆盖这一邻近情形。
+
+**以下六项保留给 AI 终检，不交给机器 gate：**
+
+1. 卖点池是否遗漏、粒度是否过度拆分或合并。
+2. 原话是否真正在真实上下文中支撑所映射的卖点，而不只是表面词语相似。
+3. 商品/款式/对象归属是否成立，必要证据、条件与限制是否足够且仍然成立。
+4. 正式词库之外的语义等价、完整上下文中的合规风险与事实待核实；这些判断不借 `risk_hint` 自动拦截。
+5. 每个候选跳点是否实际核对原文 `prev_id → next_id` 的指代、对象、条件连续性；失败且无法通过保留必要衔接解决时，该候选不合格。记录只供内部判断，不进入五部分交付。
+6. 候选资格、完整路径比较和六维排序是否公平，且单条/每条多视频都完整覆盖卖点池。
+
+回归时，机器 gate 的硬失败只由明确结构错误、解析错误和正式词库直接命中产生；风险提示误判为硬失败属于发布阻断问题。不得因为风险提示出现而削弱 AI 对真实语义等价或实际事实边界问题的判断。
+
 ## 明确失败项
 
 出现以下任一项，方案质量验收不通过：
@@ -507,6 +568,8 @@ AI 负责商品识别与切换、指代、归属、卖点与购买价值、重�
 - 候选未通过顾客问题/结果、原话证据、完整购买逻辑、全量卖点编排和事实/商品归属检查，就因为强钩子进入正式评分。
 - 候选尚未完整编排全部有效卖点就评分；评分只看钩子、单个卖点或开头，而不是完整候选成片；或把覆盖不合格方案靠其他分数补回来。
 - 评分缺少顾客问题强度、首屏停留价值、核心理由完整度、全卖点承载自然度、叙事连贯度、购买决策效率中的任一维度，或比较时给卖点使用固定类目权重。
+- 因主题名称跳过全文中更有竞争力的开头候选，或因首个已选角度提前锁定开头；仅因具体数字、使用经历或商品介绍就判定首屏价值更高，未核对顾客关联、停留理由和后续兑现。
+- 问题型开头与后续商品回应不对应，或回应没有同商品原话支撑；问题段较长就直接淘汰，未先压缩重复问题、停顿和无增量口头填充。
 - 单条未选同一候选池综合排名第一；多条重新随机生成角度、机械 Top N，或同时选入仅换开头的高度同质方案而挤掉实质差异化候选。
 - 长度压力下先删有效独立卖点，或停止时仍有有效信息未在单条或多条并集中承载。
 - 未满足停止条件就结束：全部有效卖点尚未承载、必要证据/条件未完整，剩余素材仍有可用独立信息。
@@ -539,7 +602,7 @@ AI 负责商品识别与切换、指代、归属、卖点与购买价值、重�
 6. **原话来源**：原话、原始序号和来源位置一致；没有润色、补造或伪造编号。
 7. **候选资格与完整比较**：每个正式候选先完成全量卖点重评和完整编排，通过明确顾客问题/结果、证据、完整路径、全卖点资格及事实归属检查后才评分。评分对象为完整成片，六个维度齐全；相近分按既定顺序裁决，剪辑可执行性只作次级因素。
 8. **覆盖**：每条正式交付视频各自承载全部有效独立卖点和必要证据/条件。多条方案并集也须覆盖全量，作为额外一致性检查，不能代替逐条完整覆盖。低价值只改变排序、篇幅、位置和表达选择；不得把它当成弱增量。
-9. **开头与首屏价值**：陌生顾客听完首屏可理解具体收益、要解决的问题或继续观看理由。首屏强弱进入完整方案比较，不用一个好钩子代替整条评分。
+9. **开头与首屏价值**：从目标商品全文跨主题比较候选，不因主题名称跳过更强入口；区分关注钩子、问题回应与购买依据，不让数字或主播经历自动占优。问题型入口连同紧随其后的必要回应一起核验相关性、对应关系和原话兑现；较长问题先压缩重复与停顿再判断。主播设问不得写成真实顾客反馈。首屏强弱进入完整方案比较，不用一个好钩子代替整条评分。
 10. **多方案选择**：存在适合多条的实质差异化角度时，先给用户数量与主题建议并说明每条均会完整覆盖全量卖点；用户选择数量及主题后，再正式生成。第一条为同一候选池综合第一；每条方案均须完整覆盖全部卖点，后续方案还须兼顾自身质量和实质差异，不机械 Top N。用户未选择时不把多条草案当正式交付；可按单条默认完成。
 11. **CTA 自然度**：购买推动是可选项，不强制提前安排购买机会、截断前 CTA 或逼单结尾。若保留行动句，确认它与本条角度自然相连，且原句完整语境、商品对象、条件和动态交易边界成立。
 12. **重复与信息密度**：严格按“先判同事实→判新增信息→判说服增量→最后取舍”检查。有效递进和强调不误删；无增量重复默认压缩。
@@ -694,6 +757,8 @@ AI 负责商品识别与切换、指代、归属、卖点与购买价值、重�
 - 用固定类目模板压过当前商品、顾客问题和素材证据；商品知识包决定结构、开头、卖点排序、成交位置、话题或事实取舍。
 - 总决策编辑越过事实与边界官对已确认全局禁令、商品归属或证据边界的否决。
 - 开头弱候选仅凭先后位置或表面完整度压过明显更强、可信且可兑现的顾客结果；老粉限定表达被误当陌生顾客通用利益。
+- 只在已选主题段里找开头，因而漏掉全文更强的问题钩子；或仅凭具体数字、使用时长、洗涤次数、主播经历就判定首屏更强，没有比较顾客关联和后续回应。
+- 问题型开头没有匹配的商品回应，或只因问题段较长就淘汰，没有先压缩重复、停顿和无增量口头填充；把主播设问误写成真实顾客反馈。
 - 未完整读取目标商品全部上下文和窗口就生成候选或锁定主线；第一个强卖点仅因出现早而占优。
 - 机械拆碎同一购买信息的例子，或过度合并不同事实导致覆盖遗漏。
 - 把低决策价值的有效独立购买信息当作弱增量删除；价值高低代替有效性判断。
@@ -771,11 +836,32 @@ AI 负责商品识别与切换、指代、归属、卖点与购买价值、重�
 
 C2 Universal does not require or bundle a Python runtime script for ordinary SRT or duration-text tasks.
 
-Use the host AI's native file reading and calculation capabilities by default. Optional utilities may be added when they materially improve a specific mechanical task. They must never become a normal-task gate or require a JSON/workflow pipeline.
+Use the host AI's native file reading and calculation capabilities by default. These standard-library utilities are optional and never become a normal-task gate or require a JSON/workflow pipeline.
 
-## Optional direct-term guard
+## Optional unified preprocessing tool
 
-`prohibited_term_guard.py` mechanically scans standard SRT cues or numbered duration-text rows against only the literal terms listed under `## 正式禁用词库` in `references/global-rules.md`. It normalizes Unicode compatibility forms and spacing/punctuation before direct matching. Use it when convenient for a complete mechanical scan; if unavailable, continue with the AI-first manual scan.
+`srt_tools.py` is an optional standard-library helper for lossless parsing, deterministic assembly, structural gate checks, and support-map diffs. It never decides product identity, selling-point meaning, evidence sufficiency, semantic equivalence, transition continuity, or candidate quality.
+
+Examples:
+
+```text
+python scripts/srt_tools.py preprocess input.srt --output report.json
+python scripts/srt_tools.py assemble input.srt selection.json --output assembly.json
+python scripts/srt_tools.py check input.srt selection.json --final-text final-copy.txt
+python scripts/srt_tools.py diff replay-a.json replay-b.json
+```
+
+The preprocessor includes parsed/total block counts, exact parsed and unparsed line ranges, reasons, numbering/time diagnostics, row durations, a compact three-column `id|start-end|source text` table, direct formal-term hits, and timeline support for the AI's product-window map. It recognizes the exact leading paste labels `srt文案` and `【字幕列表】` as input metadata, reports their line numbers, and excludes them from cue counts; other unrecognized text remains unparsed and BLOCKED. Duration-text rows retain decimal precision through aggregation; a malformed row makes later cumulative timeline positions explicitly unknown while preserving their parsed text. A hit is marked `HIT` in the ID cell; hit rows remain in the table, and selection validation fails if one is selected. Unparsed ranges are `BLOCKED` and cannot be described as fully checked. Timeline rows do not assign product identity; that remains an AI judgment.
+
+The selection object follows `selection.schema.json`. `verification_mode` is `script` only when the helper is actually run; in `manual` mode the helper reports an internal status but leaves `machine_gate_status` null. Selection references must match the parsed source SHA-256. The gate checks source/selected IDs, point-to-cue structure, one allowed role for each selected cue, required flag structure, and literal terms in the formal word bank. `risk_hint` is passed through as information and never becomes a hard failure. `assemble` preserves selected source text and sequence, computes continuous-group SRT spans or summed duration-text rows, divides by 1.2 once and rounds the final playback duration once to milliseconds, then returns one `playback_duration_display` for reuse in the first and third output parts.
+
+The `diff` command compares point-pool IDs, support/evidence/condition IDs, roles, flags, selected sequence/order, angles, and supplied hard-rule outcomes. A different source SHA-256 produces `BLOCKED`. The report marks semantic review as still required; changes are evidence for review, not an automatic semantic pass/fail. AI still reviews point-pool completeness, source support, conditions, attribution, transitions, and stable hard-rule conclusions.
+
+If Python or the script is unavailable, continue manually when the text is reliable, report “模型逐条对照”, and do not claim a script check.
+
+## Optional legacy direct-term guard
+
+`prohibited_term_guard.py` is the compatibility CLI for direct formal-term scans. The unified `srt_tools.py` path is preferred when source range accounting, cross-cue direct matching, selection validation, or deterministic assembly are needed. Both use the formal term list only; neither makes semantic judgments. If unavailable, continue with the AI-first manual scan.
 
 Example: `python scripts/prohibited_term_guard.py input.srt --selected-ids 12,18 --final-text final-copy.txt`
 

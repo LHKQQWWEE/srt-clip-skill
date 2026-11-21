@@ -85,14 +85,13 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
         self.assertIn("不得仅凭“皮”“草”“皮裤”“皮裙”或“毛绒”扩展", formal_list)
         self.assertIn("防静电不是正式禁词", self.global_rules)
 
-    def test_current_release_versions_and_historical_0_4_3_record(self):
+    def test_current_release_versions_and_only_current_acceptance(self):
         self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.6")
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["version"], "0.4.17")
+        self.assertEqual(manifest["version"], "0.4.18")
         self.assertTrue((ROOT / "tests/release-0.4.6-acceptance.md").is_file())
         self.assertFalse((ROOT / "tests/release-0.4.4-acceptance.md").exists())
-        self.assertTrue((PLUGIN_ROOT / "docs/history/releases/release-0.4.4-acceptance.md").is_file())
-        self.assertTrue((PLUGIN_ROOT / "docs/history/releases/release-0.4.3-acceptance.md").is_file())
+        self.assertFalse((PLUGIN_ROOT / "docs/history").exists())
 
 
 if __name__ == "__main__":

@@ -27,7 +27,7 @@ class PurchaseDecision046Tests(unittest.TestCase):
     def test_core_and_plugin_versions_are_current(self):
         self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.6")
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["version"], "0.4.17")
+        self.assertEqual(manifest["version"], "0.4.18")
         assert_has(self, self.skill, "C2 Universal 0.4.6")
 
     def test_complete_inventory_precedes_candidate_generation(self):
@@ -94,8 +94,8 @@ class PurchaseDecision046Tests(unittest.TestCase):
         self.assertFalse("每条字幕必须" in self.active, "active rules changed point coverage into cue-by-cue coverage")
 
     def test_real_case_regressions_are_recorded(self):
-        cases = (PLUGIN_ROOT / "docs/history/releases/real-source-regression-0.4.5.md").read_text(encoding="utf-8")
-        for case in ["鞋类长素材", "颗粒羊毛马甲", "短款大衣", "752 条玉米方便面"]:
+        cases = read("tests/real-source-regression-0.4.6.md")
+        for case in ["296", "106,107,111,112,171,172,179,226,227,228,231", "PASS"]:
             with self.subTest(case=case):
                 self.assertIn(case, cases)
 

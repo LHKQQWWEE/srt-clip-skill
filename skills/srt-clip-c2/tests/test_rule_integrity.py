@@ -71,11 +71,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
     def test_distribution_contains_only_current_release_record(self):
         acceptance_files = sorted(p.name for p in (ROOT / "tests").glob("release-*-acceptance.md"))
         self.assertEqual(set(acceptance_files), {"release-0.4.6-acceptance.md"})
-        history = PLUGIN_ROOT / "docs" / "history" / "releases"
-        self.assertEqual(
-            {p.name for p in history.glob("release-*-acceptance.md")},
-            {"release-0.4.0-acceptance.md", "release-0.4.1-acceptance.md", "release-0.4.2-acceptance.md", "release-0.4.3-acceptance.md", "release-0.4.4-acceptance.md", "release-0.4.5-acceptance.md"},
-        )
+        self.assertFalse((PLUGIN_ROOT / "docs" / "history").exists())
         self.assertFalse((ROOT / "tests" / "test_early_purchase_opportunity.py").exists())
         self.assertNotIn("docs/history", read("SKILL.md"))
         archive = PLUGIN_ROOT / "archive"

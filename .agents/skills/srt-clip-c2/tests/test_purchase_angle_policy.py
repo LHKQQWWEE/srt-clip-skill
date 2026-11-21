@@ -88,7 +88,7 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
     def test_current_release_versions_and_historical_0_4_3_record(self):
         self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.6")
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["version"], "0.4.13")
+        self.assertEqual(manifest["version"], "0.4.17")
         self.assertTrue((ROOT / "tests/release-0.4.6-acceptance.md").is_file())
         self.assertFalse((ROOT / "tests/release-0.4.4-acceptance.md").exists())
         self.assertTrue((PLUGIN_ROOT / "docs/history/releases/release-0.4.4-acceptance.md").is_file())

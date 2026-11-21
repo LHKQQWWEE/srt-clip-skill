@@ -155,8 +155,21 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         prompt = manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"]
         codex_prompt = codex_manifest["interface"]["defaultPrompt"]
         self.assertEqual(prompt, codex_prompt)
-        for phrase in ["SKILL.md", "当前", "全部有效卖点", "独立复评", "购买推动可选", "五部分输出"]:
+        for phrase in ["SKILL.md", "当前唯一生效", "每次触发", "完整取得", "不得凭记忆输出正式成片"]:
             self.assertIn(phrase, prompt)
+        for path in [
+            "references/ai-first-constitution.md",
+            "references/global-rules.md",
+            "references/editorial-policy.md",
+            "references/highlight-selection.md",
+            "references/final-check.md",
+            "references/product-knowledge-registry.md",
+        ]:
+            self.assertIn(path, prompt)
+            self.assertTrue((ROOT / path).is_file(), path)
+        long_description = manifest["extensions"]["com.openai"]["interface"]["longDescription"]
+        self.assertIn("全部有效独立购买信息", long_description)
+        self.assertIn("固定五部分交付", long_description)
         for detailed_rule in ["显气色", "45秒", "多条互补"]:
             self.assertNotIn(detailed_rule, prompt)
 
@@ -172,7 +185,9 @@ class C2UniversalIntegrityTests(unittest.TestCase):
             self.assertNotIn("0.4.1", text)
         self.assertIn("当前唯一执行版本", start)
         self.assertIn("逻辑职责", start)
-        self.assertIn("一个 AI", launcher)
+        self.assertIn("每次触发", launcher)
+        manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
+        self.assertIn("一个 AI", manifest["extensions"]["com.openai"]["interface"]["longDescription"])
 
     def test_plugin_manifests_match_version(self):
         version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()
@@ -189,7 +204,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
 
     def test_user_designated_wool_term_is_unconditional_and_scoped(self):
         rules = read("references/global-rules.md")
-        for phrase in ["## 正式禁用词库", "`羊毛`", "匹配证明不能豁免此词", "羊绒单独出现不命中", "防静电不是正式禁词", "只排除实际命中的完整字幕序号"]:
+        for phrase in ["## 正式禁用词库", "`羊毛`", "匹配证明不能豁免此词", "`羊绒`：", "直接匹配字面词及其组合", "防静电不是正式禁词", "只排除实际命中的完整字幕序号"]:
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, rules)
         self.assertNotIn("条件性正式拦截", rules)

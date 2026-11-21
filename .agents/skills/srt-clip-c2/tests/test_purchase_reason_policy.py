@@ -80,7 +80,8 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
         self.assertIn("## 正式禁用词库", self.global_rules)
         self.assertIn("`羊毛`", self.global_rules)
         self.assertIn("匹配证明不能豁免此词", self.global_rules)
-        self.assertIn("羊绒单独出现不命中", self.global_rules)
+        self.assertIn("`羊绒`：", self.global_rules)
+        self.assertIn("直接匹配字面词及其组合", self.global_rules)
         self.assertIn("防静电不是正式禁词", self.global_rules)
         self.assertIn("动态生成", self.global_rules)
 

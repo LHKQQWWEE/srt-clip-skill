@@ -1,3 +1,13 @@
+## Plugin package 0.4.17 / C2 Universal core 0.4.6 (2026-11-21)
+
+- Synchronized the fail-closed entry protocol across plugin manifests, the skill launcher and portable wrapper. Every trigger requires a fresh, complete read of the active SKILL.md and six required references; missing or incomplete files block formal output.
+- Kept business rules in the active Skill and its references. No core rule or Skill body changed.
+- Added a regression check for prompt parity across the plugin manifests and skill launcher; retired obsolete 0.4.5 checks from the active 0.4.6 suite.
+
+## Plugin package 0.4.15 / C2 Universal core 0.4.6 (2026-11-21)
+
+- Added the user-authorized title/topic-only restriction for “鹅绒服”. Body wording, original subtitle cues, and product identification remain allowed; the phrase is excluded from direct subtitle scanning.
+
 ## Plugin package 0.4.13 / C2 Universal core 0.4.6 (2026-11-19)
 
 - Added an unconditional user-designated `羊毛` entry to the single formal prohibited-term list, with spacing/punctuation/number normalization, a source-preserving optional direct scanner, and exact cue-level exclusion. Cashmere alone, static-control claims and adjacent cues remain outside that formal ban.

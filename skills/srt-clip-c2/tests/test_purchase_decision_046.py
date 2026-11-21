@@ -27,7 +27,7 @@ class PurchaseDecision046Tests(unittest.TestCase):
     def test_core_and_plugin_versions_are_current(self):
         self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.6")
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["version"], "0.4.13")
+        self.assertEqual(manifest["version"], "0.4.17")
         assert_has(self, self.skill, "C2 Universal 0.4.6")
 
     def test_complete_inventory_precedes_candidate_generation(self):

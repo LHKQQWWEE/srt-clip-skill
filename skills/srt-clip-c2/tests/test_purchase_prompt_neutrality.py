@@ -48,9 +48,13 @@ class PurchasePromptNeutralityTests(unittest.TestCase):
     def test_environment_and_launcher_do_not_restore_an_early_cta_gate(self):
         self.assertIn("CTA 是可选项", self.environment)
         self.assertNotIn("低完播截断压力测试", self.environment)
-        prompt = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))["extensions"]["com.openai"]["interface"]["defaultPrompt"]
-        self.assertIn("每条多视频方案都覆盖全量卖点", prompt)
-        self.assertIn("等待用户选择", prompt)
+        manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
+        interface = manifest["extensions"]["com.openai"]["interface"]
+        prompt = interface["defaultPrompt"]
+        self.assertIn("每次触发", prompt)
+        self.assertIn("不得凭记忆输出正式成片", prompt)
+        self.assertIn("单条及每条多视频都覆盖完整卖点池", interface["longDescription"])
+        self.assertIn("等待选择", interface["longDescription"])
 
     def test_no_hard_duration_ceiling(self):
         self.assertIn("取消 120 秒硬上限", self.selection)
@@ -59,7 +63,10 @@ class PurchasePromptNeutralityTests(unittest.TestCase):
 
     def test_current_core_and_package_versions(self):
         self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.6")
-        self.assertEqual((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8").count('"version": "0.4.13"'), 1)
+        manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
+        codex_manifest = json.loads((PLUGIN_ROOT / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["version"], "0.4.17")
+        self.assertEqual(codex_manifest["version"], "0.4.17")
 
 
 if __name__ == "__main__":

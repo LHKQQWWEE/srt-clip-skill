@@ -40,10 +40,11 @@ class SpecialUpgrade046Tests(unittest.TestCase):
         self.assertTrue("同一根因最多进行三轮" in FINAL_CHECK, "repair loop must have a bounded limit")
         self.assertTrue("重新运行导致失败的测试" in FINAL_CHECK, "repair must rerun the failing check")
 
-    def test_formal_wool_term_does_not_expand_to_cashmere_or_static_control(self):
+    def test_formal_wool_and_cashmere_terms_do_not_expand_to_static_control(self):
         self.assertTrue("## 正式禁用词库" in GLOBAL_RULES, "formal list heading is missing")
         self.assertTrue("羊毛" in GLOBAL_RULES, "user-authorized wool term is missing")
-        self.assertTrue("羊绒单独出现不命中" in GLOBAL_RULES, "cashmere boundary must be explicit")
+        self.assertTrue("`羊绒`：" in GLOBAL_RULES, "user-authorized cashmere term is missing")
+        self.assertTrue("直接匹配字面词及其组合" in GLOBAL_RULES, "cashmere match scope must be explicit")
         self.assertTrue("防静电不是正式禁词" in GLOBAL_RULES, "static-control claims must stay outside the ban")
 
     def test_guard_normalizes_spacing_and_punctuation_but_keeps_related_cues(self):
@@ -57,8 +58,8 @@ class SpecialUpgrade046Tests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         report = json.loads(result.stdout)
         self.assertEqual(report["source_rows"], 5)
-        self.assertEqual([hit["cue_id"] for hit in report["direct_hits"]], ["1", "2"])
-        self.assertEqual(report["excluded_full_cue_ids"], ["1", "2"])
+        self.assertEqual([hit["cue_id"] for hit in report["direct_hits"]], ["1", "2", "4"])
+        self.assertEqual(report["excluded_full_cue_ids"], ["1", "2", "4"])
         self.assertEqual(report["status"], "SCAN_COMPLETE")
 
     def test_selected_cue_and_final_copy_are_hard_blocked_on_a_direct_hit(self):

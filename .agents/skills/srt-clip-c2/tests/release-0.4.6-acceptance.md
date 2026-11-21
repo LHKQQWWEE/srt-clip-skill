@@ -6,7 +6,7 @@
 
 ## Verified changes
 
-- `羊毛` is a direct, unconditional formal prohibited term. Unicode compatibility normalization and removal of spacing/punctuation catch variants such as `绵 羊-毛`. Matching excludes only the complete matched cue. `羊绒` alone, `特殊纤维`, anti-static wording, and adjacent cues remain outside the formal list.
+- `羊毛` is a direct, unconditional formal prohibited term. Unicode compatibility normalization and removal of spacing/punctuation catch variants such as `绵 羊-毛`. Matching excludes only the complete matched cue. `羊绒` is independently prohibited as of the later update; `特殊纤维`, anti-static wording, and adjacent cues remain outside the formal list.
 - Every video independently covers the full valid point set and necessary evidence or conditions. A multi-video union is an extra consistency check and cannot compensate for omissions. When video count is unspecified, the skill recommends count/themes and waits for the user's selection before generating multiple cuts.
 - Duration is not a task-completion condition. The 45-second reference, quality-gated short exception and no fixed upper ceiling remain.
 - Acceptance states are PASS / FAIL / BLOCKED; each same-root-cause repair is capped at three substantive rounds, with the failing test and full acceptance rerun.

@@ -361,16 +361,79 @@ def _escape_table_text(text: str) -> str:
     return text.replace("|", r"\|").replace("\r", r"\r").replace("\n", r"\n")
 
 
+def _compact_parsed_ranges(source: SourceReport) -> list[dict[str, object]]:
+    """Compress consecutive, successfully parsed cues without concealing gaps or bad blocks."""
+    ranges: list[dict[str, object]] = []
+    run: list[Cue] = []
+
+    def flush() -> None:
+        if not run:
+            return
+        first, last = run[0], run[-1]
+        ranges.append({
+            "start_line": first.line_start,
+            "end_line": last.line_end,
+            "cue_id_start": first.cue_id,
+            "cue_id_end": last.cue_id,
+            "cue_count": len(run),
+        })
+        run.clear()
+
+    for cue in source.cues:
+        if run:
+            previous = run[-1]
+            can_extend = (
+                cue.source_order == previous.source_order + 1
+                and cue.cue_number == previous.cue_number + 1
+                and cue.line_start > previous.line_end
+            )
+            if not can_extend:
+                flush()
+        run.append(cue)
+    flush()
+    return ranges
+
+
 def preprocess_text(
     text: str,
     formal_terms: Optional[Iterable[str]] = None,
     source_sha256: Optional[str] = None,
+    compact: bool = False,
 ) -> dict[str, object]:
-    """Return lossless source rows, mechanical diagnostics, direct hits, and compact views."""
+    """Return a lossless mechanical report, with an optional single-view compact schema."""
     source = parse_source(text, source_sha256=source_sha256)
     terms = list(formal_terms) if formal_terms is not None else load_formal_terms()
     direct_hits = find_direct_hits(source.cues, terms)
     hit_ids = {cue_id for hit in direct_hits for cue_id in hit["cue_ids"]}
+
+    if compact:
+        return {
+            "format": "c2-preprocess-compact-v1",
+            "source_type": source.source_type,
+            "source_sha256": source.source_sha256,
+            "status": source.status,
+            "counts": {"parsed_blocks": len(source.cues), "total_blocks": source.total_blocks},
+            "recognized_header_lines": source.recognized_header_lines,
+            "parsed_ranges": _compact_parsed_ranges(source),
+            "unparsed_ranges": source.unparsed_ranges,
+            "diagnostics": source.diagnostics,
+            "direct_hits": direct_hits,
+            "rows": [
+                {
+                    "id": cue.cue_id,
+                    "source_order": cue.source_order,
+                    "line_start": cue.line_start,
+                    "line_end": cue.line_end,
+                    "original_text": cue.original_text,
+                    "start_ms_exact": _decimal_string(cue.start_ms) if cue.timeline_known else None,
+                    "end_ms_exact": _decimal_string(cue.end_ms) if cue.timeline_known else None,
+                    "duration_ms_exact": _decimal_string(cue.duration_ms),
+                    "timeline_known": cue.timeline_known,
+                    "mark": "HIT" if cue.cue_id in hit_ids else "",
+                }
+                for cue in source.cues
+            ],
+        }
 
     compact_table = []
     timeline_map = []
@@ -426,10 +489,10 @@ def preprocess_text(
     }
 
 
-def preprocess_file(path: Path) -> dict[str, object]:
+def preprocess_file(path: Path, compact: bool = False) -> dict[str, object]:
     raw = path.read_bytes()
     text = raw.decode("utf-8-sig")
-    report = preprocess_text(text, source_sha256=hashlib.sha256(raw).hexdigest())
+    report = preprocess_text(text, source_sha256=hashlib.sha256(raw).hexdigest(), compact=compact)
     report["source_file"] = path.name
     return report
 
@@ -796,8 +859,11 @@ def support_diff(first: dict[str, object], second: dict[str, object]) -> dict[st
     }
 
 
-def _write_report(report: dict[str, object], output: Optional[Path]) -> None:
-    rendered = json.dumps(report, ensure_ascii=False, indent=2)
+def _write_report(report: dict[str, object], output: Optional[Path], compact_json: bool = False) -> None:
+    rendered = (
+        json.dumps(report, ensure_ascii=False, separators=(",", ":"))
+        if compact_json else json.dumps(report, ensure_ascii=False, indent=2)
+    )
     if output:
         output.write_text(rendered + "\n", encoding="utf-8")
     else:
@@ -830,6 +896,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     preprocess = commands.add_parser("preprocess", help="parse and report an SRT or numbered duration-text source")
     preprocess.add_argument("source", type=Path)
     preprocess.add_argument("--output", type=Path, help="optional JSON report path")
+    preprocess.add_argument("--compact", action="store_true", help="emit one lossless row per cue and compact JSON without duplicate table/timeline views")
     for name, help_text in (
         ("assemble", "validate and assemble a selection from original source cues"),
         ("check", "run the structural and formal-term gate for a selection"),
@@ -846,7 +913,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     args = parser.parse_args(argv)
     try:
         if args.command == "preprocess":
-            report = preprocess_file(args.source)
+            report = preprocess_file(args.source, compact=args.compact)
         elif args.command in {"assemble", "check"}:
             source = _load_source(args.source)
             selection = _load_json(args.selection)
@@ -862,7 +929,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     except (OSError, UnicodeError, ValueError, json.JSONDecodeError) as error:
         print(str(error), file=sys.stderr)
         return 3
-    _write_report(report, args.output)
+    _write_report(report, args.output, compact_json=args.command == "preprocess" and args.compact)
     return _exit_code(report.get("status"))
 
 

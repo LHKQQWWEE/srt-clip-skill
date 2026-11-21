@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://c2-universal.local/schemas/selection-0.4.23.json",
+  "$id": "https://c2-universal.local/schemas/selection-0.4.24.json",
   "title": "C2 Selection JSON",
   "description": "Shared mechanical input for optional validation, assembly, duration, fifth-part sequence, and semantic replay diff. The schema does not judge selling-point completeness or semantic support.",
   "type": "object",

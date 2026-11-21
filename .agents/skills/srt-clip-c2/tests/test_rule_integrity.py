@@ -72,6 +72,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         acceptance_files = sorted(p.name for p in (ROOT / "tests").glob("release-*-acceptance.md"))
         self.assertEqual(set(acceptance_files), {"release-0.4.6-acceptance.md"})
         self.assertFalse((PLUGIN_ROOT / "docs" / "history").exists())
+        self.assertFalse((PLUGIN_ROOT / "docs" / "acceptance" / "c2-p0-baseline.md").exists())
         self.assertFalse((ROOT / "references" / "qianchuan-offline.md").exists())
         self.assertFalse((ROOT / "tests" / "test_early_purchase_opportunity.py").exists())
         self.assertNotIn("docs/history", read("SKILL.md"))
@@ -90,7 +91,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
             self.assertNotIn(old, active)
 
     def test_duration_and_output_rules(self):
-        skill = read("SKILL.md")
+        skill = read("references/runtime-current.md")
         selection = read("references/highlight-selection.md")
         adapter = (PLUGIN_ROOT / "docs/platform-adapter-interface.md").read_text(encoding="utf-8")
         self.assertIn("1.2 倍速", skill)
@@ -112,20 +113,23 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertIn("逐条复评", selection)
 
     def test_ai_first_organization_and_dynamic_structure(self):
-        skill = read("SKILL.md")
+        skill = read("references/runtime-current.md")
         constitution = read("references/ai-first-constitution.md")
         self.assertIn("一个 AI、一次语义分析、一次终检", skill)
         self.assertIn("Chief Decision Editor", skill)
         self.assertIn("AI-First Constitution", constitution)
         self.assertIn("产品知识包只提供属性事实提醒", constitution)
-        self.assertIn("不按品类预设", skill)
+        self.assertIn("不得退回固定类目模板或预设卖点顺序", skill)
 
     def test_update_protocol_is_development_only(self):
         protocol = read("references/update-protocol.md")
         skill = read("SKILL.md")
         for token in ["八项固定审查", "三条一票否决", "动态结构", "知识包"]:
             self.assertIn(token, protocol)
-        self.assertIn("update-protocol.md", skill)
+        manifest = json.loads(read("references/runtime-manifest.json"))
+        self.assertNotIn("references/update-protocol.md", manifest["required_files"])
+        self.assertIn("references/update-protocol.md", [item["path"] for item in manifest["conditional_files"]])
+        self.assertNotIn("references/update-protocol.md", skill)
         self.assertIn("不增加日常剪辑流程", protocol)
 
     def test_portable_embeds_all_active_instruction_sources(self):
@@ -151,16 +155,15 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         prompt = manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"]
         codex_prompt = codex_manifest["interface"]["defaultPrompt"]
         self.assertEqual(prompt, codex_prompt)
-        for phrase in ["SKILL.md", "当前唯一生效", "每次触发", "完整取得", "不得凭记忆输出正式成片"]:
+        for phrase in ["SKILL.md", "runtime-current.md", "每次调用", "完整重读", "不得使用历史摘要"]:
             self.assertIn(phrase, prompt)
-        self.assertIn("references/runtime-manifest.json", prompt)
-        self.assertIn("manifest.required_files", prompt)
+        self.assertNotIn("references/runtime-manifest.json", prompt)
         runtime_manifest = json.loads(read("references/runtime-manifest.json"))
         for path in runtime_manifest["required_files"]:
             self.assertTrue((ROOT / path).is_file(), path)
         long_description = manifest["extensions"]["com.openai"]["interface"]["longDescription"]
         self.assertIn("全部有效独立购买信息", long_description)
-        self.assertIn("固定五部分交付", long_description)
+        self.assertIn("固定五部分输出", long_description)
         for detailed_rule in ["显气色", "45秒", "多条互补"]:
             self.assertNotIn(detailed_rule, prompt)
 
@@ -176,7 +179,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
             self.assertNotIn("0.4.1", text)
         self.assertIn("当前唯一执行版本", start)
         self.assertIn("逻辑职责", start)
-        self.assertIn("每次触发", launcher)
+        self.assertIn("触发 srt文案", launcher)
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         self.assertIn("一个 AI", manifest["extensions"]["com.openai"]["interface"]["longDescription"])
 

@@ -10,7 +10,7 @@ def read(path):
 class PurchaseReasonPolicyTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.skill = read("SKILL.md")
+        cls.skill = read("references/runtime-current.md")
         cls.editorial = read("references/editorial-policy.md")
         cls.selection = read("references/highlight-selection.md")
         cls.global_rules = read("references/global-rules.md")
@@ -20,8 +20,8 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
         )
 
     def test_universal_core_owns_dynamic_structure(self):
-        self.assertIn("商品购买决策架构师", self.skill)
-        self.assertIn("动态决定内容路径", self.skill)
+        self.assertIn("Product Purchase-Decision Architect（商品购买决策架构师）", self.skill)
+        self.assertIn("内容结构根据本商品", self.skill)
         self.assertIn("Universal Core", self.editorial)
         self.assertIn("不规定结构", self.packs)
 
@@ -98,9 +98,9 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
 
     def test_no_extra_semantic_stage_or_tool_gate(self):
         self.assertIn("一次语义分析", self.skill)
-        self.assertIn("不是新增的多阶段工作流", self.skill)
+        self.assertIn("不创建多个模型、串行 Agent", self.skill)
         self.assertNotIn("第六步：", self.skill)
-        self.assertIn("Python、脚本、联网、API、JSON 台账", self.skill)
+        self.assertIn("不允许把某个 Python 版本、脚本、API、联网能力", self.skill)
 
 
 if __name__ == "__main__":

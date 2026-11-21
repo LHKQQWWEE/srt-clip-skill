@@ -19,7 +19,7 @@ def assert_has(test, text, phrase):
 class PurchaseAnglePolicyTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.skill = read("SKILL.md")
+        cls.skill = read("references/runtime-current.md")
         cls.editorial = read("references/editorial-policy.md")
         cls.selection = read("references/highlight-selection.md")
         cls.global_rules = read("references/global-rules.md")
@@ -29,12 +29,12 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
     def test_identify_all_points_and_rerate_them_for_each_video_angle(self):
         active = "\n".join([self.skill, self.editorial, self.selection, self.final_check])
         for phrase in [
-            "先完整读取目标商品全部上下文",
-            "识别全部有效独立购买信息并控制粒度",
-            "每个候选都逐条复评并完整编排全部有效卖点",
+            "完整读取目标商品的全部上下文和有效讲解窗口",
+            "识别其全部有效独立购买信息",
+            "每条候选路径使用同一完整信息集，独立重新评估全部有效卖点",
             "单条正式方案必须覆盖全部已确认有效独立卖点",
             "每条多视频方案也都必须覆盖同一完整卖点池",
-            "禁止边读取边锁定最终核心角度",
+            "禁止边读边锁定最终核心角度",
             "候选资格门槛",
             "评分对象是完整候选成片",
         ]:
@@ -74,7 +74,8 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
         for phrase in ["每条都交付完整", "差异化组合", "每条方案必须各自覆盖全部有效独立卖点", "不得只更换开头"]:
             with self.subTest(phrase=phrase):
                 assert_has(self, self.selection, phrase)
-        assert_has(self, self.skill, "用户明确要求多条时，每条都须完整覆盖同一商品的全部有效卖点")
+        assert_has(self, self.selection, "明确的核心购买角度")
+        assert_has(self, self.skill, "每条多视频方案各自覆盖完整信息池")
 
     def test_purchase_prompt_is_optional_and_never_forced_early(self):
         active = "\n".join([
@@ -110,7 +111,7 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
     def test_current_release_versions_and_only_current_acceptance(self):
         self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.6")
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["version"], "0.4.23")
+        self.assertEqual(manifest["version"], "0.4.24")
         self.assertTrue((ROOT / "tests/release-0.4.6-acceptance.md").is_file())
         self.assertFalse((ROOT / "tests/release-0.4.4-acceptance.md").exists())
         self.assertFalse((PLUGIN_ROOT / "docs/history").exists())

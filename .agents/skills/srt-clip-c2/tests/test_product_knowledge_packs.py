@@ -38,15 +38,15 @@ class ProductKnowledgePackTests(unittest.TestCase):
                 self.assertNotIn("固定卖点顺序", text)
 
     def test_dynamic_architecture_owns_structure(self):
-        skill = read("SKILL.md")
+        skill = read("references/runtime-current.md")
         editorial = read("references/editorial-policy.md")
-        self.assertIn("动态决定内容路径", skill)
+        self.assertIn("内容结构根据本商品", skill)
         self.assertIn("不存在所有商品通用的段落成交模板、卖点顺序、成交次数或成交位置", editorial)
         self.assertIn("购买决策架构师", editorial)
 
     def test_no_old_category_routing_paths_remain(self):
         active = "\n".join(
-            [read("SKILL.md"), read("references/product-knowledge-registry.md")]
+            [read("references/runtime-current.md"), read("references/product-knowledge-registry.md")]
             + [read(path) for path in PACKS]
         )
         self.assertNotIn("categories/", active)

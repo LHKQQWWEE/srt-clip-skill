@@ -1,5 +1,4 @@
 import json
-import re
 import unittest
 from pathlib import Path
 
@@ -9,51 +8,54 @@ PLUGIN_ROOT = next(path for path in ROOT.parents if (path / "plugin.json").is_fi
 
 
 class ExecutionEntryProtocolTests(unittest.TestCase):
-    def test_all_entry_surfaces_require_a_fresh_complete_read(self):
-        manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
-        codex_manifest = json.loads((PLUGIN_ROOT / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
-        prompt = manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"]
-        codex_prompt = codex_manifest["interface"]["defaultPrompt"]
+    def test_all_entry_surfaces_route_to_the_compiled_runtime(self):
+        plugin = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
+        codex = json.loads((PLUGIN_ROOT / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
+        prompt = plugin["extensions"]["com.openai"]["interface"]["defaultPrompt"]
+        codex_prompt = codex["interface"]["defaultPrompt"]
         launcher = (ROOT / "agents/openai.yaml").read_text(encoding="utf-8")
         portable = (ROOT / "C2-Universal-Portable.md").read_text(encoding="utf-8")
-        skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+        entry = (ROOT / "SKILL.md").read_text(encoding="utf-8")
 
         self.assertEqual(prompt, codex_prompt)
         self.assertIn(prompt, launcher)
         self.assertIn(prompt, portable)
-        self.assertIn("每次运行前强制完整读取", skill)
-        self.assertIn("完整读取本文件全文", skill)
-        self.assertIn("任一必读文件缺失或截断", skill)
-        self.assertLess(skill.index("每次运行前强制完整读取"), skill.index("## 1. 唯一入口与版本优先级"))
-        for phrase in [
-            "每次触发",
-            "SKILL.md 全文",
-            "同一对话每次触发都必须重新确认",
-            "若任一必读文件缺失、截断或未完整取得",
-            "不得凭记忆输出正式成片",
-        ]:
-            with self.subTest(phrase=phrase):
-                self.assertIn(phrase, prompt)
+        for phrase in ["每次运行前强制完整读取", "references/runtime-current.md", "正常任务不得再逐份加载"]:
+            self.assertIn(phrase, entry)
+        self.assertIn("不得开始语义分析", entry)
+        self.assertIn("每次调用重新读取当前版本", entry)
+        self.assertNotIn("manifest.required_files", prompt)
+        for phrase in ["每次调用", "完整重读", "runtime-current.md", "不得使用历史摘要", "固定五部分交付"]:
+            self.assertIn(phrase, prompt)
 
-    def test_every_required_reference_is_present_in_the_active_skill(self):
-        manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
-        runtime_manifest = json.loads((ROOT / "references/runtime-manifest.json").read_text(encoding="utf-8"))
-        skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
-        read_contract = skill.split("## 1. 唯一入口与版本优先级", 1)[0]
-        paths = set(re.findall(r"`(references/[a-z0-9-]+\.md)`", read_contract))
-        self.assertFalse(paths, "the entry must not duplicate the manifest's required file list")
-        self.assertIn("required_files", read_contract)
-        self.assertTrue(runtime_manifest["required_files"])
-        for relative in runtime_manifest["required_files"]:
-            with self.subTest(path=relative):
-                self.assertTrue((ROOT / relative).is_file(), relative)
+    def test_manifest_maps_all_sources_to_one_runtime_file(self):
+        manifest = json.loads((ROOT / "references/runtime-manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["entry_file"], "SKILL.md")
+        self.assertEqual(manifest["runtime_file"], "references/runtime-current.md")
+        self.assertEqual(manifest["required_files"], [manifest["runtime_file"]])
+        self.assertTrue(manifest["source_files"])
+        self.assertEqual(set(manifest["source_files"]), set(manifest["source_hashes"]))
+        for item in manifest["source_map"]:
+            self.assertIn(item["source"], manifest["source_files"])
+            self.assertGreaterEqual(item["runtime_line"], 1)
+        self.assertTrue((ROOT / manifest["runtime_file"]).is_file())
 
-    def test_package_version_and_core_version_are_separate_and_aligned(self):
-        manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
-        codex_manifest = json.loads((PLUGIN_ROOT / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
+    def test_conditional_material_is_not_part_of_the_always_loaded_runtime(self):
+        manifest = json.loads((ROOT / "references/runtime-manifest.json").read_text(encoding="utf-8"))
+        runtime = (ROOT / manifest["runtime_file"]).read_text(encoding="utf-8")
+        for item in manifest["conditional_files"]:
+            if "*" not in item["path"]:
+                self.assertNotIn(item["path"], manifest["required_files"])
+        self.assertNotIn("# Long Context Mode", runtime)
+        for pack in (ROOT / "product-knowledge-packs").glob("*.md"):
+            self.assertNotIn(pack.read_text(encoding="utf-8").strip(), runtime)
+
+    def test_package_and_core_versions_remain_separate(self):
+        plugin = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
+        codex = json.loads((PLUGIN_ROOT / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.6")
-        self.assertEqual(manifest["version"], "0.4.23")
-        self.assertEqual(codex_manifest["version"], manifest["version"])
+        self.assertEqual(plugin["version"], "0.4.24")
+        self.assertEqual(codex["version"], plugin["version"])
 
 
 if __name__ == "__main__":

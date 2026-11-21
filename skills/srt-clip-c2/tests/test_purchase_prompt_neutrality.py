@@ -13,7 +13,7 @@ def read(path):
 class PurchasePromptNeutralityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.skill = read("SKILL.md")
+        cls.skill = read("references/runtime-current.md")
         cls.editorial = read("references/editorial-policy.md")
         cls.audit = read("references/final-check.md")
         cls.selection = read("references/highlight-selection.md")
@@ -51,8 +51,8 @@ class PurchasePromptNeutralityTests(unittest.TestCase):
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         interface = manifest["extensions"]["com.openai"]["interface"]
         prompt = interface["defaultPrompt"]
-        self.assertIn("每次触发", prompt)
-        self.assertIn("不得凭记忆输出正式成片", prompt)
+        self.assertIn("每次调用 C2", prompt)
+        self.assertIn("不得使用历史摘要或旧缓存", prompt)
         self.assertIn("单条及每条多视频都覆盖完整卖点池", interface["longDescription"])
         self.assertIn("等待选择", interface["longDescription"])
 
@@ -65,8 +65,8 @@ class PurchasePromptNeutralityTests(unittest.TestCase):
         self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.6")
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         codex_manifest = json.loads((PLUGIN_ROOT / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["version"], "0.4.23")
-        self.assertEqual(codex_manifest["version"], "0.4.23")
+        self.assertEqual(manifest["version"], "0.4.24")
+        self.assertEqual(codex_manifest["version"], "0.4.24")
 
 
 if __name__ == "__main__":

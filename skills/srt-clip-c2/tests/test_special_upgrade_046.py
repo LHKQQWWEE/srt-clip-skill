@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SKILL = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+SKILL = (ROOT / "references" / "runtime-current.md").read_text(encoding="utf-8")
 FINAL_CHECK = (ROOT / "references" / "final-check.md").read_text(encoding="utf-8")
 GLOBAL_RULES = (ROOT / "references" / "global-rules.md").read_text(encoding="utf-8")
 GUARD = ROOT / "scripts" / "prohibited_term_guard.py"

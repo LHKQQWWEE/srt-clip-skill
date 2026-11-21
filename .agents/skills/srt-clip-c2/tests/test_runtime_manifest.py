@@ -1,5 +1,7 @@
+import hashlib
 import json
-import re
+import subprocess
+import sys
 import unittest
 from pathlib import Path
 
@@ -10,43 +12,49 @@ MANIFEST_PATH = ROOT / "references" / "runtime-manifest.json"
 
 class RuntimeManifestTests(unittest.TestCase):
     def setUp(self):
-        self.assertTrue(MANIFEST_PATH.is_file(), "runtime manifest must exist")
         self.manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
-        self.entry = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+        self.runtime = (ROOT / self.manifest["runtime_file"]).read_text(encoding="utf-8")
 
-    def test_manifest_paths_match_entry_without_a_fixed_count(self):
+    def test_runtime_is_the_single_required_load(self):
+        entry = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+        self.assertEqual(self.manifest["required_files"], [self.manifest["runtime_file"]])
+        self.assertIn(self.manifest["runtime_file"], entry)
+        self.assertIn("正常任务不得再逐份加载其开发源文件或读取 `references/runtime-manifest.json`", entry)
+        self.assertIn("manifest 只供构建和完整性测试使用", entry)
+
+    def test_source_hashes_and_runtime_hash_are_current(self):
+        for relative, expected in self.manifest["source_hashes"].items():
+            self.assertEqual(hashlib.sha256((ROOT / relative).read_bytes()).hexdigest(), expected, relative)
+        actual = hashlib.sha256(self.runtime.encode("utf-8")).hexdigest()
+        self.assertEqual(actual, self.manifest["runtime_sha256"])
+
+    def test_source_map_is_unique_complete_and_points_to_verbatim_lines(self):
+        source_map = self.manifest["source_map"]
+        ids = [item["rule_id"] for item in source_map]
+        self.assertEqual(len(ids), len(set(ids)))
+        mapped = {}
+        runtime_lines = self.runtime.splitlines()
+        for item in source_map:
+            source_lines = (ROOT / item["source"]).read_text(encoding="utf-8").splitlines()
+            expected = source_lines[item["source_line"] - 1]
+            self.assertEqual(runtime_lines[item["runtime_line"] - 1], expected, item["rule_id"])
+            mapped.setdefault(item["source"], set()).add(item["source_line"])
+        self.assertEqual(set(mapped), set(self.manifest["source_files"]))
+        for source in self.manifest["source_files"]:
+            source_lines = (ROOT / source).read_text(encoding="utf-8").splitlines()
+            nonempty = {i for i, line in enumerate(source_lines, start=1) if line.strip()}
+            self.assertEqual(mapped[source], nonempty, source)
+
+    def test_compiler_rebuild_is_idempotent(self):
+        script = ROOT / "scripts" / "build_runtime.py"
+        result = subprocess.run([sys.executable, str(script), "--check"], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_conditional_paths_resolve_without_becoming_required_loads(self):
         required = set(self.manifest["required_files"])
-        read_contract = self.entry.split("## 1. 唯一入口与版本优先级", 1)[0]
-
-        self.assertEqual(self.manifest["entry_file"], "SKILL.md")
-        self.assertIn("required_files", read_contract)
-        self.assertIn("runtime-manifest.json", read_contract)
-        self.assertFalse(re.search(r"`references/[a-z0-9-]+\.md`", read_contract))
-        for path in required:
-            self.assertTrue(path.startswith("references/"))
-        self.assertNotIn("len(paths) ==", self.entry)
-
-    def test_every_required_and_conditional_path_resolves(self):
-        required = self.manifest["required_files"]
-        conditional = self.manifest["conditional_files"]
-
-        self.assertEqual(len(required), len(set(required)))
-        self.assertFalse(set(required) & {item["path"] for item in conditional if "*" not in item["path"]})
-        for relative in [self.manifest["entry_file"], *required]:
-            with self.subTest(path=relative):
-                self.assertTrue((ROOT / relative).is_file(), relative)
-        for item in conditional:
-            with self.subTest(path=item["path"]):
-                matches = list(ROOT.glob(item["path"]))
-                self.assertTrue(matches, item["path"])
-
-    def test_load_contract_names_batch_read_and_range_gate(self):
-        text = self.entry.split("## 1. 唯一入口与版本优先级", 1)[0]
-        self.assertIn("runtime-manifest.json", text)
-        self.assertIn("并发", text)
-        self.assertIn("首尾", text)
-        self.assertIn("截断", text)
-        self.assertIn("不得进入素材语义分析", text)
+        for item in self.manifest["conditional_files"]:
+            self.assertNotIn(item["path"], required)
+            self.assertTrue(list(ROOT.glob(item["path"])), item["path"])
 
 
 if __name__ == "__main__":

@@ -1,33 +1,31 @@
-# C2 Universal core 0.4.6｜plugin package 0.4.23 first-round acceptance
+# C2 Universal Core 0.4.6｜Plugin 0.4.24 发布验收
 
-## Scope and source baseline
+日期：2026-11-21
 
-- Package target: `0.4.22 → 0.4.23`; core remains `0.4.6`.
-- Rule source: the local 0.4.22 plugin cache snapshot, recorded by raw-byte hashes in [`c2-p0-baseline.md`](../../../docs/acceptance/c2-p0-baseline.md). The Git checkout originally tracked 0.4.15; the cache snapshot was used so the current 0.4.22 rules were the implementation baseline.
-- Worktree: `codex/c2-p0-first-round`. No plugin, GitHub, or other external publication was performed.
-- Semantic rule text was preserved except for the agreed operational wiring. Full rule files remain the sole rule source; no consolidation or separate rule-map artifact is part of this candidate.
+## 版本与规则基准
 
-## Implemented changes
+- GitHub 与原私有插件基准为 Plugin 0.4.23 / Core 0.4.6；新包升级为 Plugin 0.4.24，Core 维持 0.4.6。
+- 原插件身份、私有范围和入口沿用；0.4.23 ZIP 与 Git 历史保留回退。
+- AI-First、全局规则、编辑政策、卖点筛选、商品知识登记、终检、女装/鞋/围巾知识源共 9 类文件在 `.agents` 与发行镜像中逐字节保持基准内容。
+- 本次仅调整运行加载、候选编排契约、机械预处理、入口说明和发行元数据；不删减任何业务规则。
 
-- The runtime manifest is the only required-reference list. Entry consistency and path-completeness tests protect it; the entry does not hard-code a file count or duplicate the list.
-- Optional `srt_tools.py` parses SRT and numbered duration text, preserves cue text and unparsed raw blocks, reports parsed/total counts, exact line ranges and reasons, mechanical diagnostics, direct hits, compact three-column rows, and timeline support. A HIT row remains visible; selecting a direct formal-term hit fails.
-- The real attached duration-text regression exposed two exact leading paste labels being treated as malformed rows. The parser now reports `srt文案` and `【字幕列表】` as recognized input metadata, excludes them from cue counts, and still leaves any other unrecognized row BLOCKED.
-- A source-bound selection JSON drives structural gate, source-word assembly, continuous-group/duration-text timing, and fifth-part sequence. The same `playback_duration_display` is reused in parts 1 and 3. `manual` mode reports internal status without claiming machine validation.
-- The gate passes `risk_hint` through without elevating it to a hard failure. A fixture places “特殊纤维/防静电” next to a direct “羊毛” hit and confirms the selected risk cue passes the formal-term gate.
-- Candidate comparison retains complete sequence, one-sentence angle, point-to-cue support mapping, necessary evidence/conditions, six-dimension results, and source-checked jump records. Losing candidate transcripts are not expanded. AI owns all meaning and transition decisions.
-- The semantic replay protocol distinguishes identical-JSON mechanical reproducibility from two-pass semantic stability and produces a support/condition/role/rule diff.
-- The fixed five-part output remains. Part 1 uses one short template; ordinary omitted-content notes are capped at three one-line items; risks, facts to verify, and key limits are separate exceptions. Repairs are local.
+## 架构与规则保持
 
-## Verification
+- 每次运行完整读取精简入口和唯一编译正文；长文本模式与商品知识按条件加载。manifest/source map用于构建、溯源和测试。
+- 一次语义分析共享完整事实/卖点池；各核心独立重排；每个候选逐条覆盖全部有效卖点后才比较。现有六维比较、独立终检、局部修复和固定五部分交付保留。
+- 机械脚本仍只校验结构、来源、直接禁词和时长，不承担语义判断；正式禁词范围、原话、商品归属、重复判断、时长与多视频规则不变。
 
-- Pre-change 0.4.22 baseline: 89/89 tests passed.
-- Post-change full suite: `python -m unittest discover -s tests -v`, **128 tests passed, 0 failed**.
-- Portable package generation succeeded; manifest/metadata, portable-embedding, schema JSON, and replay JSON integrity checks passed.
-- Same selection JSON produced identical assembly and gate reports. The synthetic A/B review retained the same point pool, conditions, roles, flags, and formal-word conclusion; the generated diff explains an evidence-to-support mapping change. The adjacent special-fiber/anti-static risk case produced **0 mechanical risk-to-hard-fail false positives**.
-- Real attached sample (kept outside the repository): **509/509** numbered duration rows parsed, zero structural diagnostics, zero unparsed rows, cumulative duration **789,114 ms**, and byte-identical preprocessing reports on repeat. Direct formal hits were `羊毛`: 54, 186, 188, 229; `羊绒`: 54, 186, 188, 228. A source-bound assembly smoke test on cues 73–74 reproduced the original text and computed 4,000 ms source / 3,333 ms at 1.2x. Cue 509 ends mid-phrase (“你想要面料稍”) and remains a semantic completeness warning; it was not promoted into a machine parse failure.
-- A real-material independent AI replay has not been performed; the checked-in A/B records are authored synthetic expected outputs, as detailed in `semantic-replay-acceptance.md`.
-- The attached sample includes multiple product windows; no single-product five-part clip was issued because the regression request did not identify a target product. Audiovisual verification, external publishing, and host reload were not performed.
+## 验证结果
 
-## Acceptance boundary
+- 修改前 GitHub 基准：128/128 测试通过。
+- 修改后生效源 `.agents/skills/srt-clip-c2/tests`：153/153；发行镜像 `skills/srt-clip-c2/tests`：153/153；发行 ZIP 解压后：153/153。
+- 新增执行架构边界测试 22 项通过；运行正文 source map 检查、Portable 重建、ZIP CRC 与解压重建一致性检查通过。
+- 真实字幕文件 SHA-256：`53727e7401826ed845e2aaa54c4ba316ab16481091a26f6151eaf8713ce77e66`。999/999 条解析，累计 1,945.612 秒，无未解析行或结构诊断。直接词库命中序号与当前规则一致。
+- 本地机械对照：旧兼容 JSON 中位 1,298,120 bytes / 100.038 ms；`--compact` 为 219,865 bytes / 63.268 ms；分别减少 83.1% 输出体积、36.8% 中位墙钟耗时。
 
-This package is the locally tested first-round candidate. The real-source failure was an input-wrapper parsing issue and was fixed in the parser; this regression showed no unresolved rule conflict or context-limit failure requiring rule consolidation. No separate consolidation work remains in this candidate. Seconds saved and percentage estimates are not acceptance thresholds.
+## 验收范围与已知边界
+
+- 用户已授权按当前提供的 999 条字幕范围发布，无需补录素材。鹅绒服只作为上传测试记录中的离线模拟目标；本文件不宣称正式选品或销售转化结果。
+- 候选 A/B 已修复机械漏接和已识别的上下文问题，并完成结构/词库/来源核验。该素材仍有字幕转写不清、跨商品和尾句不完整等限制；#999 不完整句不进入候选。
+- 没有第二 AI 环境的模型 Token、总耗时与工具调用对照。本地脚本计时不代表跨平台 LLM 提速，发布记录不作此类声称。用户已明确授权按现有测试范围同步。
+- 旧 `.4.23` ZIP 与 Git 历史作为回退；当前发行树删除了过期的 P0 基线报告，不保留重复旧规则入口。

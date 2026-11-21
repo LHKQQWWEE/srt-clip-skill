@@ -18,7 +18,7 @@ def assert_has(test, text, phrase):
 class PurchaseDecision046Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.skill = read("SKILL.md")
+        cls.skill = read("references/runtime-current.md")
         cls.editorial = read("references/editorial-policy.md")
         cls.selection = read("references/highlight-selection.md")
         cls.final_check = read("references/final-check.md")
@@ -27,11 +27,11 @@ class PurchaseDecision046Tests(unittest.TestCase):
     def test_core_and_plugin_versions_are_current(self):
         self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.6")
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["version"], "0.4.23")
+        self.assertEqual(manifest["version"], "0.4.24")
         assert_has(self, self.skill, "C2 Universal 0.4.6")
 
     def test_complete_inventory_precedes_candidate_generation(self):
-        for phrase in ["先完整读取目标商品全部上下文", "候选购买路径", "禁止边读取边锁定最终核心角度", "第一个强卖点"]:
+        for phrase in ["完整读取目标商品的全部上下文和有效讲解窗口", "候选购买路径", "禁止边读边锁定最终核心角度", "第一个强卖点"]:
             assert_has(self, self.active, phrase)
 
     def test_single_clip_requires_every_valid_independent_point(self):
@@ -43,7 +43,7 @@ class PurchaseDecision046Tests(unittest.TestCase):
             assert_has(self, self.active, phrase)
 
     def test_point_granularity_keeps_examples_grouped_and_facts_distinct(self):
-        for phrase in ["有效独立购买信息", "不得机械拆碎", "不得过度合并造成信息遗漏", "证据覆盖不等于卖点覆盖"]:
+        for phrase in ["有效独立购买信息", "不把同一购买意义下的一组例子机械拆成多个卖点", "不把不同具体事实过度合并", "证据覆盖不等于卖点覆盖"]:
             assert_has(self, self.active, phrase)
 
     def test_each_candidate_is_a_complete_path_scored_after_coverage_gate(self):
@@ -88,7 +88,7 @@ class PurchaseDecision046Tests(unittest.TestCase):
 
     def test_architecture_stays_ai_first_and_does_not_add_fixed_machinery(self):
         assert_has(self, self.skill, "一个 AI、一次语义分析、一次终检")
-        assert_has(self, self.skill, "CTA 可选")
+        assert_has(self, self.skill, "购买推动是可选项")
         self.assertFalse("必须运行 Python 才能" in self.active, "active rules introduced a mandatory Python gate")
         self.assertIn("不设固定卖点权重", self.active)
         self.assertFalse("每条字幕必须" in self.active, "active rules changed point coverage into cue-by-cue coverage")

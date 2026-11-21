@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class RuntimeContractTests(unittest.TestCase):
     def setUp(self):
-        self.skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+        self.skill = (ROOT / "references" / "runtime-current.md").read_text(encoding="utf-8")
         self.editorial = (ROOT / "references" / "editorial-policy.md").read_text(encoding="utf-8")
         self.final_check = (ROOT / "references" / "final-check.md").read_text(encoding="utf-8")
         self.schema = json.loads((ROOT / "scripts" / "selection.schema.json").read_text(encoding="utf-8"))
@@ -38,7 +38,7 @@ class RuntimeContractTests(unittest.TestCase):
         self.require(self.editorial, "跳点核验不成立")
 
     def test_output_limits_and_exceptions_are_explicit(self):
-        self.assertRegex(self.skill, r"重要未采用内容.{0,30}最多 ?3 条")
+        self.assertRegex(self.skill, r"重要未采用内容.{0,30}最多 ?(?:3|三)条")
         self.assertIn("每条一行", self.skill)
         for exception in ("合规风险", "事实待核实", "关键限制"):
             self.require(self.skill, exception)

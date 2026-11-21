@@ -4,16 +4,16 @@
     "email": "lihuikang23@gmail.com",
     "name": "惠康 黎"
   },
-  "description": "SRT Clip C2 Universal 0.4.6：逐条视频全量覆盖；正式禁词以全局词库和授权边界为准；多视频先选主题；时长不是完成门槛。",
+  "description": "SRT Clip C2 Universal 0.4.6：使用单一编译运行正文；每条成片独立覆盖全部有效卖点；正式禁词与时长等业务边界保持现行规则。",
   "extensions": {
     "com.openai": {
       "interface": {
         "capabilities": [],
         "category": "Productivity",
-        "defaultPrompt": "【C2 Universal 每次运行强制加载协议｜仅执行约束，不定义业务规则】每次触发 srt文案、srt切片文案、str文案或 C2完整精简版时，先定位当前唯一生效的 C2 Universal Skill。正式分析素材前完整读取本插件 skills/srt-clip-c2/SKILL.md 全文与 references/runtime-manifest.json 全文；manifest.required_files 声明必读引用集合，随后一次并发读取集合内全部文件，不固定文件数量；manifest.conditional_files 按条件读取。逐份核对正文首尾、读取范围连续性与截断，截断时续读缺失范围。若任一必读文件缺失、截断或未完整取得，停止读取缺口并续读；全部必读内容完整前不得进入素材语义分析，也不得凭记忆输出正式成片。同一对话每次触发都必须重新确认当前文件。AI 保留商品归属、卖点识别、语义禁词、事实边界和候选质量判断；脚本只做机械校验和正式词库直接命中，risk_hint 只透传。脚本不可用时使用 manual，五部分交付照常完成并标“模型逐条对照”，内部仍记录 PASS/FAIL/BLOCKED，不声称机检通过。保持固定五部分输出，不新增 Agent、额外语义轮次或日常强制工具门槛。",
+        "defaultPrompt": "【C2 Universal 运行加载约束】每次调用 C2（触发 srt文案、srt切片文案、str文案或 C2完整精简版）时，正式分析素材前完整重读当前技能包中的 SKILL.md 与 references/runtime-current.md，并核对首尾和读取范围。runtime-current.md 是唯一日常业务规则正文；普通任务不要再逐份加载其开发源文件，也不要读取仅用于构建和测试的 runtime-manifest.json。只有运行正文要求时才加载 Long Context 规则或相关商品知识包。缺失或截断且未补齐时 BLOCKED，不得使用历史摘要或旧缓存。语义判断由一个 AI 在一次语义分析和现有一次终检中完成；工具可选且只做机械检查，工具不可用时继续并如实标注。保留原话、商品归属、正式禁词范围、每条全卖点覆盖、动态结构、时长规则、多视频机制和固定五部分交付。",
         "developerName": "惠康 黎",
         "displayName": "SRT Clip C2 Universal 0.4.6",
-        "longDescription": "由一个 AI 在一次语义分析中完成购买决策、事实边界和原话剪辑。先完整读取上下文并识别全部有效独立购买信息，再比较完整候选。单条及每条多视频都覆盖完整卖点池；方案并集只作额外检查。用户未指定多条数量时先建议主题并等待选择。正式词库唯一来源为 references/global-rules.md，当前五项为“羊毛、皮草、羊绒、特殊动物绒、全金纺半高领”；直接命中及语义等价按该文件边界处理，只排除实际命中的字幕序号，不连带相邻字幕，也不将风险提示扩展为正式拦截。时长不作为任务完成条件；CTA可选，保留动态结构与固定五部分交付。",
+        "longDescription": "由一个 AI 在一次语义分析和现有一次终检中完成购买决策、事实边界与原话剪辑。完整读取目标商品上下文，识别全部有效独立购买信息，再比较完整候选。单条及每条多视频都覆盖完整卖点池；用户未指定多条且存在实质差异化方案时，先建议主题与数量并等待选择。日常只读取 SKILL.md 与唯一编译运行正文 runtime-current.md；正式词库、原话、时长、重复、动态结构和固定五部分输出均保持现行规则。",
         "shortDescription": "AI组织分工，动态构建购买决策内容",
         "version": null
       }
@@ -27,5 +27,5 @@
   ],
   "name": "srt-clip-c2",
   "skills": "./skills",
-  "version": "0.4.23"
+  "version": "0.4.24"
 }

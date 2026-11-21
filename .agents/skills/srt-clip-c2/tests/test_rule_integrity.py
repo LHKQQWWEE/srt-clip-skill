@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import re
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -48,7 +49,6 @@ class C2UniversalIntegrityTests(unittest.TestCase):
             "references/highlight-selection.md",
             "references/product-knowledge-registry.md",
             "references/global-rules.md",
-            "references/qianchuan-offline.md",
             "references/final-check.md",
             "references/long-context-mode.md",
             "product-knowledge-packs/womens-fashion.md",
@@ -72,6 +72,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         acceptance_files = sorted(p.name for p in (ROOT / "tests").glob("release-*-acceptance.md"))
         self.assertEqual(set(acceptance_files), {"release-0.4.6-acceptance.md"})
         self.assertFalse((PLUGIN_ROOT / "docs" / "history").exists())
+        self.assertFalse((ROOT / "references" / "qianchuan-offline.md").exists())
         self.assertFalse((ROOT / "tests" / "test_early_purchase_opportunity.py").exists())
         self.assertNotIn("docs/history", read("SKILL.md"))
         archive = PLUGIN_ROOT / "archive"
@@ -136,7 +137,6 @@ class C2UniversalIntegrityTests(unittest.TestCase):
             "references/highlight-selection.md",
             "references/product-knowledge-registry.md",
             "references/global-rules.md",
-            "references/qianchuan-offline.md",
             "references/final-check.md",
             "references/long-context-mode.md",
             "product-knowledge-packs/womens-fashion.md",
@@ -198,24 +198,23 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertEqual(manifest["extensions"]["com.openai"]["interface"]["defaultPrompt"],
                          codex_manifest["interface"]["defaultPrompt"])
 
-    def test_user_designated_wool_term_is_unconditional_and_scoped(self):
+    def test_user_designated_prohibited_terms_are_unconditional_and_scoped(self):
         rules = read("references/global-rules.md")
+        section = rules.split("## 正式禁用词库", 1)[1].split("\n## ", 1)[0]
+        terms = set(re.findall(r"^\s*-\s+`([^`]+)`", section, flags=re.MULTILINE))
+        self.assertEqual(terms, {"羊毛", "皮草", "羊绒", "特殊动物绒", "全金纺半高领"})
         for phrase in ["## 正式禁用词库", "`羊毛`", "匹配证明不能豁免此词", "`羊绒`：", "直接匹配字面词及其组合", "防静电不是正式禁词", "只排除实际命中的完整字幕序号"]:
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, rules)
         self.assertNotIn("条件性正式拦截", rules)
         self.assertNotIn("证明匹配时，本条不触发正式拦截", rules)
-        offline = read("references/qianchuan-offline.md")
-        self.assertIn("当前直接命中即排除该完整字幕", offline)
-        self.assertIn("不以证明、否定语境或引用豁免", offline)
+        self.assertIn("只排除命中的完整字幕序号", rules)
 
-    def test_old_material_proof_policy_is_historical_only(self):
+    def test_superseded_historical_compliance_notes_are_not_distributed(self):
         rules = read("references/global-rules.md")
-        history = rules.split("## 历史审核背景（已被后续授权取代）", 1)[1].split("## 字段特例", 1)[0]
-        self.assertIn("旧的“有匹配证明即可保留羊毛宣传”口径不再适用", history)
-        self.assertNotIn("匹配证明时本条不触发", history)
-        offline = read("references/qianchuan-offline.md")
-        self.assertIn("本文是历史审核背景与风险提示记录", offline)
+        self.assertNotIn("历史审核背景", rules)
+        self.assertNotIn("有匹配证明即可保留羊毛宣传", rules)
+        self.assertFalse((ROOT / "references/qianchuan-offline.md").exists())
 
 
 if __name__ == "__main__":

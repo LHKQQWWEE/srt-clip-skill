@@ -5,6 +5,10 @@ description: "当用户发送“srt文案”“srt切片文案”“str文案”
 
 # SRT Clip C2 Universal 0.4.6
 
+## 每次运行前强制完整读取
+
+每次触发本 Skill，正式处理素材前必须重新完整读取本文件全文，以及以下六份必读文件的完整内容：`references/ai-first-constitution.md`、`references/global-rules.md`、`references/editorial-policy.md`、`references/highlight-selection.md`、`references/final-check.md`、`references/product-knowledge-registry.md`。仅有文件名、目录、摘要、历史对话或上次运行记录不算完整读取。任一必读文件缺失或截断时先重新读取；仍无法完整取得则停止输出正式成片并说明缺少文件。读取完成后只按当前文件内容执行，不凭记忆省略、简化或改写规则。
+
 ## 1. 唯一入口与版本优先级
 
 - 当前唯一执行版本：**C2 Universal 0.4.6**。只读取本入口及它明确引用的当前文件；旧版、缓存、同名副本和历史发布记录不覆盖本版。

@@ -14,7 +14,6 @@ SOURCES = [
     "references/highlight-selection.md",
     "references/product-knowledge-registry.md",
     "references/global-rules.md",
-    "references/qianchuan-offline.md",
     "references/final-check.md",
     "references/long-context-mode.md",
     "references/update-protocol.md",

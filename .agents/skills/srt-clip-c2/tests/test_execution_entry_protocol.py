@@ -16,10 +16,15 @@ class ExecutionEntryProtocolTests(unittest.TestCase):
         codex_prompt = codex_manifest["interface"]["defaultPrompt"]
         launcher = (ROOT / "agents/openai.yaml").read_text(encoding="utf-8")
         portable = (ROOT / "C2-Universal-Portable.md").read_text(encoding="utf-8")
+        skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
 
         self.assertEqual(prompt, codex_prompt)
         self.assertIn(prompt, launcher)
         self.assertIn(prompt, portable)
+        self.assertIn("每次运行前强制完整读取", skill)
+        self.assertIn("完整读取本文件全文", skill)
+        self.assertIn("任一必读文件缺失或截断", skill)
+        self.assertLess(skill.index("每次运行前强制完整读取"), skill.index("## 1. 唯一入口与版本优先级"))
         for phrase in [
             "每次触发",
             "SKILL.md 全文",
@@ -43,7 +48,7 @@ class ExecutionEntryProtocolTests(unittest.TestCase):
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
         codex_manifest = json.loads((PLUGIN_ROOT / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         self.assertEqual((PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.6")
-        self.assertEqual(manifest["version"], "0.4.18")
+        self.assertEqual(manifest["version"], "0.4.19")
         self.assertEqual(codex_manifest["version"], manifest["version"])
 
 

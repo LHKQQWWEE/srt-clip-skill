@@ -1,7 +1,7 @@
 # C2 Universal 0.4.6 Release Acceptance
 
 - Core version: `0.4.6`
-- Plugin package version: `0.4.19`
+- Plugin package version: `0.4.20`
 - Acceptance: **PASS** for active-source integrity, execution-entry parity, package assembly and automated regression tests.
 
 ## Execution entry

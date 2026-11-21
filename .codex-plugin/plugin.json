@@ -3,14 +3,14 @@
     "email": "lihuikang23@gmail.com",
     "name": "惠康 黎"
   },
-  "description": "SRT Clip C2 Universal 0.4.6：逐条视频全量覆盖；用户指定羊毛正式禁词；多视频先选主题；时长不是完成门槛。",
+  "description": "SRT Clip C2 Universal 0.4.6：逐条视频全量覆盖；正式禁词以全局词库和授权边界为准；多视频先选主题；时长不是完成门槛。",
   "interface": {
     "capabilities": [],
     "category": "Productivity",
     "defaultPrompt": "【C2 Universal 每次运行强制加载协议｜仅执行约束，不定义业务规则】每次触发 srt文案、srt切片文案、str文案或 C2完整精简版时，先定位当前唯一生效的 C2 Universal Skill。正式分析素材之前，必须实际取得本插件 skills/srt-clip-c2/SKILL.md 全文，并完整取得本次适用的必读引用文件：references/ai-first-constitution.md、references/global-rules.md、references/editorial-policy.md、references/highlight-selection.md、references/final-check.md、references/product-knowledge-registry.md。其他引用文件依据 SKILL.md 指明的场景按需读取。可接受宿主完整注入文件原文或使用当前可用的读取能力；仅有文件名、目录、摘要、此前聊天记录、旧版本或上一次输出，不等于真实加载。同一对话每次触发都必须重新确认当前生效文件，不得以刚刚执行过为由跳过。若任一必读文件缺失、截断或未完整取得，先针对该文件重新读取；仍失败则如实报告受阻文件与范围，不得声称已完整加载，也不得凭记忆输出正式成片。加载完整后只按照现行 SKILL.md 及其引用规则执行，不得自行增删、简化或改写业务规则；交付前仅执行 Skill 已规定的终检，失败按 Skill 原规则局部修复复验。不新增 Agent、强制程序、独立模型轮次或第六个交付部分。业务规则的唯一来源仍是原 Skill 文件。",
     "developerName": "惠康 黎",
     "displayName": "SRT Clip C2 Universal 0.4.6",
-    "longDescription": "由一个 AI 在一次语义分析中完成购买决策、事实边界和原话剪辑。先完整读取上下文并识别全部有效独立购买信息，再比较完整候选。单条及每条多视频都覆盖完整卖点池；方案并集只作额外检查。用户未指定多条数量时先建议主题并等待选择。羊毛和羊绒为无条件正式禁词，防静电不因此命中；只排除直接命中的完整字幕。时长不作为任务完成条件；CTA可选，保留动态结构与固定五部分交付。",
+    "longDescription": "由一个 AI 在一次语义分析中完成购买决策、事实边界和原话剪辑。先完整读取上下文并识别全部有效独立购买信息，再比较完整候选。单条及每条多视频都覆盖完整卖点池；方案并集只作额外检查。用户未指定多条数量时先建议主题并等待选择。正式词库唯一来源为 references/global-rules.md，当前五项为“羊毛、皮草、羊绒、特殊动物绒、全金纺半高领”；直接命中及语义等价按该文件边界处理，只排除实际命中的字幕序号，不连带相邻字幕，也不将风险提示扩展为正式拦截。时长不作为任务完成条件；CTA可选，保留动态结构与固定五部分交付。",
     "shortDescription": "AI组织分工，动态构建购买决策内容",
     "version": null
   },
@@ -22,5 +22,5 @@
   ],
   "name": "srt-clip-c2",
   "skills": "./skills",
-  "version": "0.4.19"
+  "version": "0.4.20"
 }

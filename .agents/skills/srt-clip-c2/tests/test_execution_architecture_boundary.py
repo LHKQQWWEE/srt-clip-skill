@@ -125,17 +125,18 @@ class ExecutionArchitectureBoundaryTests(unittest.TestCase):
         self.assertIn(self.runtime.strip(), portable)
         self.assertIn(prompt, portable)
 
-    def test_16_shared_point_pool_has_no_fixed_value_and_reranks_by_angle(self):
-        self.assertIn("建池时不赋固定价值等级", self.runtime)
-        self.assertIn("价值按每个候选的核心角度动态重评", self.runtime)
-        self.assertIn("同一卖点在不同成片中可以有不同价值等级", self.selection)
+    def test_16_point_pool_keeps_eligibility_separate_from_dynamic_value(self):
+        self.assertIn("有效性决定每条成片的覆盖义务", self.runtime)
+        self.assertIn("价值排序与表达篇幅按用户选定方案动态处理", self.runtime)
+        self.assertIn("不把某种类别固定成某一等级", self.selection)
 
-    def test_17_each_candidate_must_cover_the_full_pool_before_scoring(self):
-        self.assertIn("每个候选从同一完整信息池独立排序并编排全部有效信息", self.runtime)
-        self.assertIn("覆盖资格", self.editorial)
-        self.assertIn("候选尚未完整编排全部有效卖点就评分", self.auditor)
+    def test_17_opening_comparison_is_empathy_first_and_never_scores_full_cuts(self):
+        self.assertIn("只比较开头", self.editorial)
+        self.assertIn("共情入口优先", self.editorial)
+        self.assertIn("不为完整成片建立候选比赛", self.editorial)
+        self.assertIn("不做六维评分", self.editorial)
         for dimension in ["顾客问题强度", "首屏停留价值", "核心理由完整度", "全卖点承载自然度", "叙事连贯度", "购买决策效率"]:
-            self.assertIn(dimension, self.editorial)
+            self.assertNotIn(dimension, self.editorial)
 
     def test_18_machine_gate_does_not_judge_the_398_to_400_semantic_jump(self):
         sys.path.insert(0, str(ROOT / "scripts"))
@@ -153,18 +154,13 @@ class ExecutionArchitectureBoundaryTests(unittest.TestCase):
             "selling_points": [{"id": "P1", "support_ids": ["398"], "necessary_evidence_ids": ["400"], "required_condition_ids": []}],
             "roles": [{"cue_id": "398", "role": "独立卖点"}, {"cue_id": "400", "role": "证据"}],
             "flags": [],
-            "candidate_comparison": [{
-                "candidate_id": "B",
-                "complete_ordered_sequence": ["398", "400"],
-                "jump_checks": [],
-            }],
         }
         result = srt_tools.validate_selection(source, selection, formal_terms=[])
 
         self.assertEqual(result["machine_gate_status"], "PASS")
         self.assertTrue(result["semantic_review_required"])
-        self.assertIn("跳点核验不成立", self.editorial)
-        self.assertIn("prev_id → next_id", self.auditor)
+        self.assertIn("机器不判断", self.auditor)
+        self.assertIn("AI 的语义判断", self.auditor)
 
     def test_19_mechanical_calls_are_optional_and_grouped(self):
         self.assertIn("非日常任务前置条件", self.runtime)
@@ -174,8 +170,8 @@ class ExecutionArchitectureBoundaryTests(unittest.TestCase):
 
     def test_20_final_audit_is_single_pass_and_repairs_are_local_and_bounded(self):
         self.assertIn("现有一次终检", self.runtime)
-        self.assertIn("现有终检的审计视角", self.runtime)
-        self.assertIn("相同根因最多三轮实质修复", self.runtime)
+        self.assertIn("只对已选择且实际写出的成片", self.runtime)
+        self.assertIn("同一根因最多三轮实质修复", self.runtime)
         self.assertIn("只重出受影响段落，不重写整份五部分", self.runtime)
 
     def test_21_compact_preprocess_keeps_each_cue_once_and_preserves_parse_gaps(self):

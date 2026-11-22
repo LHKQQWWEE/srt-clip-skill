@@ -1,31 +1,33 @@
 # C2 semantic replay acceptance
 
-This replay separates exact tool reproducibility from semantic stability. The fixtures are synthetic and do not establish product facts or replace a real-source quality review.
+This protocol separates repeatable mechanical evidence from AI semantic judgment. Fixtures are synthetic; real-source findings are recorded separately in `real-source-regression-0.4.6.md`.
 
-## Layer 1: identical selection JSON
+## Layer 1: mechanical repeatability
 
-Run `preprocess`, `check`, and `assemble` twice against the same source bytes and the same selection JSON. The source SHA-256 must match. The complete gate JSON, assembled original text, `source_sequence` / `fifth_part_sequence`, source duration, playback duration, and `playback_duration_display` must be byte-for-byte identical. The first and third delivery parts reuse that one displayed duration field.
+Run `preprocess`, `check`, and `assemble` twice on identical source bytes and the same selected-cut record. Source SHA-256, structural diagnostics, assembled original text, source sequence, and any displayed duration estimate must match. Duration is informational only and is never an acceptance threshold or split trigger.
 
-Any parse gap must remain visible in `parsed_ranges` / `unparsed_ranges`; unresolved ranges remain BLOCKED. A selection that points into an unparsed range cannot be treated as a confirmed source ID. Known parsed cues remain present and inspectable.
+Every parse gap remains visible. An unresolved range stays BLOCKED, and an unparsed cue cannot be treated as a confirmed source ID. Direct formal-term hits exclude only their complete source cue; neighboring cues remain independently reviewable.
 
-## Layer 2: two semantic passes on the same source
+## Layer 2: semantic stability on the same source
 
-Review `runtime-replay-selection-a.json` and `runtime-replay-selection-b.json` as two independent AI passes using the same complete source and current rules. Run `srt_tools.py diff` and keep the generated support-change diff with the review notes.
+Review the A/B selection records against the same complete source and current rules. The diff compares the full valid point pool, supporting source IDs, necessary evidence/conditions, product attribution, exact-rule outcomes, opening-only choices, and each actual selected cut. Multi-video pause and resume state stays in the current conversation; it is not serialized into a selection record or required by the scripts.
 
-The generated diff reports point-pool IDs, direct support IDs, necessary evidence/conditions, cue roles, flags, selected IDs, angles, and supplied hard-rule outcomes. These items must remain stable:
+Stable findings must include:
 
-- the complete effective selling-point pool and its granularity;
-- the necessary evidence, conditions, ownership, and hard-rule conclusions for each point;
-- each point's source support being genuine in context;
-- direct formal-term hits remain excluded, while the adjacent special-fiber / anti-static risk hint stays a hint and is never promoted to `hard_fail`;
-- every discontinuity in each candidate path has a source-checked `prev_id → next_id` review for referents, object, and conditions; failed transitions disqualify that candidate.
+- the same complete pool at the same semantic granularity;
+- the same required evidence, conditions, ownership, and hard-rule boundaries;
+- opening candidates compared only as openings and necessary adjacent responses, with empathy first;
+- multi-video opportunity detection only after the full pool;
+- when a user choice is pending, a recoverable checkpoint and no unselected final cuts;
+- after choice, resume without re-reading or re-detecting unless source, product, or scope changed;
+- every actual selected cut independently covers the complete pool and required evidence/conditions;
+- applicable compliant source CTA retained verbatim; no new or rewritten CTA when the source has none;
+- final audit limited to the selected cuts actually written.
 
-The angle and ordered sequence may differ when both candidates remain complete and eligible. For every support change, explain which cue was added or removed and why the source supports the revised mapping. A changed support ID alone is not proof of semantic instability; an unexplained lost selling point, condition, ownership boundary, or changed hard-rule outcome is a failure.
-
-The support diff is a review aid, not an automatic semantic pass. `risk_hint` is never a machine hard failure. A machine failure caused only by a risk hint blocks release until corrected.
+An evidence/support change can be valid when the source supports it. An unexplained lost point, condition, product boundary, or changed hard-rule outcome is a failure. The support diff is a review aid and never makes semantic decisions.
 
 ## Synthetic fixture review
 
-The checked-in A/B records use the same six-cue synthetic source. Both keep the same four-point pool, washing condition, cue roles, risk/fact flags, and formal-word conclusion. B changes the order and maps cue 2 directly as support where A lists it as necessary evidence for P1; the generated diff shows both deltas without losing the underlying cue. B has two source-order discontinuities, `3 → 1` and `2 → 4`; both were checked against the original cue text for referents, product object, and conditions. Cue 6 directly hits “羊毛” and is omitted; cue 5's neighboring anti-static claim remains a `risk_hint` and the machine gate reports no hard failure.
+The checked-in A/B records use the same short synthetic source and retain the same complete point pool, condition, product attribution, flags, and formal-rule conclusion. They differ only in source support and playback ordering. The generated diff reports those changes without comparing full-cut candidates. The direct-hit cue is omitted in full, while its adjacent risk hint remains informational and does not become a mechanical hard failure.
 
-These are authored synthetic expected outputs reviewed against their source, not two independent runs of a production host model. A real-material semantic replay remains a separate acceptance check when suitable source material is available.
+These are authored expected outputs, not claims of two independent production-model runs. Real-source regression and scope limits are recorded in `real-source-regression-0.4.6.md`.

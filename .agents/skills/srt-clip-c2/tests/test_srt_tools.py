@@ -231,7 +231,7 @@ class SelectionPipelineTests(unittest.TestCase):
                 if cue_id in selected_ids
             ],
             "flags": [],
-            "candidate_angle": "完整展示购买理由",
+            "opening_choice": {"cue_ids": ["1"], "priority": "empathy", "basis": "完整呈现顾客处境"},
             "known_unaccelerated_ms": 150,
         }
 
@@ -362,11 +362,32 @@ class SelectionPipelineTests(unittest.TestCase):
         self.assertEqual(result["body_text"], "主卖点\n补充证据\n适用条件")
         self.assertEqual(result["source_duration_ms"], 2000)
         self.assertEqual(result["playback_duration_ms"], 1817)
-        self.assertEqual(result["source_duration_display"], "2.000秒")
-        self.assertEqual(result["playback_duration_display"], "1.817秒")
+        self.assertEqual(result["source_duration_display"], "\u7ea6 2 \u79d2")
+        self.assertEqual(result["playback_duration_display"], "\u7ea6 2 \u79d2")
         self.assertEqual([group["span_ms"] for group in result["source_groups"]], [1500, 500])
 
-    def test_duration_text_assembly_uses_half_up_millisecond_rounding_once(self):
+    def test_applicable_original_cta_role_is_valid_and_assembly_keeps_source_verbatim(self):
+        source = srt_tools.parse_source("1 1.0 原文行动提示")
+        selection = self.make_selection(source, selected_ids=("1",))
+        selection["selling_points"] = [{
+            "id": "P1",
+            "support_ids": ["1"],
+            "necessary_evidence_ids": [],
+            "required_condition_ids": [],
+        }]
+        selection["roles"] = [{"cue_id": "1", "role": "适用促单原话"}]
+
+        checked = srt_tools.validate_selection(source, selection, formal_terms=[])
+        assembled = srt_tools.assemble_selection(source, selection, formal_terms=[])
+
+        self.assertEqual(checked["status"], "PASS")
+        self.assertEqual(assembled["status"], "PASS")
+        self.assertEqual(assembled["body_text"], "原文行动提示")
+        selection["roles"] = [{"cue_id": "1", "role": "可选行动句"}]
+        legacy_role = srt_tools.validate_selection(source, selection, formal_terms=[])
+        self.assertIn("invalid_role", {item["code"] for item in legacy_role["hard_failures"]})
+
+    def test_duration_text_display_is_approximate_and_not_a_millisecond_claim(self):
         source = srt_tools.parse_source("7 0.003 一句话")
         selection = self.make_selection(source, selected_ids=("7",))
         selection["selling_points"][0]["support_ids"] = ["7"]
@@ -379,9 +400,9 @@ class SelectionPipelineTests(unittest.TestCase):
 
         self.assertEqual(result["source_duration_ms"], 3)
         self.assertEqual(result["playback_duration_ms"], 3)
-        self.assertEqual(result["playback_duration_display"], "0.003秒")
+        self.assertEqual(result["playback_duration_display"], "\u7ea6 1 \u79d2\u5185")
 
-    def test_duration_text_sums_fractional_milliseconds_before_rounding(self):
+    def test_fractional_duration_display_remains_approximate(self):
         source = srt_tools.parse_source("7 0.0005 第一句\n8 0.0005 第二句")
         selection = self.make_selection(source, selected_ids=("7", "8"))
         selection["selling_points"][0]["support_ids"] = ["7"]
@@ -395,7 +416,7 @@ class SelectionPipelineTests(unittest.TestCase):
         self.assertEqual(result["source_duration_ms_exact"], "1")
         self.assertEqual(result["source_duration_ms"], 1)
         self.assertEqual(result["playback_duration_ms"], 1)
-        self.assertEqual(result["playback_duration_display"], "0.001秒")
+        self.assertEqual(result["playback_duration_display"], "\u7ea6 1 \u79d2\u5185")
 
     def test_support_diff_reports_added_and_removed_ids_by_point(self):
         source = srt_tools.parse_source(SOURCE_WITH_GAPS)
@@ -418,7 +439,7 @@ class SelectionPipelineTests(unittest.TestCase):
         self.assertEqual(diff["evidence_changes"], [{"point_id": "P1", "added_ids": [], "removed_ids": ["4"]}])
         self.assertEqual(diff["selected_added_ids"], ["3"])
         self.assertEqual(diff["selected_removed_ids"], ["2"])
-        self.assertEqual(diff["angles"], ["完整展示购买理由", "换一种完整表达角度"])
+        self.assertEqual(diff["opening_choices"], [first["opening_choice"], second["opening_choice"]])
 
     def test_support_diff_reports_point_pool_condition_role_and_hard_rule_changes(self):
         source = srt_tools.parse_source(SOURCE_WITH_GAPS)
@@ -486,7 +507,7 @@ class SelectionPipelineTests(unittest.TestCase):
             result = json.loads(first.stdout.decode("utf-8"))
             self.assertEqual(result["source_sequence"], "1,2,4")
             self.assertEqual(result["fifth_part_sequence"], "1,2,4")
-            self.assertEqual(result["playback_duration_display"], "1.817秒")
+        self.assertEqual(result["playback_duration_display"], "\u7ea6 2 \u79d2")
 
 
 class ReplayFixtureTests(unittest.TestCase):
@@ -528,20 +549,9 @@ class ReplayFixtureTests(unittest.TestCase):
         self.assertEqual(diff["selected_sequences"], [["1", "2", "3", "4", "5"], ["3", "1", "2", "4", "5"]])
         self.assertEqual(diff["evidence_changes"], [{"point_id": "P1", "added_ids": [], "removed_ids": ["2"]}])
         self.assertEqual(diff["support_changes"], [{"point_id": "P1", "added_ids": ["2"], "removed_ids": []}])
-        source_orders = {cue.cue_id: cue.source_order for cue in source.cues}
-        for selection in (first, second):
-            for candidate in selection["candidate_comparison"]:
-                path = candidate["complete_ordered_sequence"]
-                expected_jumps = {
-                    (prev_id, next_id)
-                    for prev_id, next_id in zip(path, path[1:])
-                    if source_orders[next_id] != source_orders[prev_id] + 1
-                }
-                jump_checks = candidate["jump_checks"]
-                recorded_jumps = {(item["prev_id"], item["next_id"]) for item in jump_checks}
-                self.assertEqual(recorded_jumps, expected_jumps)
-                self.assertTrue(all(item.get("source_evidence") for item in jump_checks))
-                self.assertTrue(all(item["eligible"] for item in jump_checks))
+        self.assertEqual(diff["opening_choices"], [first["opening_choice"], second["opening_choice"]])
+        self.assertNotIn("candidate_comparison", first)
+        self.assertNotIn("candidate_comparison", second)
 
     def test_check_and_diff_cli_commands_emit_expected_json(self):
         fixture_dir = ROOT / "tests" / "fixtures"

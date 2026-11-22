@@ -23,11 +23,12 @@ SOURCES = [
 
 
 def build() -> str:
-    version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    core_version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    package_version = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))["version"]
     plugin = json.loads((PLUGIN_ROOT / "plugin.json").read_text(encoding="utf-8"))
     execution_protocol = plugin["extensions"]["com.openai"]["interface"]["defaultPrompt"]
     parts = [
-        f"# SRT Clip C2 Universal {version} Portable",
+        f"# SRT Clip C2 Universal · Core {core_version} · Plugin {package_version} Portable",
         "",
         "This portable file embeds the slim entry and one compiled runtime body. The long-context rules and product knowledge packs are included for portability and remain conditional at execution time. Developer-only update procedures, tests, and source-map metadata are excluded.",
         "",

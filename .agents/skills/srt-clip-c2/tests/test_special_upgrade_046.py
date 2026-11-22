@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SKILL = (ROOT / "references" / "runtime-current.md").read_text(encoding="utf-8")
+SKILL = (ROOT / "SKILL.md").read_text(encoding="utf-8")
 FINAL_CHECK = (ROOT / "references" / "final-check.md").read_text(encoding="utf-8")
 GLOBAL_RULES = (ROOT / "references" / "global-rules.md").read_text(encoding="utf-8")
 GUARD = ROOT / "scripts" / "prohibited_term_guard.py"
@@ -27,18 +27,21 @@ class SpecialUpgrade046Tests(unittest.TestCase):
                 check=False,
             )
 
-    def test_every_multi_video_plan_covers_the_full_point_pool_and_waits_for_choice(self):
-        self.assertTrue("每条多视频方案也都必须覆盖同一完整卖点池" in SKILL, "per-video coverage rule is missing")
-        self.assertTrue("用户选择数量及主题后，再正式生成" in SKILL, "multi-video generation is not gated on user choice")
-        self.assertTrue("多条方案并集" in SKILL, "collective coverage must remain documented as a second invariant")
-        self.assertFalse("多条最终方案并集覆盖全部有效卖点" in SKILL, "collective coverage cannot replace per-video coverage")
-        self.assertTrue("每条视频" in FINAL_CHECK, "final audit must check each delivered video")
+    def test_every_selected_cut_covers_full_pool_and_multi_video_waits(self):
+        editorial = (ROOT / "references" / "editorial-policy.md").read_text(encoding="utf-8")
+        contract = (ROOT / "references" / "runtime-contract.md").read_text(encoding="utf-8")
+        self.assertIn("每一条实际选中的成片", editorial)
+        self.assertIn("多视频机会", contract)
+        self.assertIn("暂停生成正式成片", contract)
+        self.assertIn("不重复读取", contract)
 
-    def test_duration_is_not_a_completion_gate_and_failed_acceptance_repairs(self):
-        self.assertTrue("时长不作为任务完成条件" in SKILL, "duration must not terminate the task")
-        self.assertTrue("PASS / FAIL / BLOCKED" in FINAL_CHECK, "acceptance states are missing")
-        self.assertTrue("同一根因最多进行三轮" in FINAL_CHECK, "repair loop must have a bounded limit")
-        self.assertTrue("重新运行导致失败的测试" in FINAL_CHECK, "repair must rerun the failing check")
+    def test_duration_is_approximate_and_final_audit_is_selected_only(self):
+        highlight = (ROOT / "references" / "highlight-selection.md").read_text(encoding="utf-8")
+        self.assertIn("只作约数参考", highlight)
+        self.assertIn("不参与质量验收", highlight)
+        self.assertIn("不触发拆条", highlight)
+        self.assertIn("仅为用户已选定且实际写出的成片", FINAL_CHECK)
+        self.assertIn("同一根因最多三轮", FINAL_CHECK)
 
     def test_formal_wool_and_cashmere_terms_do_not_expand_to_static_control(self):
         self.assertTrue("## 正式禁用词库" in GLOBAL_RULES, "formal list heading is missing")

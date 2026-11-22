@@ -105,17 +105,15 @@ class RepetitionSemanticRegressionTests(unittest.TestCase):
         self.assertNotIn(105, SHOE_SELECTED)  # partial, misrecognized restart before corrected line 106
         self.assertNotIn(149, SHOE_SELECTED)  # suspected ASR error; 106 already states the clear advice
 
-    def test_human_reviewed_clips_are_not_padded_to_duration_floor(self):
+    def test_human_reviewed_duration_numbers_are_display_only(self):
         shoe_raw, shoe_1_2x = estimate(SHOE_SELECTED, SHOE)
         pants_raw, pants_1_2x = estimate(PANTS_SELECTED, PANTS)
         self.assertEqual(shoe_raw, Decimal("37.280"))
         self.assertEqual(shoe_1_2x, Decimal("31.067"))
         self.assertEqual(pants_raw, Decimal("15.30"))
         self.assertEqual(pants_1_2x, Decimal("12.750"))
-        self.assertLess(shoe_1_2x, Decimal("45"))
-        self.assertLess(pants_1_2x, Decimal("45"))
-        # Semantic QA must label both as short candidates rather than retain weak
-        # repeats simply to cross the formal 45-second floor.
+        # These historical calculations are display estimates only; they do not
+        # establish a quality gate, acceptance threshold, or reason to split.
 
     def test_duplicate_decisions_are_defined_in_active_rules(self):
         from pathlib import Path
@@ -125,10 +123,9 @@ class RepetitionSemanticRegressionTests(unittest.TestCase):
         final_check = (root / "references/final-check.md").read_text(encoding="utf-8")
         for category in ("机械性重复", "强调性重复", "递进性重复", "过度性重复"):
             self.assertIn(category, editorial)
-            self.assertIn(category, selection)
-        self.assertIn("词面相似度", selection)
+        self.assertIn("同一购买事实", selection)
         self.assertIn("说服增量", selection)
-        self.assertIn("挤占更重要的独立购买理由", final_check)
+        self.assertIn("信息池", final_check)
 
 
 if __name__ == "__main__":

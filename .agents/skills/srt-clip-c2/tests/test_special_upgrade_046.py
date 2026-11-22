@@ -27,20 +27,21 @@ class SpecialUpgrade046Tests(unittest.TestCase):
                 check=False,
             )
 
-    def test_every_selected_cut_covers_full_pool_and_multi_video_waits(self):
-        editorial = (ROOT / "references" / "editorial-policy.md").read_text(encoding="utf-8")
+    def test_default_two_plans_and_long_form_exception_are_explicit(self):
+        policy = (ROOT / "references" / "clip-selection-policy.md").read_text(encoding="utf-8")
         contract = (ROOT / "references" / "runtime-contract.md").read_text(encoding="utf-8")
-        self.assertIn("每一条实际选中的成片", editorial)
-        self.assertIn("多视频机会", contract)
-        self.assertIn("暂停生成正式成片", contract)
-        self.assertIn("不重复读取", contract)
+        self.assertIn("默认直接生成两条", policy)
+        self.assertIn("每条独立覆盖完整有效卖点", policy)
+        self.assertIn("超长预设", policy)
+        self.assertIn("不得暂停等待用户选择", policy)
+        self.assertNotIn("暂停生成正式成片", contract)
 
     def test_duration_is_approximate_and_final_audit_is_selected_only(self):
         highlight = (ROOT / "references" / "highlight-selection.md").read_text(encoding="utf-8")
-        self.assertIn("只作约数参考", highlight)
-        self.assertIn("不参与质量验收", highlight)
-        self.assertIn("不触发拆条", highlight)
-        self.assertIn("仅为用户已选定且实际写出的成片", FINAL_CHECK)
+        policy = (ROOT / "references" / "clip-selection-policy.md").read_text(encoding="utf-8")
+        self.assertIn("120 秒不是目标，也不是硬上限", policy)
+        self.assertIn("先完成全部有效卖点的完整编排，再计算时长", policy)
+        self.assertIn("只对实际写出的成片执行终检", FINAL_CHECK)
         self.assertIn("同一根因最多三轮", FINAL_CHECK)
 
     def test_formal_wool_and_cashmere_terms_do_not_expand_to_static_control(self):

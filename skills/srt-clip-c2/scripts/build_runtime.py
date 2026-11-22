@@ -10,11 +10,14 @@ from pathlib import Path
 
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
+PLUGIN_ROOT = next(parent for parent in SKILL_ROOT.parents if (parent / "VERSION").is_file())
 MANIFEST_PATH = SKILL_ROOT / "references" / "runtime-manifest.json"
 RUNTIME_PATH = SKILL_ROOT / "references" / "runtime-current.md"
+SKILL_VERSION_PATH = SKILL_ROOT / "VERSION"
 SOURCE_FILES = [
     "references/ai-first-constitution.md",
     "references/runtime-contract.md",
+    "references/clip-selection-policy.md",
     "references/global-rules.md",
     "references/editorial-policy.md",
     "references/highlight-selection.md",
@@ -28,8 +31,10 @@ def sha256(data: bytes) -> str:
 
 
 def compile_bundle() -> tuple[str, dict[str, object]]:
+    core_version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    skill_version = SKILL_VERSION_PATH.read_text(encoding="utf-8").strip()
     parts = [
-        "# C2 Universal 0.4.6｜唯一运行规则正文",
+        f"# C2 Universal Core {core_version} / Skill {skill_version}｜唯一运行规则正文",
         "",
         "本文件为构建生成的日常运行正文。其下各权威源文件按原文收录；不要手工编辑本文件。",
         "源文件 → 规则行 ID → 本文件源章节及行号的完整映射见同目录 `runtime-manifest.json`。",
@@ -65,6 +70,8 @@ def compile_bundle() -> tuple[str, dict[str, object]]:
     manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
     if manifest.get("source_files") != SOURCE_FILES:
         raise ValueError("runtime manifest source_files do not match compiler sources")
+    manifest["core_version"] = core_version
+    manifest["skill_version"] = skill_version
     manifest["source_hashes"] = source_hashes
     manifest["runtime_sha256"] = sha256(runtime.encode("utf-8"))
     manifest["source_map"] = source_map

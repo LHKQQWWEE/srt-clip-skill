@@ -14,6 +14,8 @@ PLUGIN_ROOT = next(
 )
 SOURCES = [
     "SKILL.md",
+    "references/execution-summary.json",
+    "references/runtime-manifest.json",
     "references/runtime-current.md",
     "references/long-context-mode.md",
     "product-knowledge-packs/womens-fashion.md",
@@ -34,7 +36,7 @@ def build() -> str:
         "",
         "---",
         "",
-        "## 每次执行前的完整加载协议（执行约束，不定义业务规则）",
+        "## 执行摘要与版本校验协议（不定义高于规则源的新业务规则）",
         "",
         execution_protocol,
         "",

@@ -1,6 +1,6 @@
 # C2 semantic replay acceptance
 
-This protocol separates repeatable mechanical evidence from AI semantic judgment. Fixtures are synthetic; real-source findings are recorded separately in `real-source-regression-0.4.6.md`.
+This protocol separates repeatable mechanical evidence from AI semantic judgment. Fixtures are synthetic; real-source findings are recorded separately in `real-source-regression-0.4.7.md`.
 
 ## Layer 1: mechanical repeatability
 
@@ -10,17 +10,17 @@ Every parse gap remains visible. An unresolved range stays BLOCKED, and an unpar
 
 ## Layer 2: semantic stability on the same source
 
-Review the A/B selection records against the same complete source and current rules. The diff compares the full valid point pool, supporting source IDs, necessary evidence/conditions, product attribution, exact-rule outcomes, opening-only choices, and each actual selected cut. Multi-video pause and resume state stays in the current conversation; it is not serialized into a selection record or required by the scripts.
+Review the A/B selection records against the same complete source and current rules. The diff compares the full valid point pool, supporting source IDs, necessary evidence/conditions, product attribution, exact-rule outcomes, opening-only choices, and each actual selected cut. Plan count, independent purchase cores and per-plan coverage are semantic checks, not script decisions.
 
 Stable findings must include:
 
 - the same complete pool at the same semantic granularity;
 - the same required evidence, conditions, ownership, and hard-rule boundaries;
 - opening candidates compared only as openings and necessary adjacent responses, with empathy first;
-- multi-video opportunity detection only after the full pool;
-- when a user choice is pending, a recoverable checkpoint and no unselected final cuts;
-- after choice, resume without re-reading or re-detecting unless source, product, or scope changed;
-- every actual selected cut independently covers the complete pool and required evidence/conditions;
+- default two materially distinct plans with real independent purchase cores, unless the user starts with “单条” or “按推荐版” or a second plan would lack independent purchase value or lower quality;
+- every plan independently arranges the full point pool and required evidence/conditions; union coverage is invalid;
+- duration is calculated after full arrangement; at or below the slight-overrun region every valid point is retained, while only a clearly over-120-second complete plan may use core-specific dynamic selection and must list omitted valid points;
+- optional cache loss does not invalidate a current persistent execution summary; a missing, mismatched or stale summary requires reading source rules and refreshing it;
 - applicable compliant source CTA retained verbatim; no new or rewritten CTA when the source has none;
 - final audit limited to the selected cuts actually written.
 
@@ -30,4 +30,4 @@ An evidence/support change can be valid when the source supports it. An unexplai
 
 The checked-in A/B records use the same short synthetic source and retain the same complete point pool, condition, product attribution, flags, and formal-rule conclusion. They differ only in source support and playback ordering. The generated diff reports those changes without comparing full-cut candidates. The direct-hit cue is omitted in full, while its adjacent risk hint remains informational and does not become a mechanical hard failure.
 
-These are authored expected outputs, not claims of two independent production-model runs. Real-source regression and scope limits are recorded in `real-source-regression-0.4.6.md`.
+These are authored expected outputs, not claims of multiple independent production-model runs. Real-source regression and scope limits are recorded in `real-source-regression-0.4.7.md`.

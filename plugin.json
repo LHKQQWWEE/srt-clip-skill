@@ -4,17 +4,17 @@
     "email": "lihuikang23@gmail.com",
     "name": "惠康 黎"
   },
-  "description": "SRT Clip C2 Universal 0.4.6：共情优先比较开头；每条实际成片完整覆盖有效信息；多视频选择可暂停并恢复；适用合规原文促单保留，时长仅作约数参考。",
+  "description": "SRT Clip C2 Universal 0.4.7：摘要有效时复用；默认双方案，逐条独立编排；超长按购买核心动态处理。",
   "extensions": {
     "com.openai": {
       "interface": {
         "capabilities": [],
         "category": "Productivity",
-        "defaultPrompt": "【C2 Universal 运行加载约束】每次调用 C2（触发 srt文案、srt切片文案、str文案或 C2完整精简版）时，正式分析素材前完整重读当前技能包中的 SKILL.md 与 references/runtime-current.md，并核对首尾和读取范围。runtime-current.md 是唯一日常业务规则正文；普通任务不要再逐份加载其开发源文件，也不要读取仅用于构建和测试的 runtime-manifest.json。只有运行正文要求时才加载 Long Context 规则或相关商品知识包。缺失或截断且未补齐时 BLOCKED，不得使用历史摘要或旧缓存。语义判断由一个 AI 在一次语义分析和现有一次终检中完成；工具可选且只做机械检查，工具不可用时继续并如实标注。保留原话、商品归属、正式禁词范围、每条全卖点覆盖、动态结构、时长规则、多视频机制和固定五部分交付。",
+        "defaultPrompt": "【C2 Universal 0.4.7 / Skill 0.4.27】触发 srt文案、srt切片文案、str文案或 C2完整精简版时，先按 SKILL.md 校验 references/execution-summary.json。首次运行、版本/manifest/规则 SHA-256 不匹配或摘要无效时，完整读取 references/runtime-current.md 和相关权威规则并刷新摘要；有效摘要可复用，不要求每次完整重读。缓存仅可选，丢失不影响有效持久摘要；摘要始终从属于原始规则。普通任务无需脚本或工具门槛。默认直接生成两个具有独立购买核心的方案；开头指定单条/按推荐版时仅出一条。方案数量、逐条独立覆盖、120 秒和超长预设唯一按 references/clip-selection-policy.md。保留真实原话/序号、商品归属、多商品确认、正式禁词逐句边界、风险提示分离、重复判断、动态购买结构、共情优先开头、原文促单、固定五部分、AI-First 与工具最小化。",
         "developerName": "惠康 黎",
-        "displayName": "SRT Clip C2 Universal 0.4.6",
-        "longDescription": "一个 AI 在一次语义分析和现有一次终检中完成购买决策与原话剪辑。先建立目标商品完整信息池，再按共情优先顺序只比较开头，并在信息池之后检测多视频机会。用户需选择时保存当前对话检查点并暂停，选择后恢复且不重复读取、识别或检测。每条实际选定的成片覆盖完整有效信息及必要支持；适用且合规的原文促单必须保留，无来源不补造。时长只作约数参考，不参与验收或触发拆条；最终终检只检查实际选定并写出的成片。",
-        "shortDescription": "AI组织分工，动态构建购买决策内容",
+        "displayName": "SRT Clip C2 Universal 0.4.7 / Skill 0.4.27",
+        "longDescription": "C2 Universal Core 0.4.7 / Skill 0.4.27。基于完整信息池和真实原话组织购买决策，按共情优先选择开头。默认直接生成两个具有独立购买核心的方案；用户开头指定‘单条’或‘按推荐版’时只生成一条；第二条无法成立或会降低质量时说明具体原因。每条分别编排、计算时长和终检；120 秒仅在完整编排后明显超出时触发动态超长预设，必要时允许适度超时。摘要按版本与规则哈希复用，失效时回查原规则。保留合规原文促单、商品归属、正式禁词边界和五部分输出。",
+        "shortDescription": "原话剪辑，默认双方案与超长动态处理",
         "version": null
       }
     }
@@ -27,5 +27,5 @@
   ],
   "name": "srt-clip-c2",
   "skills": "./skills",
-  "version": "0.4.26"
+  "version": "0.4.27"
 }

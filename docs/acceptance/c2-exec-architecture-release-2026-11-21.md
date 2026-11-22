@@ -1,6 +1,6 @@
 # C2 Universal 执行架构优化｜0.4.24 历史验收记录
 
-> 历史记录，仅用于追溯 0.4.24 当时的执行架构和验证结果。本文中的版本、判断与测试结论不定义当前业务行为；当前规则和本轮验收以 `skills/srt-clip-c2/references/runtime-current.md` 及 `skills/srt-clip-c2/tests/release-0.4.6-acceptance.md` 为准。
+> 历史记录，仅用于追溯 0.4.24 当时的执行架构和验证结果。本文中的版本、判断与测试结论不定义当前业务行为；当前规则以 `skills/srt-clip-c2/references/runtime-current.md` 和 `skills/srt-clip-c2/references/clip-selection-policy.md` 为准，当前验收以 `skills/srt-clip-c2/tests/revision-0.4.7-acceptance.md` 为准。
 
 日期：2026-11-21  
 状态：**用户已授权按当前素材与测试范围同步；业务规则保持冻结**

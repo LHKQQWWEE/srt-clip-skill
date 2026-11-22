@@ -1,4 +1,4 @@
 interface:
-  display_name: "SRT Clip C2 Universal 0.4.6"
-  short_description: "AI组织分工，动态构建购买决策内容"
-  default_prompt: "【C2 Universal 运行加载约束】每次调用 C2（触发 srt文案、srt切片文案、str文案或 C2完整精简版）时，正式分析素材前完整重读当前技能包中的 SKILL.md 与 references/runtime-current.md，并核对首尾和读取范围。runtime-current.md 是唯一日常业务规则正文；普通任务不要再逐份加载其开发源文件，也不要读取仅用于构建和测试的 runtime-manifest.json。只有运行正文要求时才加载 Long Context 规则或相关商品知识包。缺失或截断且未补齐时 BLOCKED，不得使用历史摘要或旧缓存。语义判断由一个 AI 在一次语义分析和现有一次终检中完成；工具可选且只做机械检查，工具不可用时继续并如实标注。保留原话、商品归属、正式禁词范围、每条全卖点覆盖、动态结构、时长规则、多视频机制和固定五部分交付。"
+  display_name: "SRT Clip C2 Universal 0.4.7 / Skill 0.4.27"
+  short_description: "原话剪辑，默认双方案与超长动态处理"
+  default_prompt: "【C2 Universal 0.4.7 / Skill 0.4.27】触发 srt文案、srt切片文案、str文案或 C2完整精简版时，先按 SKILL.md 校验 references/execution-summary.json。首次运行、版本/manifest/规则 SHA-256 不匹配或摘要无效时，完整读取 references/runtime-current.md 和相关权威规则并刷新摘要；有效摘要可复用，不要求每次完整重读。缓存仅可选，丢失不影响有效持久摘要；摘要始终从属于原始规则。普通任务无需脚本或工具门槛。默认直接生成两个具有独立购买核心的方案；开头指定单条/按推荐版时仅出一条。方案数量、逐条独立覆盖、120 秒和超长预设唯一按 references/clip-selection-policy.md。保留真实原话/序号、商品归属、多商品确认、正式禁词逐句边界、风险提示分离、重复判断、动态购买结构、共情优先开头、原文促单、固定五部分、AI-First 与工具最小化。"

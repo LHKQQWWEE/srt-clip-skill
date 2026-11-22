@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://c2-universal.local/schemas/selection-0.4.26.json",
+  "$id": "https://c2-universal.local/schemas/selection-0.4.27.json",
   "title": "C2 Selection JSON",
-  "description": "Semantic record for one user-selected final cut. Selling points describe the complete product pool; selected_ids and roles describe only this cut. Opening choice is an AI record, not a machine judgment. A pending multi-video choice is saved in the current conversation and does not create a selection record or JSON gate.",
+  "description": "Optional semantic record for one generated final plan. Selling points describe the complete product pool; selected_ids and roles describe only this plan. Opening choice is an AI record, not a machine judgment. Default delivery is two distinct plans; do not create a pending theme-choice checkpoint.",
   "type": "object",
   "required": [
     "verification_mode",
@@ -32,7 +32,47 @@
         "minLength": 1
       },
       "uniqueItems": true,
-      "description": "Source cue IDs for one user-selected final cut, ordered for playback. Create one selection record per selected cut."
+      "description": "Source cue IDs for one generated final plan, ordered for playback. Create one selection record per emitted plan."
+    },
+    "plan_core": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The independent, source-supported purchase core that distinguishes this plan from other emitted plans."
+    },
+    "estimated_duration_seconds": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Approximate duration for this completely arranged plan, calculated after arrangement. 120 seconds is not a target or hard cap."
+    },
+    "duration_mode": {
+      "enum": [
+        "at_or_under_120_all_effective_points",
+        "clearly_over_120_dynamic_long_form"
+      ],
+      "description": "Per-plan classification after full arrangement; a slight overrun can retain decision-critical content."
+    },
+    "omitted_selling_points": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "selling_point_id",
+          "reason"
+        ],
+        "properties": {
+          "selling_point_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "description": "For a long-form omission, explain its lower contribution to this plan's core while confirming that the purchase decision remains complete."
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Any valid pool point omitted by this individual plan after the clearly-over-120-second dynamic preset; disclose these in the final plan. Never use another plan's union to cover an omission."
     },
     "selling_points": {
       "type": "array",
@@ -69,7 +109,7 @@
         },
         "additionalProperties": true
       },
-      "description": "The complete valid independent purchase-information pool for this product. Each selected cut must independently cover every point and its required evidence/conditions."
+      "description": "The complete valid independent purchase-information pool for this product. Each plan starts from this pool and independently covers all effective points when at or below 120 seconds; over 120 seconds follows the dynamic long-form policy and records valid omissions."
     },
     "roles": {
       "type": "array",

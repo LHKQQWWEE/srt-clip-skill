@@ -33,13 +33,15 @@ class ExecutionArchitectureBoundaryTests(unittest.TestCase):
     def test_02_entry_stays_small(self):
         self.assertLess(len(self.entry), 1600)
 
-    def test_03_every_call_requires_a_fresh_complete_read(self):
-        self.assertIn("每次调用重新读取当前版本", self.entry)
-        self.assertIn("首尾与读取范围连续", self.entry)
-        self.assertIn("不得开始语义分析", self.entry)
+    def test_03_valid_versioned_summary_is_reused_and_invalidated_on_change(self):
+        self.assertIn("execution-summary.json", self.entry)
+        self.assertIn("摘要有效时直接复用", self.entry)
+        self.assertIn("首次运行", self.entry)
+        self.assertIn("版本不匹配", self.entry)
+        self.assertIn("规则文件 SHA-256", self.entry)
 
-    def test_04_manifest_is_build_metadata_not_a_runtime_load(self):
-        self.assertIn("manifest 只供构建和完整性测试使用", self.entry)
+    def test_04_manifest_metadata_binds_the_persistent_summary(self):
+        self.assertIn("运行 manifest 哈希", self.entry)
         self.assertNotIn("runtime-manifest.json", self.manifest["required_files"])
 
     def test_05_compiler_check_is_clean(self):
@@ -107,7 +109,8 @@ class ExecutionArchitectureBoundaryTests(unittest.TestCase):
         prompt = plugin["extensions"]["com.openai"]["interface"]["defaultPrompt"]
         self.assertEqual(prompt, codex["interface"]["defaultPrompt"])
         self.assertIn("runtime-current.md", prompt)
-        self.assertIn("不要读取仅用于构建和测试的 runtime-manifest.json", prompt)
+        self.assertIn("execution-summary.json", prompt)
+        self.assertIn("clip-selection-policy.md", prompt)
         self.assertNotIn("manifest.required_files", prompt)
         self.assertLess(len(prompt), 1000)
         self.assertIn(prompt, read("agents/openai.yaml"))
@@ -126,15 +129,14 @@ class ExecutionArchitectureBoundaryTests(unittest.TestCase):
         self.assertIn(prompt, portable)
 
     def test_16_point_pool_keeps_eligibility_separate_from_dynamic_value(self):
-        self.assertIn("有效性决定每条成片的覆盖义务", self.runtime)
-        self.assertIn("价值排序与表达篇幅按用户选定方案动态处理", self.runtime)
-        self.assertIn("不把某种类别固定成某一等级", self.selection)
+        self.assertIn("有效性与价值排序是两个判断", self.runtime)
+        self.assertIn("不得固定某些卖点永远低价值", self.runtime)
+        self.assertIn("不把某类商品信息固定成高、中、低等级", self.selection)
 
     def test_17_opening_comparison_is_empathy_first_and_never_scores_full_cuts(self):
         self.assertIn("只比较开头", self.editorial)
         self.assertIn("共情入口优先", self.editorial)
-        self.assertIn("不为完整成片建立候选比赛", self.editorial)
-        self.assertIn("不做六维评分", self.editorial)
+        self.assertIn("不比较、评分或排名完整成片", self.editorial)
         for dimension in ["顾客问题强度", "首屏停留价值", "核心理由完整度", "全卖点承载自然度", "叙事连贯度", "购买决策效率"]:
             self.assertNotIn(dimension, self.editorial)
 
@@ -170,7 +172,7 @@ class ExecutionArchitectureBoundaryTests(unittest.TestCase):
 
     def test_20_final_audit_is_single_pass_and_repairs_are_local_and_bounded(self):
         self.assertIn("现有一次终检", self.runtime)
-        self.assertIn("只对已选择且实际写出的成片", self.runtime)
+        self.assertIn("只对实际写出的成片完成一次终检", self.runtime)
         self.assertIn("同一根因最多三轮实质修复", self.runtime)
         self.assertIn("只重出受影响段落，不重写整份五部分", self.runtime)
 

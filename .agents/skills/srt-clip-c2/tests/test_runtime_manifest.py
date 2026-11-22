@@ -7,7 +7,7 @@ class RuntimeManifestTests(unittest.TestCase):
  def test_entry_loads_compiled_runtime_without_manifest_requirement(self):
   self.assertIn("runtime-current.md",self.entry); self.assertIn("runtime-manifest.json",self.entry); self.assertEqual(self.m["required_files"],["references/runtime-current.md"]); self.assertTrue((ROOT/self.m["runtime_file"]).is_file())
  def test_source_hashes_runtime_hash_and_source_map_are_current(self):
-  self.assertEqual(self.m["core_version"],"0.4.6"); self.assertTrue(self.m["source_map"]); self.assertEqual(hashlib.sha256((ROOT/self.m["runtime_file"]).read_bytes()).hexdigest(),self.m["runtime_sha256"])
+  self.assertEqual(self.m["core_version"],"0.4.7"); self.assertEqual(self.m["skill_version"],"0.4.27"); self.assertTrue(self.m["source_map"]); self.assertEqual(hashlib.sha256((ROOT/self.m["runtime_file"]).read_bytes()).hexdigest(),self.m["runtime_sha256"])
   for p,d in self.m["source_hashes"].items(): self.assertEqual(hashlib.sha256((ROOT/p).read_bytes()).hexdigest(),d,p)
  def test_conditional_paths_resolve(self):
   for item in self.m["conditional_files"]: self.assertTrue(list(ROOT.glob(item["path"])),item["path"])

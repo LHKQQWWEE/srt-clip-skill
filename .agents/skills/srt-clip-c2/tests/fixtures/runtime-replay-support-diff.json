@@ -63,9 +63,21 @@
   "sequence_order_changed": true,
   "selected_added_ids": [],
   "selected_removed_ids": [],
-  "angles": [
-    "从肩部设计、活动量到穿着细节，交代日常穿着理由。",
-    "先落在衣摆搭配，再回到肩部和活动量，兼顾穿着限制。"
-  ],
-  "semantic_review_required": true
+  "semantic_review_required": true,
+  "opening_choices": [
+    {
+      "cue_ids": [
+        "1"
+      ],
+      "priority": "empathy",
+      "basis": "对应原文提出的穿着活动顾虑"
+    },
+    {
+      "cue_ids": [
+        "1"
+      ],
+      "priority": "empathy",
+      "basis": "对应原文呈现的搭配顾虑"
+    }
+  ]
 }

@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://c2-universal.local/schemas/selection-0.4.24.json",
+  "$id": "https://c2-universal.local/schemas/selection-0.4.26.json",
   "title": "C2 Selection JSON",
-  "description": "Shared mechanical input for optional validation, assembly, duration, fifth-part sequence, and semantic replay diff. The schema does not judge selling-point completeness or semantic support.",
+  "description": "Semantic record for one user-selected final cut. Selling points describe the complete product pool; selected_ids and roles describe only this cut. Opening choice is an AI record, not a machine judgment. A pending multi-video choice is saved in the current conversation and does not create a selection record or JSON gate.",
   "type": "object",
   "required": [
     "verification_mode",
@@ -14,38 +14,85 @@
   ],
   "properties": {
     "verification_mode": {
-      "enum": ["script", "manual"],
+      "enum": [
+        "script",
+        "manual"
+      ],
       "description": "script means the optional helper was run; manual never claims a machine pass."
     },
-    "source_sha256": {"type": "string", "pattern": "^[a-fA-F0-9]{64}$"},
+    "source_sha256": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{64}$"
+    },
     "selected_ids": {
       "type": "array",
       "minItems": 1,
-      "items": {"type": "string", "minLength": 1},
-      "uniqueItems": true
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true,
+      "description": "Source cue IDs for one user-selected final cut, ordered for playback. Create one selection record per selected cut."
     },
     "selling_points": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "support_ids"],
+        "required": [
+          "id",
+          "support_ids"
+        ],
         "properties": {
-          "id": {"type": "string", "minLength": 1},
-          "support_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
-          "necessary_evidence_ids": {"type": "array", "items": {"type": "string"}},
-          "required_condition_ids": {"type": "array", "items": {"type": "string"}}
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "support_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "necessary_evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required_condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
         },
         "additionalProperties": true
-      }
+      },
+      "description": "The complete valid independent purchase-information pool for this product. Each selected cut must independently cover every point and its required evidence/conditions."
     },
     "roles": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["cue_id", "role"],
+        "required": [
+          "cue_id",
+          "role"
+        ],
         "properties": {
-          "cue_id": {"type": "string"},
-          "role": {"enum": ["独立卖点", "证据", "条件", "必要衔接", "可选行动句"]}
+          "cue_id": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "独立卖点",
+              "证据",
+              "条件",
+              "必要衔接",
+              "适用促单原话"
+            ],
+            "description": "适用促单原话必须来自原文；适用于当前商品和成片且符合规则时完整保留，不得编造、改写、补充或跨商品移用。"
+          }
         },
         "additionalProperties": false
       }
@@ -54,11 +101,28 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["type", "cue_ids", "note"],
+        "required": [
+          "type",
+          "cue_ids",
+          "note"
+        ],
         "properties": {
-          "type": {"enum": ["fact_pending", "risk_hint", "key_limit"]},
-          "cue_ids": {"type": "array", "items": {"type": "string"}},
-          "note": {"type": "string"}
+          "type": {
+            "enum": [
+              "fact_pending",
+              "risk_hint",
+              "key_limit"
+            ]
+          },
+          "cue_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "note": {
+            "type": "string"
+          }
         },
         "additionalProperties": false
       }
@@ -68,94 +132,62 @@
       "description": "AI-recorded hard-rule conclusions for semantic replay comparison; the diff utility reports changes but does not judge them.",
       "items": {
         "type": "object",
-        "required": ["rule_id", "status"],
+        "required": [
+          "rule_id",
+          "status"
+        ],
         "properties": {
-          "rule_id": {"type": "string"},
-          "status": {"enum": ["PASS", "FAIL", "BLOCKED"]},
-          "cue_ids": {"type": "array", "items": {"type": "string"}},
-          "note": {"type": "string"}
-        },
-        "additionalProperties": false
-      }
-    },
-    "candidate_angle": {"type": "string"},
-    "known_unaccelerated_ms": {"type": "integer", "minimum": 0},
-    "jump_checks": {
-      "type": "array",
-      "description": "AI-only, source-verified checks at each source discontinuity in the ordered candidate path.",
-      "items": {
-        "type": "object",
-        "required": ["prev_id", "next_id", "referent_continuity", "object_continuity", "condition_continuity", "eligible"],
-        "properties": {
-          "prev_id": {"type": "string"},
-          "next_id": {"type": "string"},
-          "referent_continuity": {"type": "boolean"},
-          "object_continuity": {"type": "boolean"},
-          "condition_continuity": {"type": "boolean"},
-          "eligible": {"type": "boolean"},
-          "source_evidence": {"type": "string"}
-        },
-        "additionalProperties": false
-      }
-    },
-    "candidate_comparison": {
-      "type": "array",
-      "description": "Compact full-path candidate records. Losing candidates retain ordered IDs, angle, point mapping, necessary evidence/conditions, source-checked jump checks, and six-dimension results; their transcript text is not copied or expanded.",
-      "items": {
-        "type": "object",
-        "required": ["candidate_id", "angle", "eligible", "complete_ordered_sequence", "point_map", "jump_checks", "six_dimension_results"],
-        "properties": {
-          "candidate_id": {"type": "string"},
-          "angle": {"type": "string", "description": "One sentence describing this candidate's path."},
-          "eligible": {"type": "boolean"},
-          "complete_ordered_sequence": {"type": "array", "items": {"type": "string"}},
-          "point_map": {
+          "rule_id": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "BLOCKED"
+            ]
+          },
+          "cue_ids": {
             "type": "array",
             "items": {
-              "type": "object",
-              "required": ["point_id", "support_ids", "necessary_evidence_ids", "required_condition_ids"],
-              "properties": {
-                "point_id": {"type": "string"},
-                "support_ids": {"type": "array", "items": {"type": "string"}},
-                "necessary_evidence_ids": {"type": "array", "items": {"type": "string"}},
-                "required_condition_ids": {"type": "array", "items": {"type": "string"}}
-              },
-              "additionalProperties": false
+              "type": "string"
             }
           },
-          "jump_checks": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "required": ["prev_id", "next_id", "referent_continuity", "object_continuity", "condition_continuity", "eligible"],
-              "properties": {
-                "prev_id": {"type": "string"},
-                "next_id": {"type": "string"},
-                "referent_continuity": {"type": "boolean"},
-                "object_continuity": {"type": "boolean"},
-                "condition_continuity": {"type": "boolean"},
-                "eligible": {"type": "boolean"},
-                "source_evidence": {"type": "string"}
-              },
-              "additionalProperties": false
-            }
-          },
-          "six_dimension_results": {
-            "type": "object",
-            "required": ["customer_problem_strength", "first_screen_value", "core_reason_completeness", "full_point_naturalness", "narrative_continuity", "decision_efficiency"],
-            "properties": {
-              "customer_problem_strength": {"type": "number"},
-              "first_screen_value": {"type": "number"},
-              "core_reason_completeness": {"type": "number"},
-              "full_point_naturalness": {"type": "number"},
-              "narrative_continuity": {"type": "number"},
-              "decision_efficiency": {"type": "number"}
-            },
-            "additionalProperties": false
+          "note": {
+            "type": "string"
           }
         },
         "additionalProperties": false
       }
+    },
+    "opening_choice": {
+      "type": "object",
+      "description": "AI-only record of the selected opening. Comparison is empathy-first and covers opening candidates only, never full cuts.",
+      "properties": {
+        "cue_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "priority": {
+          "enum": [
+            "empathy",
+            "direct_response",
+            "specific_benefit",
+            "verifiable_product_fact"
+          ]
+        },
+        "basis": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "known_unaccelerated_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Optional estimate supplement for display only; duration remains approximate and is never used for acceptance, pause, or splitting."
     }
   },
   "additionalProperties": true

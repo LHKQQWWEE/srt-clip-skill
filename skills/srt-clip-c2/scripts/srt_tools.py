@@ -497,7 +497,7 @@ def preprocess_file(path: Path, compact: bool = False) -> dict[str, object]:
     return report
 
 
-VALID_ROLES = {"独立卖点", "证据", "条件", "必要衔接", "可选行动句"}
+VALID_ROLES = {"独立卖点", "证据", "条件", "必要衔接", "适用促单原话"}
 VALID_FLAG_TYPES = {"fact_pending", "risk_hint", "key_limit"}
 
 
@@ -678,15 +678,13 @@ def validate_selection(
     }
 
 
-def _display_duration(milliseconds: int) -> str:
-    seconds, millis = divmod(max(milliseconds, 0), 1000)
-    return f"{seconds}.{millis:03}秒"
-
-
-def _display_duration_exact(milliseconds: Decimal) -> str:
-    seconds_text = _decimal_string(milliseconds / Decimal(1000))
-    whole, _, fraction = seconds_text.partition(".")
-    return f"{whole}.{fraction.ljust(3, '0')}秒"
+def _display_duration(milliseconds: int | Decimal) -> str:
+    """Show only a coarse estimate; source timings are not exported-video timings."""
+    seconds = Decimal(str(max(milliseconds, 0))) / Decimal(1000)
+    if seconds < 1:
+        return "\u7ea6 1 \u79d2\u5185"
+    rounded_seconds = int(seconds.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+    return f"\u7ea6 {rounded_seconds} \u79d2"
 
 
 def _selected_groups(cues: list[Cue], source_type: str) -> list[dict[str, object]]:
@@ -728,7 +726,7 @@ def assemble_selection(
     groups = _selected_groups(cues, source.source_type)
     source_duration_exact = sum((Decimal(str(group["span_ms_exact"])) for group in groups), Decimal(0))
     source_duration_ms = _number_value(source_duration_exact)
-    # 1.2x acceleration is source milliseconds / 1.2, rounded once, half up.
+    # Internal timing arithmetic is deterministic; only a coarse estimate is displayed.
     accelerated_ms = int((source_duration_exact / Decimal("1.2")).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
     known_unaccelerated_ms = selection.get("known_unaccelerated_ms", 0)
     if isinstance(known_unaccelerated_ms, bool) or not isinstance(known_unaccelerated_ms, int) or known_unaccelerated_ms < 0:
@@ -761,7 +759,7 @@ def assemble_selection(
         "accelerated_duration_ms": accelerated_ms,
         "known_unaccelerated_ms": known_unaccelerated_ms,
         "playback_duration_ms": playback_ms,
-        "source_duration_display": _display_duration_exact(source_duration_exact),
+        "source_duration_display": _display_duration(source_duration_exact),
         "playback_duration_display": display,
         "shared_duration_field": "playback_duration_display",
     }
@@ -854,7 +852,7 @@ def support_diff(first: dict[str, object], second: dict[str, object]) -> dict[st
         "sequence_order_changed": first_selected != second_selected,
         "selected_added_ids": [item for item in second_selected if item not in set(first_selected)],
         "selected_removed_ids": [item for item in first_selected if item not in set(second_selected)],
-        "angles": [first.get("candidate_angle"), second.get("candidate_angle")],
+        "opening_choices": [first.get("opening_choice"), second.get("opening_choice")],
         "semantic_review_required": True,
     }
 

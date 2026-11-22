@@ -1,64 +1,22 @@
-import json
-import re
-import unittest
+import json,unittest
 from pathlib import Path
-
-
-ROOT = Path(__file__).resolve().parents[1]
-
-
+ROOT=Path(__file__).resolve().parents[1]
+def read(p): return (ROOT/p).read_text(encoding="utf-8")
 class RuntimeContractTests(unittest.TestCase):
-    def setUp(self):
-        self.skill = (ROOT / "references" / "runtime-current.md").read_text(encoding="utf-8")
-        self.editorial = (ROOT / "references" / "editorial-policy.md").read_text(encoding="utf-8")
-        self.final_check = (ROOT / "references" / "final-check.md").read_text(encoding="utf-8")
-        self.schema = json.loads((ROOT / "scripts" / "selection.schema.json").read_text(encoding="utf-8"))
-
-    def require(self, text, phrase):
-        self.assertTrue(phrase in text, f"required contract phrase missing: {phrase}")
-
-    def test_machine_and_ai_boundaries_keep_semantics_with_ai(self):
-        self.require(self.skill, "机器判定与 AI 语义判断")
-        for phrase in ("机器判定", "AI 语义判断", "risk_hint", "不得升级为硬失败"):
-            self.require(self.final_check, phrase)
-        for phrase in ("卖点池是否遗漏", "原话是否真正在真实上下文中支撑", "机器只验结构"):
-            self.require(self.final_check, phrase)
-        self.require(self.final_check, "特殊纤维")
-        self.require(self.final_check, "防静电")
-
-    def test_candidate_comparison_keeps_full_path_without_loser_transcripts(self):
-        for phrase in ("完整序号顺序", "卖点 ID → 支撑序号", "必要证据", "必要条件", "六维", "落选候选不展开全文"):
-            self.require(self.editorial, phrase)
-        self.require(self.editorial, "prev_id → next_id")
-        self.require(self.editorial, "候选不合格")
-
-    def test_jump_checks_are_internal_and_failed_jumps_disqualify_candidate(self):
-        self.require(self.editorial, "逐字对照原文")
-        self.require(self.editorial, "不进入五部分交付")
-        self.require(self.editorial, "跳点核验不成立")
-
-    def test_output_limits_and_exceptions_are_explicit(self):
-        self.assertRegex(self.skill, r"重要未采用内容.{0,30}最多 ?(?:3|三)条")
-        self.assertIn("每条一行", self.skill)
-        for exception in ("合规风险", "事实待核实", "关键限制"):
-            self.require(self.skill, exception)
-        self.require(self.skill, "不计入三条限额")
-        self.require(self.skill, "短句模板")
-
-    def test_duration_rounding_and_single_shared_display_field_are_explicit(self):
-        for phrase in ("连续组", "0.5ms 进位规则舍入到毫秒一次", "playback_duration_display", "不得各自重算"):
-            self.require(self.skill, phrase)
-
-    def test_five_part_output_and_local_repair_contract_remain(self):
-        for phrase in ("固定五部分交付", "只重出受影响段落", "不重写整份五部分"):
-            self.require(self.skill, phrase)
-
-    def test_schema_has_five_roles_and_independent_flags(self):
-        roles = self.schema["properties"]["roles"]["items"]["properties"]["role"]["enum"]
-        self.assertEqual(roles, ["独立卖点", "证据", "条件", "必要衔接", "可选行动句"])
-        flags = self.schema["properties"]["flags"]["items"]["properties"]["type"]["enum"]
-        self.assertEqual(flags, ["fact_pending", "risk_hint", "key_limit"])
-
-
-if __name__ == "__main__":
-    unittest.main()
+ def test_machine_and_ai_boundaries_keep_semantics_with_ai(self):
+  f=read("references/final-check.md"); self.assertIn("机器不判断",f); self.assertIn("AI 的语义判断",f); self.assertIn("risk_hint",f); self.assertIn("信息池完整性",f)
+ def test_opening_compares_only_empathy_first_openings(self):
+  e=read("references/editorial-policy.md"); self.assertIn("共情优先",e); self.assertIn("只比较开头",e); self.assertIn("不为完整成片建立候选比赛",e); self.assertIn("不开启完整成片候选的资格评分",e)
+ def test_multi_video_gate_and_checkpoint_contract(self):
+  c=read("references/runtime-contract.md"); self.assertLess(c.index("建立完整卖点池"),c.index("检测多视频机会"));
+  for phrase in ("暂停生成正式成片","保存当前对话检查点","恢复此状态","不重复读取","不重复识别","不重复检测"): self.assertIn(phrase,c)
+ def test_final_check_is_limited_to_selected_cuts(self):
+  f=read("references/final-check.md"); self.assertIn("仅为用户已选定且实际写出的成片",f); self.assertIn("不终检未选主题",f.split("## 失败修复",1)[0])
+ def test_duration_and_cta_contract(self):
+  h=read("references/highlight-selection.md"); e=read("references/editorial-policy.md"); self.assertIn("只作约数参考",h); self.assertIn("不参与质量验收",h); self.assertIn("不触发拆条",h); self.assertIn("原文存在适用且合规的促单话术时，必须保留",e); self.assertIn("原文没有促单时，禁止编造、改写或补充",e)
+ def test_five_part_output_and_one_ai_remain(self):
+  c=read("references/runtime-contract.md"); self.assertIn("一个 AI",c); self.assertIn("固定五部分交付",c); self.assertIn("不重写整份五部分",c)
+ def test_schema_has_selection_level_contract_not_full_cut_competition(self):
+  schema=json.loads(read("scripts/selection.schema.json")); props=schema["properties"]; self.assertIn("opening_choice",props); self.assertNotIn("multi_video_opportunity",props); self.assertNotIn("checkpoint_status",props); self.assertIn("current conversation",schema["description"]); self.assertNotIn("candidate_comparison",props); self.assertNotIn("jump_checks",props); self.assertEqual(props["roles"]["items"]["properties"]["role"]["enum"],["独立卖点","证据","条件","必要衔接","适用促单原话"])
+  self.assertEqual(props["flags"]["items"]["properties"]["type"]["enum"],["fact_pending","risk_hint","key_limit"])
+if __name__=="__main__": unittest.main()

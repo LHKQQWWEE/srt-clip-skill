@@ -29,7 +29,8 @@ class PurchaseDecisionPolicyTests(unittest.TestCase):
         policy = read("references/clip-selection-policy.md")
         contract = read("references/runtime-contract.md")
         self.assertLess(contract.index("等待用户选择商品"), contract.index("确认后才为所选商品生成开头候选"))
-        self.assertIn("最多 3 个真实、合格的开头候选", policy)
+        self.assertIn("不设候选识别数或展示数上限", policy)
+        self.assertIn("用户最多选择 3 个候选", policy)
         self.assertIn("不得预选、代选、默认选中", policy)
 
     def test_full_cut_competition_is_removed(self):

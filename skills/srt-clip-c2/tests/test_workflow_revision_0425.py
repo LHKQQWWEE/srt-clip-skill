@@ -32,7 +32,8 @@ class WorkflowRevision047Tests(unittest.TestCase):
         self.assertLess(contract.index("建立完整信息池"), contract.index("开头候选等待关口"))
         self.assertLess(contract.index("先只呈现商品身份"), contract.index("确认前不得生成开头候选"))
         self.assertIn("每个已选开头分别生成一条完整成片", policy)
-        self.assertIn("最多 3 个真实、合格的开头候选", policy)
+        self.assertIn("所有达到现有质量门槛且彼此实质不同", policy)
+        self.assertIn("用户最多选择 3 个候选", policy)
 
     def test_each_plan_starts_from_complete_pool_and_superlong_is_explicit(self):
         policy = read("references/clip-selection-policy.md")
@@ -67,7 +68,7 @@ class WorkflowRevision047Tests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         runtime = ROOT / manifest["runtime_file"]
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.38")
+        self.assertEqual(manifest["skill_version"], "0.4.39")
         self.assertTrue(manifest["source_map"])
         self.assertEqual(text_sha256(runtime), manifest["runtime_sha256"])
         for relative, digest in manifest["source_hashes"].items():
@@ -79,7 +80,7 @@ class WorkflowRevision047Tests(unittest.TestCase):
             self.assertIn(phrase, contract)
 
     def test_185_cue_scoped_source_status_is_explicit_in_release_acceptance(self):
-        report = read("tests/release-acceptance-0.4.37.md")
+        report = read("tests/history/0.4.37/release-acceptance-0.4.37.md")
         self.assertIn("前 1–185 条", report)
         self.assertIn("703 条", report)
         self.assertIn("只对前 185 条", report)

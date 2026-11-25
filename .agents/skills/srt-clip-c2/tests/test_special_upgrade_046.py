@@ -30,7 +30,8 @@ class SpecialUpgrade046Tests(unittest.TestCase):
     def test_user_selected_openings_and_long_form_exception_are_explicit(self):
         policy = (ROOT / "references" / "clip-selection-policy.md").read_text(encoding="utf-8")
         contract = (ROOT / "references" / "runtime-contract.md").read_text(encoding="utf-8")
-        self.assertIn("最多 3 个真实、合格的开头候选", policy)
+        self.assertIn("不设候选识别数或展示数上限", policy)
+        self.assertIn("用户最多选择 3 个候选", policy)
         self.assertIn("每个已选开头分别生成一条完整成片", policy)
         self.assertIn("每条常规时长方案须独立覆盖", policy)
         self.assertIn("超长预设", policy)

@@ -14,8 +14,8 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
         plugin = ROOT.parents[1]
         manifest = json.loads(read("references/runtime-manifest.json"))
         self.assertEqual((plugin / "VERSION").read_text(encoding="utf-8").strip(), "0.4.7")
-        self.assertEqual(json.loads((plugin / "plugin.json").read_text(encoding="utf-8"))["version"], "0.4.38")
-        self.assertEqual(manifest["skill_version"], "0.4.38")
+        self.assertEqual(json.loads((plugin / "plugin.json").read_text(encoding="utf-8"))["version"], "0.4.39")
+        self.assertEqual(manifest["skill_version"], "0.4.39")
 
     def test_opening_choice_uses_dynamic_customer_motivation(self):
         editorial = read("references/editorial-policy.md")
@@ -42,7 +42,7 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
         policy = read("references/clip-selection-policy.md")
         self.assertLess(contract.index("建立完整信息池"), contract.index("开头候选等待关口"))
         self.assertLess(contract.index("先只呈现商品身份"), contract.index("确认前不得生成开头候选"))
-        self.assertIn("最多 3 个", policy)
+        self.assertIn("用户最多选择 3 个候选", policy)
         self.assertIn("只为用户选中的开头生成成片", policy)
 
     def test_each_plan_is_independent_and_long_form_is_explicit(self):

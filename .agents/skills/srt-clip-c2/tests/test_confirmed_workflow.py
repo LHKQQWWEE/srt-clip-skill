@@ -32,7 +32,7 @@ class ConfirmedWorkflowPolicyTests(unittest.TestCase):
     def test_02_opening_candidates_have_only_four_fields_and_no_default(self):
         for field in ("方案名称", "开头原话", "原始 SRT 序号", "预估时长"):
             self.assertIn(field, self.policy)
-        self.assertIn("最多 3 个", self.policy)
+        self.assertIn("用户最多选择 3 个候选", self.policy)
         self.assertIn("不得预选", self.policy)
         self.assertIn("不得凑数", self.policy)
         self.assertIn("只为用户选中的开头生成成片", self.policy)

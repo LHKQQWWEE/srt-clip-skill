@@ -31,7 +31,7 @@ class RuntimeContractTests(unittest.TestCase):
         contract = read("references/runtime-contract.md")
         self.assertLess(contract.index("建立完整信息池"), contract.index("开头候选等待关口"))
         self.assertLess(contract.index("等待用户选择商品"), contract.index("确认后才为所选商品生成开头候选"))
-        self.assertIn("最多 3 个", contract)
+        self.assertIn("用户最多选择 3 个", contract)
 
     def test_final_check_covers_actual_output_plans(self):
         final_check = read("references/final-check.md")

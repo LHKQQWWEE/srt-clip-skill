@@ -21,7 +21,10 @@ class RuntimeContractTests(unittest.TestCase):
         editorial = read("references/editorial-policy.md")
         self.assertIn("动态顾客心理驱动钩子机制", editorial)
         self.assertIn("开头比较只覆盖开头本身", editorial)
-        self.assertIn("不设置固定钩子类型优先级", editorial)
+        self.assertIn("开放式观看动力优先级", editorial)
+        self.assertIn("存在合格的第一优先级开头候选，必须从这些候选中动态择优", editorial)
+        self.assertIn("只有不存在合格的第一优先级候选时，才从其他有效钩子候选中择优", editorial)
+        self.assertIn("多方案", editorial)
         self.assertIn("不比较、评分或排名完整成片", editorial)
 
     def test_pool_is_complete_before_plan_count_and_generation(self):

@@ -14,8 +14,8 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
         plugin = ROOT.parents[1]
         manifest = json.loads(read("references/runtime-manifest.json"))
         self.assertEqual((plugin / "VERSION").read_text(encoding="utf-8").strip(), "0.4.7")
-        self.assertEqual(json.loads((plugin / "plugin.json").read_text(encoding="utf-8"))["version"], "0.4.29")
-        self.assertEqual(manifest["skill_version"], "0.4.29")
+        self.assertEqual(json.loads((plugin / "plugin.json").read_text(encoding="utf-8"))["version"], "0.4.30")
+        self.assertEqual(manifest["skill_version"], "0.4.30")
 
     def test_opening_choice_uses_dynamic_customer_motivation(self):
         editorial = read("references/editorial-policy.md")
@@ -24,7 +24,11 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
         self.assertIn("继续观看欲望", editorial)
         self.assertIn("与商品相关的购买兴趣", editorial)
         self.assertIn("不比较、评分或排名完整成片", editorial)
-        self.assertIn("不设置固定钩子类型优先级", editorial)
+        self.assertIn("开放式观看动力优先级", editorial)
+        self.assertIn("存在合格的第一优先级开头候选，必须从这些候选中动态择优", editorial)
+        self.assertIn("只有不存在合格的第一优先级候选时，才从其他有效钩子候选中择优", editorial)
+        self.assertIn("第一优先级内部不设固定类型清单、顺序、权重或分数", editorial)
+        self.assertIn("可以共享", editorial)
         self.assertNotIn("共情入口优先", editorial)
 
     def test_opening_is_grounded_and_not_fabricated_as_customer_feedback(self):

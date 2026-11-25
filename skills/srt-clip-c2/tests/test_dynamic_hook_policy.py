@@ -13,22 +13,26 @@ def read(relative: str) -> str:
 
 
 class DynamicHookPolicyTests(unittest.TestCase):
-    def test_policy_uses_customer_motivation_without_fixed_hook_hierarchy(self) -> None:
+    def test_open_viewing_motivation_tier_precedes_fallback_without_internal_order(self) -> None:
         policy = read("references/editorial-policy.md")
         self.assertIn("动态顾客心理驱动钩子机制", policy)
         self.assertIn("陌生潜在买家", policy)
         self.assertIn("继续观看欲望", policy)
         self.assertIn("与商品相关的购买兴趣", policy)
-        for dimension in ("情绪感染", "视觉引导", "好奇期待", "审美种草", "场景代入", "共情", "需求与收益", "自然原生感"):
+        self.assertIn("开放式观看动力优先级", policy)
+        self.assertIn("第一优先级是**观看动力驱动型钩子**，类型开放", policy)
+        for dimension in ("情绪感染", "审美种草", "视觉好奇", "动作展示", "穿搭种草", "反差惊喜", "情感共鸣", "上身效果", "场景代入", "悬念期待", "质感种草", "设计吸引", "体验感染", "需求唤醒"):
             self.assertIn(dimension, policy)
-        self.assertIn("不设置固定钩子类型优先级", policy)
-        self.assertIn("权重、分数或额外语义轮次", policy)
-        self.assertIn("不预设种草或共情优先", policy)
+        self.assertIn("若存在合格的第一优先级开头候选，必须从这些候选中动态择优", policy)
+        self.assertIn("只有不存在合格的第一优先级候选时，才从其他有效钩子候选中择优", policy)
+        self.assertIn("类型名称、关键词或所属卖点类别本身都不自动决定归类或优先资格", policy)
+        self.assertIn("第一优先级内部不设固定类型清单、顺序、权重或分数", policy)
         self.assertIn("承接须依据当前原话动态延续或增强观看动力", policy)
         for bridge in ("情绪感染", "视觉/动作期待", "种草兴趣", "具体购买收益"):
             self.assertIn(bridge, policy)
+        self.assertIn("多方案", policy)
+        self.assertIn("可以共享", policy)
         self.assertNotIn("共情入口优先", policy)
-        self.assertNotIn("优先层级", policy)
 
     def test_joint_opening_uses_two_windows_and_reference_only_timing(self) -> None:
         policy = read("references/editorial-policy.md")
@@ -75,7 +79,7 @@ class DynamicHookPolicyTests(unittest.TestCase):
         self.assertIn("动作展示", policy)
         self.assertIn("视觉好奇", policy)
 
-    def test_active_rule_surfaces_remove_previous_fixed_hook_hierarchy(self) -> None:
+    def test_active_rule_surfaces_replace_the_old_no_priority_rule(self) -> None:
         surfaces = (
             "SKILL.md", "README.md", "START-HERE.md", "ENVIRONMENT.md",
             "agents/openai.yaml", "C2-Universal-Portable.md",
@@ -84,10 +88,12 @@ class DynamicHookPolicyTests(unittest.TestCase):
             "references/final-check.md", "references/long-context-mode.md",
             "references/update-protocol.md", "references/runtime-current.md",
             "references/execution-summary.json", "tests/quality-rubric.md",
-            "tests/dynamic-hook-regression-0.4.29.md",
+            "tests/dynamic-hook-regression-0.4.30.md",
             "tests/test_runtime_contract.py", "tests/test_rule_integrity.py",
         )
         stale_phrases = (
+            "不设置固定钩子类型优先级", "不预设种草或共情优先",
+            "不设置固定类型优先级", "没有固定优先级、顺序",
             "共情入口优先", "按共情优先顺序", "共情优先层级",
             "比较顺序为：有原话依据的真实顾客困扰",
             "开头尽早在前三秒形成吸引力", "不得为凑足前三秒而硬截",
@@ -103,15 +109,17 @@ class DynamicHookPolicyTests(unittest.TestCase):
         opening = schema["properties"]["opening_choice"]
         self.assertNotIn("priority", opening["properties"])
         self.assertNotIn("score", opening["properties"])
-        self.assertIn("No fixed hook type, order, weight, or score", opening["description"])
+        self.assertIn("whenever any qualified candidate exists", opening["description"])
+        self.assertIn("only when none exists", opening["description"])
+        self.assertIn("not product-benefit category or type label", opening["description"])
         self.assertIn("never hard cuts", opening["description"])
         self.assertIn("not a workflow dependency", opening["description"])
 
     def test_regression_matrix_covers_joint_windows_and_adaptive_bridges(self) -> None:
-        matrix = read("tests/dynamic-hook-regression-0.4.29.md")
+        matrix = read("tests/dynamic-hook-regression-0.4.30.md")
         for term in ("前 2 秒", "前 5 秒", "1.2 倍速", "2.4 秒", "6 秒", "不得硬切", "承接动力"):
             self.assertIn(term, matrix)
-        for term in ("场景 A", "场景 B", "场景 C", "场景 D", "场景 E", "不固定类型", "不能确认动作"):
+        for term in ("真实素材", "多瑙河", "小马甲", "鞋", "回退", "共享最佳钩子", "不按卖点类别", "人工回放"):
             self.assertIn(term, matrix)
         self.assertIn("文本判断不声称平台实际完播或转化提升", matrix)
 
@@ -123,18 +131,19 @@ class DynamicHookPolicyTests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         summary = json.loads(read("references/execution-summary.json"))
         self.assertEqual(core_version, "0.4.7")
-        self.assertEqual(skill_version, "0.4.29")
-        self.assertEqual(plugin["version"], "0.4.29")
+        self.assertEqual(skill_version, "0.4.30")
+        self.assertEqual(plugin["version"], "0.4.30")
         self.assertEqual(manifest["core_version"], core_version)
         self.assertEqual(manifest["skill_version"], skill_version)
         self.assertEqual(summary["core_version"], core_version)
         self.assertEqual(summary["skill_version"], skill_version)
         self.assertIn("前 2 秒", summary["summary"])
         self.assertIn("前 5 秒", summary["summary"])
+        self.assertIn("观看动力", summary["summary"])
         plugin_text = (plugin_root / "plugin.json").read_text(encoding="utf-8")
         self.assertIn("前2秒吸引力", plugin_text)
         self.assertIn("前5秒连续吸引力", plugin_text)
-        for phrase in ("共情入口优先", "按共情优先顺序", "共情优先层级"):
+        for phrase in ("不设置固定钩子类型优先级", "不预设种草或共情优先", "共情入口优先"):
             self.assertNotIn(phrase, plugin_text)
         for relative, digest in manifest["source_hashes"].items():
             self.assertEqual(hashlib.sha256((ROOT / relative).read_bytes()).hexdigest(), digest)

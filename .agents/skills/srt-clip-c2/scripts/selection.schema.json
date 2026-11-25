@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://c2-universal.local/schemas/selection-0.4.29.json",
+  "$id": "https://c2-universal.local/schemas/selection-0.4.30.json",
   "title": "C2 Selection JSON",
   "description": "Optional semantic record for one generated final plan. Selling points describe the complete product pool; selected_ids and roles describe only this plan. Opening choice is an AI record, not a machine judgment. Default delivery is two distinct plans; do not create a pending theme-choice checkpoint.",
   "type": "object",
@@ -202,7 +202,7 @@
     },
     "opening_choice": {
       "type": "object",
-      "description": "AI record of a real hook and its immediate bridge, evaluated jointly for attention in the first 2 seconds and continuity through the first 5 seconds. At default 1.2x, 2.4 and 6 cumulative source seconds are references only, never hard cuts. No fixed hook type, order, weight, or score; this optional schema is not a workflow dependency.",
+      "description": "Optional AI record of a real hook and its immediate bridge, evaluated jointly for attention in the first 2 seconds and continuity through the first 5 seconds. Prefer a dynamically classified, open-ended viewing-motivation hook whenever any qualified candidate exists; fall back to other valid hooks only when none exists. Classify by actual viewing motivation, not product-benefit category or type label. No fixed order, weight, or score within the first priority; multiple plans may share one best hook. At default 1.2x, 2.4 and 6 cumulative source seconds are references only, never hard cuts. This schema is not a workflow dependency.",
       "properties": {
         "cue_ids": {
           "type": "array",

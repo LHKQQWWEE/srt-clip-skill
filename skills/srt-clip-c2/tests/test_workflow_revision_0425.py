@@ -15,7 +15,9 @@ class WorkflowRevision047Tests(unittest.TestCase):
         editorial = read("references/editorial-policy.md")
         self.assertIn("动态顾客心理驱动钩子机制", editorial)
         self.assertIn("开头比较只覆盖开头本身", editorial)
-        self.assertIn("不设置固定钩子类型优先级", editorial)
+        self.assertIn("开放式观看动力优先级", editorial)
+        self.assertIn("存在合格的第一优先级开头候选，必须从这些候选中动态择优", editorial)
+        self.assertIn("第一优先级内部不设固定类型清单、顺序、权重或分数", editorial)
         self.assertIn("不比较、评分或排名完整成片", editorial)
         self.assertNotIn("不做六维评分", editorial)
 
@@ -60,7 +62,7 @@ class WorkflowRevision047Tests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         runtime = ROOT / manifest["runtime_file"]
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.29")
+        self.assertEqual(manifest["skill_version"], "0.4.30")
         self.assertTrue(manifest["source_map"])
         self.assertEqual(hashlib.sha256(runtime.read_bytes()).hexdigest(), manifest["runtime_sha256"])
         for relative, digest in manifest["source_hashes"].items():
@@ -71,11 +73,11 @@ class WorkflowRevision047Tests(unittest.TestCase):
         for phrase in ("一个 AI", "固定五部分交付", "不新增 Agent"):
             self.assertIn(phrase, contract)
 
-    def test_real_srt_regression_report_is_present(self):
-        report = read("tests/real-source-regression-0.4.7.md")
-        self.assertIn("SRT", report)
-        self.assertIn("字幕序号", report)
-        self.assertIn("未做音画核验", report)
+    def test_real_source_hook_regression_report_is_present(self):
+        report = read("tests/real-source-regression-0.4.30.md")
+        self.assertIn("鹅绒服", report)
+        self.assertIn("第 35–44 条", report)
+        self.assertIn("未核验", report)
 
 
 if __name__ == "__main__":

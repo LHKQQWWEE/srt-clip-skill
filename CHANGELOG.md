@@ -58,3 +58,16 @@
 - Keep formal direct-term hits separate from risk hints; keep selling-point completeness, support meaning, product attribution, conditions, transitions, and candidate quality with AI.
 - Compare compact complete candidate paths and expand only the selected result; cap ordinary omitted-content notes at three one-line items while listing facts, risks, and key limits separately.
 - Add baseline hashes, synthetic replay fixtures, and acceptance protocol. Real-source regression adds recognition of exact leading paste labels without weakening BLOCKED handling for other malformed rows. No rule-file consolidation is included. Publication status is recorded separately.
+# Plugin 0.4.32 / Core 0.4.7 / Skill 0.4.32（2026-11-25）
+
+- 按 LF 规范化文本哈希，避免 Windows CRLF 与 LF 检出导致运行摘要误判失效。
+- 完成已确认的商品选择、开头选择、独立成片、纯文本连续性和序号硬门修正；常规运行不再依赖 Python、脚本或外部工具。
+- 五部分输出及有效业务规则保持；164 项自动回归通过。用户指定的 185 行 SRT 未提供，素材级语义回归仍为 BLOCKED。
+
+# Plugin 0.4.31 / Core 0.4.7 / Skill 0.4.31（2026-11-25）
+
+- 多商品先呈现身份与原始讲解窗口并等待用户选择；仅对选定商品生成开头候选。
+- 候选最多 3 个且只显示名称、开头原话、原始序号和预估时长；不预选、不代选、不凑数。用户所选的每个开头分别生成独立完整成片。
+- 增强纯文本的指代、动作/回应、前置条件与事件状态连续性跟踪，不要求视频或图片。
+- 日常 SRT 执行完全移除 Python、脚本、CLI 与 JSON 流水线调用；Python 仅保留在开发、构建和发布测试。
+- 将原始序号、原话、精确时长绑定到冻结映射；成片正文与第五部分序号不一致或无法核验即阻断。固定五部分、已有有效业务规则与 Core 0.4.7 保持。

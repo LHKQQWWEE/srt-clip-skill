@@ -11,13 +11,13 @@ def read(path):
 class PurchaseDecisionPolicyTests(unittest.TestCase):
     def test_complete_inventory_precedes_opening_and_plan_generation(self):
         contract = read("references/runtime-contract.md")
-        self.assertLess(contract.index("建立完整信息池"), contract.index("4. 信息池完成后"))
-        self.assertLess(contract.index("建立完整信息池"), contract.index("单条/多方案数量"))
+        self.assertLess(contract.index("建立完整信息池"), contract.index("开头候选等待关口"))
+        self.assertLess(contract.index("开头候选等待关口"), contract.index("每个用户所选开头分别生成一条完整成片"))
 
     def test_each_plan_starts_from_the_same_pool_and_does_not_use_union_coverage(self):
         policy = read("references/clip-selection-policy.md")
-        self.assertIn("每条独立覆盖完整有效卖点", policy)
-        self.assertIn("不得把卖点拆到两条、只靠并集覆盖", policy)
+        self.assertIn("每条常规时长方案须独立覆盖", policy)
+        self.assertIn("不得以另一条方案或方案并集补足", policy)
         self.assertIn("超长预设", policy)
 
     def test_point_granularity_keeps_examples_grouped_and_facts_distinct(self):
@@ -25,13 +25,12 @@ class PurchaseDecisionPolicyTests(unittest.TestCase):
         self.assertIn("不把同一购买意义下的一组例子机械拆成多个卖点", editorial)
         self.assertIn("不同具体事实过度合并", editorial)
 
-    def test_default_dual_plan_runs_without_theme_pause(self):
+    def test_product_and_opening_choices_are_sequential(self):
         policy = read("references/clip-selection-policy.md")
         contract = read("references/runtime-contract.md")
-        self.assertIn("默认直接生成两条", policy)
-        self.assertIn("不得暂停等待用户选择", policy)
-        self.assertIn("单条", policy)
-        self.assertNotIn("暂停生成正式成片", contract)
+        self.assertLess(contract.index("等待用户选择商品"), contract.index("确认后才为所选商品生成开头候选"))
+        self.assertIn("最多 3 个真实、合格的开头候选", policy)
+        self.assertIn("不得预选、代选、默认选中", policy)
 
     def test_full_cut_competition_is_removed(self):
         editorial = read("references/editorial-policy.md")

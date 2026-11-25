@@ -1,21 +1,21 @@
 ---
 name: srt-clip-c2
-description: "当用户发送‘srt文案’‘srt切片文案’‘str文案’或‘C2完整精简版’，并提供 SRT 文件或逐条时长文本时使用。执行 C2 Universal Core 0.4.7 / Skill 0.4.30。"
+description: "当用户发送‘srt文案’‘srt切片文案’‘str文案’或‘C2完整精简版’，并提供 SRT 文件或逐条时长文本时使用。执行 C2 Universal Core 0.4.7 / Skill 0.4.32。"
 ---
 
 # SRT Clip C2 Universal 0.4.7｜运行入口
 
-Skill 版本：**0.4.30**。
+Skill 版本：**0.4.32**。
 
 ## 版本化执行摘要与规则读取
 
 触发后先确认当前 Skill 版本，并检查 `references/execution-summary.json` 是否存在且有效。摘要必须绑定当前 Skill 版本、Core 版本、运行 manifest 哈希和全部规则文件 SHA-256；摘要只帮助恢复规则，不高于规则源文件。
 
-- 首次运行、摘要缺失或无效、Skill/Core 版本不匹配、manifest 或规则哈希变化时，完整读取当前 `runtime-current.md` 及相关权威源规则，完成本次判断，并生成或刷新持久摘要。
+- 首次运行、摘要缺失或无效、Skill/Core 版本不匹配、manifest 或规则哈希变化时，完整读取当前 `runtime-current.md` 及相关权威源规则，完成本次判断。日常任务不写入或刷新摘要。
 - 摘要有效时直接复用；不要求每次完整重读 Skill 或运行正文。按当前任务读取必要输入和条件文件即可。
 - 平台可提供本地缓存时可辅助读取；缓存不是跨平台持久保证。缓存丢失时继续使用有效持久摘要。
 - 若校验工具不可用，先检查摘要记录的版本、manifest 和规则哈希元数据；无法确认有效、规则存在冲突/不确定/缺失时，回查原始规则。不得把摘要当成新业务规则。
-- 执行摘要管理脚本：`scripts/execution_summary.py`。常规运行不得把脚本或其他工具设为硬门槛。
+- 日常任务不调用 Python、脚本、CLI 或外部工具。执行摘要文件若可直接读取，可作为辅助；缺失、失效或无法核验时直接读取 `runtime-current.md`，不得运行脚本生成或刷新摘要。
 
 `references/clip-selection-policy.md` 是时长与单条/多方案数量的唯一权威规则来源。其他文件仅引用它。`references/runtime-current.md` 是生成的日常运行正文；版本、构建元数据和完整规则哈希见 `references/runtime-manifest.json`。
 

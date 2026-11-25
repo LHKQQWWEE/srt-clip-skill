@@ -10,7 +10,7 @@ class ResponsibilityArchitectureTests(unittest.TestCase):
  def test_architecture_keeps_dynamic_structure_and_opening_policy(self):
   e=read("references/editorial-policy.md"); self.assertIn("动态构建路径",e); self.assertIn("动态顾客心理驱动",e); self.assertNotIn("通过覆盖资格后，按六维评分比较完整候选",e)
  def test_full_pool_precedes_plans_and_policy_is_single_source(self):
-  c=read("references/runtime-contract.md"); p=read("references/clip-selection-policy.md"); self.assertLess(c.index("建立完整信息池"),c.index("单条/多方案数量")); self.assertIn("references/clip-selection-policy.md",c); self.assertIn("每条独立覆盖完整有效卖点",p)
+  c=read("references/runtime-contract.md"); p=read("references/clip-selection-policy.md"); self.assertLess(c.index("建立完整信息池"),c.index("开头候选等待关口")); self.assertIn("references/clip-selection-policy.md",c); self.assertIn("每条常规时长方案须独立覆盖",p)
  def test_source_words_and_final_audit_scope(self):
   e=read("references/editorial-policy.md"); f=read("references/final-check.md"); self.assertIn("原话逐字保留",e); self.assertIn("只对实际写出的成片执行终检",f); self.assertIn("没有成片时不产生最终成片审计结论",f)
  def test_global_rules_and_factual_veto_are_not_overridable(self):

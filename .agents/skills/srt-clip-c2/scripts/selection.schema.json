@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://c2-universal.local/schemas/selection-0.4.30.json",
+  "$id": "https://c2-universal.local/schemas/selection-0.4.32.json",
   "title": "C2 Selection JSON",
-  "description": "Optional semantic record for one generated final plan. Selling points describe the complete product pool; selected_ids and roles describe only this plan. Opening choice is an AI record, not a machine judgment. Default delivery is two distinct plans; do not create a pending theme-choice checkpoint.",
+  "description": "Development/test record for one actual user-selected final cut. Selling points describe the complete product pool; selected_ids and roles describe only this plan. Opening choice is an AI record, not a machine judgment. Routine SRT execution never calls this JSON schema or Python tools. Create one independent record for each user-selected opening.",
   "type": "object",
   "required": [
     "verification_mode",

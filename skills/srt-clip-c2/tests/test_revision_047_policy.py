@@ -20,7 +20,7 @@ def read(path: str) -> str:
 
 
 class Revision047PolicyTests(unittest.TestCase):
-    def test_duration_and_multi_video_rules_have_one_source(self):
+    def test_duration_and_opening_choice_rules_have_one_source(self):
         self.assertTrue(POLICY.is_file(), "the new canonical clip-selection policy is missing")
         policy = POLICY.read_text(encoding="utf-8")
         contract = read("references/runtime-contract.md")
@@ -33,10 +33,12 @@ class Revision047PolicyTests(unittest.TestCase):
         self.assertIn("只有明显超过 120 秒", policy)
         self.assertIn("略超 120 秒", policy)
         self.assertIn("不得固定某些卖点永远低价值", policy)
-        self.assertIn("默认直接生成两条", policy)
-        self.assertIn("不得暂停等待用户选择", policy)
-        self.assertIn("每条独立覆盖", policy)
-        self.assertIn("不能形成真实独立购买核心", policy)
+        self.assertIn("最多 3 个真实、合格的开头候选", policy)
+        self.assertIn("每个候选只显示四项", policy)
+        self.assertIn("不得预选", policy)
+        self.assertIn("每个已选开头分别生成一条完整成片", policy)
+        self.assertIn("每条常规时长方案须独立覆盖", policy)
+        self.assertIn("不得凑数", policy)
         self.assertIn("单条", policy)
         self.assertIn("按推荐版", policy)
         self.assertIn("references/clip-selection-policy.md", contract)
@@ -47,7 +49,7 @@ class Revision047PolicyTests(unittest.TestCase):
             self.assertNotIn("暂停生成正式成片", text)
             self.assertNotIn("每次调用都重新完整读取", text)
 
-    def test_entry_prefers_valid_versioned_summary_and_refreshes_only_when_needed(self):
+    def test_entry_uses_summary_as_optional_context_and_reads_runtime_on_mismatch(self):
         entry = read("SKILL.md")
         self.assertIn("execution-summary.json", entry)
         self.assertIn("Skill 版本", entry)
@@ -96,7 +98,7 @@ class ExecutionSummaryTests(unittest.TestCase):
             self.assertEqual(code, 0)
             self.assertTrue(summary.is_file())
             data = json.loads(summary.read_text(encoding="utf-8"))
-            self.assertEqual(data["skill_version"], "0.4.30")
+            self.assertEqual(data["skill_version"], "0.4.32")
             self.assertEqual(data["core_version"], "0.4.7")
             self.assertTrue(data["rule_hashes"])
             code, status = self.run_summary("validate", "--skill-root", str(root), "--summary", str(summary))

@@ -14,8 +14,8 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
         plugin = ROOT.parents[1]
         manifest = json.loads(read("references/runtime-manifest.json"))
         self.assertEqual((plugin / "VERSION").read_text(encoding="utf-8").strip(), "0.4.7")
-        self.assertEqual(json.loads((plugin / "plugin.json").read_text(encoding="utf-8"))["version"], "0.4.30")
-        self.assertEqual(manifest["skill_version"], "0.4.30")
+        self.assertEqual(json.loads((plugin / "plugin.json").read_text(encoding="utf-8"))["version"], "0.4.32")
+        self.assertEqual(manifest["skill_version"], "0.4.32")
 
     def test_opening_choice_uses_dynamic_customer_motivation(self):
         editorial = read("references/editorial-policy.md")
@@ -37,19 +37,18 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
         self.assertIn("原话支撑", editorial)
         self.assertIn("主播设问", editorial)
 
-    def test_complete_pool_precedes_direct_plan_generation(self):
+    def test_complete_pool_precedes_user_selected_opening_generation(self):
         contract = read("references/runtime-contract.md")
         policy = read("references/clip-selection-policy.md")
-        self.assertLess(contract.index("建立完整信息池"), contract.index("4. 信息池完成后"))
-        self.assertLess(contract.index("建立完整信息池"), contract.index("单条/多方案数量"))
-        self.assertIn("默认直接生成两条", policy)
-        self.assertIn("不得暂停等待用户选择", policy)
-        self.assertIn("按推荐版", policy)
+        self.assertLess(contract.index("建立完整信息池"), contract.index("开头候选等待关口"))
+        self.assertLess(contract.index("先只呈现商品身份"), contract.index("确认前不得生成开头候选"))
+        self.assertIn("最多 3 个", policy)
+        self.assertIn("只为用户选中的开头生成成片", policy)
 
     def test_each_plan_is_independent_and_long_form_is_explicit(self):
         policy = read("references/clip-selection-policy.md")
-        self.assertIn("每条独立覆盖完整有效卖点", policy)
-        self.assertIn("不得把卖点拆到两条、只靠并集覆盖", policy)
+        self.assertIn("每条常规时长方案须独立覆盖", policy)
+        self.assertIn("不得以另一条方案或方案并集补足", policy)
         self.assertIn("超长预设", policy)
         self.assertIn("省略的有效信息", policy)
 

@@ -1,12 +1,10 @@
-# Optional tools
+# Development, build, and test tools
 
-C2 Universal does not require or bundle a Python runtime script for ordinary SRT or duration-text tasks.
+Everything in this directory is for development, build generation, or release regression tests. Routine SRT and duration-text work never calls Python, these scripts, a CLI, or a JSON pipeline. Daily work uses the host AI's native text reading and exact source-by-source comparison.
 
-Use the host AI's native file reading and calculation capabilities by default. These standard-library utilities are optional and never become a normal-task gate or require a JSON/workflow pipeline.
+## Development-only unified preprocessing tool
 
-## Optional unified preprocessing tool
-
-`srt_tools.py` is an optional standard-library helper for lossless parsing, deterministic assembly, structural gate checks, and support-map diffs. It never decides product identity, selling-point meaning, evidence sufficiency, semantic equivalence, transition continuity, or candidate quality.
+`srt_tools.py` is a development-only standard-library helper for lossless parsing, deterministic assembly, structural gate checks, and support-map diffs. It never decides product identity, selling-point meaning, evidence sufficiency, semantic equivalence, transition continuity, or candidate quality.
 
 Examples:
 
@@ -23,11 +21,11 @@ The selection object follows `selection.schema.json` and represents one actual u
 
 The `diff` command compares point-pool IDs, support/evidence/condition IDs, roles, flags, selected sequence/order, angles, and supplied hard-rule outcomes. A different source SHA-256 produces `BLOCKED`. The report marks semantic review as still required; changes are evidence for review, not an automatic semantic pass/fail. AI still reviews point-pool completeness, source support, conditions, attribution, transitions, and stable hard-rule conclusions.
 
-If Python or the script is unavailable, continue manually when the text is reliable, report “模型逐条对照”, and do not claim a script check.
+These commands must not be used for routine SRT execution.
 
-## Optional legacy direct-term guard
+## Development-only legacy direct-term guard
 
-`prohibited_term_guard.py` is the compatibility CLI for direct formal-term scans. The unified `srt_tools.py` path is preferred when source range accounting, cross-cue direct matching, selection validation, or deterministic assembly are needed. Both use the formal term list only; neither makes semantic judgments. If unavailable, continue with the AI-first manual scan.
+`prohibited_term_guard.py` is retained only for development tests of formal direct-term boundaries. The unified `srt_tools.py` path is preferred for release regression checks. Both use the formal term list only; neither makes semantic judgments.
 
 Example: `python scripts/prohibited_term_guard.py input.srt --selected-ids 12,18 --final-text final-copy.txt`
 

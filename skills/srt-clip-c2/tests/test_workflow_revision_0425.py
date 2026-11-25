@@ -10,6 +10,11 @@ def read(path):
     return (ROOT / path).read_text(encoding="utf-8")
 
 
+def text_sha256(path):
+    data = path.read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(data).hexdigest()
+
+
 class WorkflowRevision047Tests(unittest.TestCase):
     def test_opening_only_comparison_uses_dynamic_customer_motivation(self):
         editorial = read("references/editorial-policy.md")
@@ -21,18 +26,18 @@ class WorkflowRevision047Tests(unittest.TestCase):
         self.assertIn("不比较、评分或排名完整成片", editorial)
         self.assertNotIn("不做六维评分", editorial)
 
-    def test_complete_pool_precedes_direct_dual_plan(self):
+    def test_complete_pool_precedes_user_selected_opening_generation(self):
         contract = read("references/runtime-contract.md")
         policy = read("references/clip-selection-policy.md")
-        self.assertLess(contract.index("建立完整信息池"), contract.index("4. 信息池完成后"))
-        self.assertLess(contract.index("建立完整信息池"), contract.index("单条/多方案数量"))
-        self.assertIn("默认直接生成两条", policy)
-        self.assertIn("不得暂停等待用户选择", policy)
+        self.assertLess(contract.index("建立完整信息池"), contract.index("开头候选等待关口"))
+        self.assertLess(contract.index("先只呈现商品身份"), contract.index("确认前不得生成开头候选"))
+        self.assertIn("每个已选开头分别生成一条完整成片", policy)
+        self.assertIn("最多 3 个真实、合格的开头候选", policy)
 
     def test_each_plan_starts_from_complete_pool_and_superlong_is_explicit(self):
         policy = read("references/clip-selection-policy.md")
-        self.assertIn("每条独立覆盖完整有效卖点", policy)
-        self.assertIn("不得把卖点拆到两条、只靠并集覆盖", policy)
+        self.assertIn("每条常规时长方案须独立覆盖", policy)
+        self.assertIn("不得以另一条方案或方案并集补足", policy)
         self.assertIn("明显超过 120 秒", policy)
         self.assertIn("逐项说明被省略的有效信息", policy)
 
@@ -62,22 +67,22 @@ class WorkflowRevision047Tests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         runtime = ROOT / manifest["runtime_file"]
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.30")
+        self.assertEqual(manifest["skill_version"], "0.4.32")
         self.assertTrue(manifest["source_map"])
-        self.assertEqual(hashlib.sha256(runtime.read_bytes()).hexdigest(), manifest["runtime_sha256"])
+        self.assertEqual(text_sha256(runtime), manifest["runtime_sha256"])
         for relative, digest in manifest["source_hashes"].items():
-            self.assertEqual(hashlib.sha256((ROOT / relative).read_bytes()).hexdigest(), digest, relative)
+            self.assertEqual(text_sha256(ROOT / relative), digest, relative)
 
     def test_fixed_five_parts_and_single_ai_architecture_remain(self):
         contract = read("references/runtime-contract.md")
         for phrase in ("一个 AI", "固定五部分交付", "不新增 Agent"):
             self.assertIn(phrase, contract)
 
-    def test_real_source_hook_regression_report_is_present(self):
-        report = read("tests/real-source-regression-0.4.30.md")
-        self.assertIn("鹅绒服", report)
-        self.assertIn("第 35–44 条", report)
-        self.assertIn("未核验", report)
+    def test_185_line_source_status_is_explicit_in_release_acceptance(self):
+        report = read("tests/release-acceptance-0.4.32.md")
+        self.assertIn("185 行原始 SRT", report)
+        self.assertIn("BLOCKED", report)
+        self.assertIn("未提供", report)
 
 
 if __name__ == "__main__":

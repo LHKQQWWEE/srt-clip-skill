@@ -27,7 +27,8 @@ SOURCE_FILES = [
 
 
 def sha256(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest()
+    normalized = data.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(normalized).hexdigest()
 
 
 def compile_bundle() -> tuple[str, dict[str, object]]:

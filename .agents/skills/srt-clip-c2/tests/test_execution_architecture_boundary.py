@@ -16,6 +16,11 @@ def read(relative):
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
+def text_sha256(path):
+    data = path.read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(data).hexdigest()
+
+
 class ExecutionArchitectureBoundaryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -53,14 +58,14 @@ class ExecutionArchitectureBoundaryTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_06_runtime_digest_matches_the_manifest(self):
-        actual = hashlib.sha256((ROOT / self.manifest["runtime_file"]).read_bytes()).hexdigest()
+        actual = text_sha256(ROOT / self.manifest["runtime_file"])
         self.assertEqual(actual, self.manifest["runtime_sha256"])
 
     def test_07_all_source_files_have_matching_hashes(self):
         self.assertEqual(set(self.manifest["source_files"]), set(self.manifest["source_hashes"]))
         for relative, expected in self.manifest["source_hashes"].items():
             with self.subTest(source=relative):
-                self.assertEqual(hashlib.sha256((ROOT / relative).read_bytes()).hexdigest(), expected)
+                self.assertEqual(text_sha256(ROOT / relative), expected)
 
     def test_08_source_map_ids_are_unique(self):
         ids = [item["rule_id"] for item in self.manifest["source_map"]]
@@ -109,8 +114,8 @@ class ExecutionArchitectureBoundaryTests(unittest.TestCase):
         prompt = plugin["extensions"]["com.openai"]["interface"]["defaultPrompt"]
         self.assertEqual(prompt, codex["interface"]["defaultPrompt"])
         self.assertIn("runtime-current.md", prompt)
-        self.assertIn("execution-summary.json", prompt)
         self.assertIn("clip-selection-policy.md", prompt)
+        self.assertNotIn("execution-summary.json", prompt)
         self.assertNotIn("manifest.required_files", prompt)
         self.assertLess(len(prompt), 1000)
         self.assertIn(prompt, read("agents/openai.yaml"))
@@ -169,10 +174,10 @@ class ExecutionArchitectureBoundaryTests(unittest.TestCase):
         self.assertIn("AI 的语义判断", self.auditor)
 
     def test_19_mechanical_calls_are_optional_and_grouped(self):
-        self.assertIn("非日常任务前置条件", self.runtime)
-        self.assertIn("最多执行一次输入预处理", self.runtime)
-        self.assertIn("选段组装时一次完成", self.runtime)
-        self.assertIn("工具不可用时继续处理", self.runtime)
+        self.assertIn("日常执行不调用 Python、脚本或外部工具", self.runtime)
+        self.assertIn("不可变序号/原话/时长映射", self.runtime)
+        self.assertNotIn("scripts/srt_tools.py preprocess", self.runtime)
+        self.assertNotIn("scripts/prohibited_term_guard.py", self.runtime)
 
     def test_20_final_audit_is_single_pass_and_repairs_are_local_and_bounded(self):
         self.assertIn("现有一次终检", self.runtime)

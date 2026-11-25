@@ -17,7 +17,7 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
 
     def test_every_plan_is_independent_and_long_form_omissions_are_visible(self):
         policy = read("references/clip-selection-policy.md")
-        self.assertIn("每条独立覆盖完整有效卖点", policy)
+        self.assertIn("每条常规时长方案须独立覆盖", policy)
         self.assertIn("超长预设", policy)
         self.assertIn("逐项说明被省略的有效信息", policy)
 
@@ -56,11 +56,11 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
             for unsupported in ("45 秒", "45秒", "130 秒", "130秒"):
                 self.assertNotIn(unsupported, text)
 
-    def test_default_dual_plan_has_no_pause(self):
+    def test_selected_opening_count_drives_independent_complete_cuts(self):
         policy = read("references/clip-selection-policy.md")
         contract = read("references/runtime-contract.md")
-        self.assertIn("默认直接生成两条", policy)
-        self.assertIn("不得暂停等待用户选择", policy)
+        self.assertIn("每个已选开头分别生成一条完整成片", policy)
+        self.assertIn("每条常规时长方案须独立覆盖", policy)
         self.assertNotIn("暂停生成正式成片", contract)
 
 

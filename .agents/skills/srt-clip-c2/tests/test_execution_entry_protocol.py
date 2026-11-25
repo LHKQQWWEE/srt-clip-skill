@@ -16,11 +16,12 @@ class EntryProtocolTests(unittest.TestCase):
         self.assertEqual(plugin["skills"], "./skills")
         skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
         portable = (ROOT / "C2-Universal-Portable.md").read_text(encoding="utf-8")
-        for text in (skill, prompt):
-            self.assertIn("execution-summary.json", text)
-            self.assertIn("clip-selection-policy.md", text)
+        self.assertIn("execution-summary.json", skill)
+        self.assertIn("clip-selection-policy.md", skill)
+        self.assertIn("clip-selection-policy.md", prompt)
         self.assertIn("摘要有效时直接复用", skill)
-        self.assertIn("默认直接生成两个", prompt)
+        self.assertIn("至多 3 个开头候选", prompt)
+        self.assertIn("不预选、不凑数", prompt)
         self.assertNotIn("每次调用 C2", prompt)
         self.assertIn(prompt, portable)
 
@@ -42,11 +43,11 @@ class EntryProtocolTests(unittest.TestCase):
         companion = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         manifest = json.loads((ROOT / "references/runtime-manifest.json").read_text(encoding="utf-8"))
         self.assertEqual((PLUGIN / "VERSION").read_text(encoding="utf-8").strip(), "0.4.7")
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.30")
-        self.assertEqual(plugin["version"], "0.4.30")
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.32")
+        self.assertEqual(plugin["version"], "0.4.32")
         self.assertEqual(companion["version"], plugin["version"])
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.30")
+        self.assertEqual(manifest["skill_version"], "0.4.32")
 
 
 if __name__ == "__main__":

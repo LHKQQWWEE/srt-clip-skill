@@ -29,9 +29,9 @@ class RuntimeContractTests(unittest.TestCase):
 
     def test_pool_is_complete_before_plan_count_and_generation(self):
         contract = read("references/runtime-contract.md")
-        self.assertLess(contract.index("建立完整信息池"), contract.index("4. 信息池完成后"))
-        self.assertLess(contract.index("建立完整信息池"), contract.index("单条/多方案数量"))
-        self.assertNotIn("暂停生成正式成片", contract)
+        self.assertLess(contract.index("建立完整信息池"), contract.index("开头候选等待关口"))
+        self.assertLess(contract.index("等待用户选择商品"), contract.index("确认后才为所选商品生成开头候选"))
+        self.assertIn("最多 3 个", contract)
 
     def test_final_check_covers_actual_output_plans(self):
         final_check = read("references/final-check.md")
@@ -56,7 +56,8 @@ class RuntimeContractTests(unittest.TestCase):
 
     def test_schema_describes_one_record_per_generated_plan(self):
         schema = json.loads(read("scripts/selection.schema.json"))
-        self.assertIn("one generated final plan", schema["description"])
+        self.assertIn("one actual user-selected final cut", schema["description"])
+        self.assertIn("Routine SRT execution never calls this JSON schema or Python tools", schema["description"])
         self.assertIn("opening_choice", schema["properties"])
         self.assertIn("plan_core", schema["properties"])
         self.assertIn("duration_mode", schema["properties"])

@@ -34,7 +34,7 @@
 
 ## 开头比较
 
-开头候选的范围和动态顾客心理驱动钩子机制见 `references/editorial-policy.md`。信息池后的方案数量、逐条独立编排、120 秒处理及验收唯一遵循 `references/clip-selection-policy.md`。本文件不再定义暂停等待用户选择或时长规则。
+开头候选的范围和动态顾客心理驱动钩子机制见 `references/editorial-policy.md`。商品确认、开头候选选择、逐条独立编排、120 秒处理及验收遵循 `references/runtime-contract.md` 与 `references/clip-selection-policy.md`。本文件不另定候选或成片数量。
 
 ## 原文促单的保留
 

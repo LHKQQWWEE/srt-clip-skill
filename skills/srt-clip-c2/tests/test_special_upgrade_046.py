@@ -27,14 +27,14 @@ class SpecialUpgrade046Tests(unittest.TestCase):
                 check=False,
             )
 
-    def test_default_two_plans_and_long_form_exception_are_explicit(self):
+    def test_user_selected_openings_and_long_form_exception_are_explicit(self):
         policy = (ROOT / "references" / "clip-selection-policy.md").read_text(encoding="utf-8")
         contract = (ROOT / "references" / "runtime-contract.md").read_text(encoding="utf-8")
-        self.assertIn("默认直接生成两条", policy)
-        self.assertIn("每条独立覆盖完整有效卖点", policy)
+        self.assertIn("最多 3 个真实、合格的开头候选", policy)
+        self.assertIn("每个已选开头分别生成一条完整成片", policy)
+        self.assertIn("每条常规时长方案须独立覆盖", policy)
         self.assertIn("超长预设", policy)
-        self.assertIn("不得暂停等待用户选择", policy)
-        self.assertNotIn("暂停生成正式成片", contract)
+        self.assertIn("用户选择商品", contract)
 
     def test_duration_is_approximate_and_final_audit_is_selected_only(self):
         highlight = (ROOT / "references" / "highlight-selection.md").read_text(encoding="utf-8")

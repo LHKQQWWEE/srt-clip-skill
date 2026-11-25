@@ -12,6 +12,11 @@ def read(relative: str) -> str:
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
+def text_sha256(path: Path) -> str:
+    data = path.read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(data).hexdigest()
+
+
 class DynamicHookPolicyTests(unittest.TestCase):
     def test_open_viewing_motivation_tier_precedes_fallback_without_internal_order(self) -> None:
         policy = read("references/editorial-policy.md")
@@ -57,7 +62,8 @@ class DynamicHookPolicyTests(unittest.TestCase):
         self.assertIn("跨主题比较", policy)
         self.assertIn("真实原话", policy)
         self.assertIn("不比较、评分或排名完整成片", policy)
-        self.assertLess(contract.index("3. 在同一次语义分析"), contract.index("4. 信息池完成后"))
+        self.assertLess(contract.index("建立完整信息池"), contract.index("信息池完成后，按"))
+        self.assertLess(contract.index("信息池完成后，按"), contract.index("开头候选等待关口"))
 
     def test_truth_and_srt_visual_limits_remain_hard_boundaries(self) -> None:
         policy = read("references/editorial-policy.md")
@@ -131,8 +137,8 @@ class DynamicHookPolicyTests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         summary = json.loads(read("references/execution-summary.json"))
         self.assertEqual(core_version, "0.4.7")
-        self.assertEqual(skill_version, "0.4.30")
-        self.assertEqual(plugin["version"], "0.4.30")
+        self.assertEqual(skill_version, "0.4.32")
+        self.assertEqual(plugin["version"], "0.4.32")
         self.assertEqual(manifest["core_version"], core_version)
         self.assertEqual(manifest["skill_version"], skill_version)
         self.assertEqual(summary["core_version"], core_version)
@@ -146,8 +152,8 @@ class DynamicHookPolicyTests(unittest.TestCase):
         for phrase in ("不设置固定钩子类型优先级", "不预设种草或共情优先", "共情入口优先"):
             self.assertNotIn(phrase, plugin_text)
         for relative, digest in manifest["source_hashes"].items():
-            self.assertEqual(hashlib.sha256((ROOT / relative).read_bytes()).hexdigest(), digest)
-        runtime_digest = hashlib.sha256((ROOT / "references/runtime-current.md").read_bytes()).hexdigest()
+            self.assertEqual(text_sha256(ROOT / relative), digest)
+        runtime_digest = text_sha256(ROOT / "references/runtime-current.md")
         self.assertEqual(runtime_digest, manifest["runtime_sha256"])
         mirrored = plugin_root / ".agents/skills/srt-clip-c2"
         for path in ROOT.rglob("*"):

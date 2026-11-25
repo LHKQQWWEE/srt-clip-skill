@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Optional, lossless mechanical helpers for C2 SRT and duration-text work."""
+"""Development and release-test helpers for C2 SRT and duration-text workflows."""
 
 from __future__ import annotations
 
@@ -56,7 +56,7 @@ class Cue:
 @dataclass
 class SourceReport:
     source_type: str
-    cues: list[Cue] = field(default_factory=list)
+    cues: list[Cue] | tuple[Cue, ...] = field(default_factory=list)
     parsed_ranges: list[dict[str, object]] = field(default_factory=list)
     unparsed_ranges: list[dict[str, object]] = field(default_factory=list)
     diagnostics: list[dict[str, object]] = field(default_factory=list)
@@ -64,6 +64,27 @@ class SourceReport:
     total_blocks: int = 0
     status: str = "BLOCKED"
     source_sha256: str = ""
+    source_map_sha256: str = ""
+
+
+def _source_map_records(cues: Iterable[Cue]) -> list[dict[str, object]]:
+    return [
+        {
+            "id": cue.cue_id,
+            "source_order": cue.source_order,
+            "original_text": cue.original_text,
+            "start_ms_exact": _decimal_string(cue.start_ms) if cue.timeline_known else None,
+            "end_ms_exact": _decimal_string(cue.end_ms) if cue.timeline_known else None,
+            "duration_ms_exact": _decimal_string(cue.duration_ms),
+            "timeline_known": cue.timeline_known,
+        }
+        for cue in cues
+    ]
+
+
+def _source_map_digest(cues: Iterable[Cue]) -> str:
+    payload = json.dumps(_source_map_records(cues), ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def _split_srt_blocks(text: str) -> list[tuple[int, int, int, list[str]]]:
@@ -285,6 +306,8 @@ def _finish_report(report: SourceReport) -> SourceReport:
         report.status = "FAIL"
     else:
         report.status = "PASS"
+    report.source_map_sha256 = _source_map_digest(report.cues)
+    report.cues = tuple(report.cues)
     return report
 
 
@@ -411,6 +434,8 @@ def preprocess_text(
             "format": "c2-preprocess-compact-v1",
             "source_type": source.source_type,
             "source_sha256": source.source_sha256,
+            "source_map_sha256": source.source_map_sha256,
+            "source_map": _source_map_records(source.cues),
             "status": source.status,
             "counts": {"parsed_blocks": len(source.cues), "total_blocks": source.total_blocks},
             "recognized_header_lines": source.recognized_header_lines,
@@ -471,6 +496,8 @@ def preprocess_text(
     return {
         "source_type": source.source_type,
         "source_sha256": source.source_sha256,
+        "source_map_sha256": source.source_map_sha256,
+        "source_map": _source_map_records(source.cues),
         "status": source.status,
         "counts": {"parsed_blocks": len(source.cues), "total_blocks": source.total_blocks},
         "recognized_header_lines": source.recognized_header_lines,
@@ -748,10 +775,19 @@ def assemble_selection(
         "validation": validation,
         "assembled": True,
         "source_sha256": source.source_sha256,
+        "source_map_sha256": source.source_map_sha256,
         "source_sequence": ",".join(selected_ids),
         "fifth_part_sequence": ",".join(selected_ids),
         "selected_ids": selected_ids,
-        "segments": [{"cue_id": cue.cue_id, "original_text": cue.original_text} for cue in cues],
+        "segments": [
+            {
+                "cue_id": cue.cue_id,
+                "source_order": cue.source_order,
+                "original_text": cue.original_text,
+                "duration_ms_exact": _decimal_string(cue.duration_ms),
+            }
+            for cue in cues
+        ],
         "body_text": "\n".join(cue.original_text for cue in cues),
         "source_groups": groups,
         "source_duration_ms": source_duration_ms,
@@ -762,6 +798,69 @@ def assemble_selection(
         "source_duration_display": _display_duration(source_duration_exact),
         "playback_duration_display": display,
         "shared_duration_field": "playback_duration_display",
+    }
+
+
+def verify_final_output(
+    source: SourceReport,
+    selection: dict[str, object],
+    assembly: dict[str, object],
+    final_text: str,
+    final_sequence: str,
+    formal_terms: Optional[Iterable[str]] = None,
+) -> dict[str, object]:
+    """Release-test gate binding final clip text and fifth-part IDs to immutable source cues."""
+    failures: list[dict[str, object]] = []
+    if not isinstance(source.cues, tuple):
+        failures.append(_failure("source_map_not_immutable", "parsed source cue mapping is not frozen"))
+    actual_map_hash = _source_map_digest(source.cues)
+    if not source.source_map_sha256 or actual_map_hash != source.source_map_sha256:
+        failures.append(_failure("source_map_hash_mismatch", "original cue ID/text/duration map changed after parsing"))
+
+    validation = validate_selection(source, selection, formal_terms=formal_terms)
+    if validation["status"] != "PASS":
+        failures.extend(validation["hard_failures"])
+    if assembly.get("status") != "PASS" or assembly.get("assembled") is not True:
+        failures.append(_failure("assembly_not_passed", "final output must be based on a passing assembly"))
+
+    selected_ids = [str(item) for item in selection.get("selected_ids", [])] if isinstance(selection.get("selected_ids"), list) else []
+    by_id = _source_index(source)
+    expected_segments = [
+        {
+            "cue_id": cue_id,
+            "source_order": by_id[cue_id].source_order,
+            "original_text": by_id[cue_id].original_text,
+            "duration_ms_exact": _decimal_string(by_id[cue_id].duration_ms),
+        }
+        for cue_id in selected_ids
+        if cue_id in by_id
+    ]
+    expected_sequence = ",".join(selected_ids)
+    expected_text = "\n".join(str(item["original_text"]) for item in expected_segments)
+
+    if len(expected_segments) != len(selected_ids):
+        failures.append(_failure("selected_source_mapping_missing", "one or more selected cue IDs have no source mapping"))
+    if assembly.get("source_sha256") != source.source_sha256:
+        failures.append(_failure("assembly_source_hash_mismatch", "assembly does not match the current source file"))
+    if assembly.get("source_map_sha256") != source.source_map_sha256:
+        failures.append(_failure("assembly_source_map_mismatch", "assembly does not match the immutable source cue mapping"))
+    if assembly.get("selected_ids") != selected_ids or assembly.get("segments") != expected_segments:
+        failures.append(_failure("assembled_line_mismatch", "assembled lines differ from selected source IDs/text/durations"))
+    if assembly.get("body_text") != expected_text or final_text != expected_text:
+        failures.append(_failure("final_text_source_mismatch", "final clip text is not an exact playback-order rendering of source cues"))
+    if assembly.get("source_sequence") != expected_sequence or assembly.get("fifth_part_sequence") != expected_sequence:
+        failures.append(_failure("assembly_sequence_mismatch", "assembly sequences do not match selected source cue IDs"))
+    if final_sequence != expected_sequence:
+        failures.append(_failure("final_sequence_source_mismatch", "fifth-part sequence differs from selected source cue IDs"))
+
+    return {
+        "status": "FAIL" if failures else "PASS",
+        "hard_failures": failures,
+        "source_sha256": source.source_sha256,
+        "source_map_sha256": source.source_map_sha256,
+        "expected_sequence": expected_sequence,
+        "verified_sequence": final_sequence,
+        "verified_line_count": len(expected_segments),
     }
 
 

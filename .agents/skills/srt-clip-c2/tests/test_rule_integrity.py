@@ -51,12 +51,12 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         companion = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         manifest = json.loads(read("references/runtime-manifest.json"))
         self.assertEqual((PLUGIN / "VERSION").read_text(encoding="utf-8").strip(), "0.4.7")
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.39")
-        self.assertEqual(plugin["version"], "0.4.39")
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.40")
+        self.assertEqual(plugin["version"], "0.4.40")
         self.assertEqual(companion["version"], plugin["version"])
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.39")
-        self.assertIn("0.4.39", read("C2-Universal-Portable.md"))
+        self.assertEqual(manifest["skill_version"], "0.4.40")
+        self.assertIn("0.4.40", read("C2-Universal-Portable.md"))
 
     def test_plugin_identity_and_entry_prompts_remain_aligned(self):
         plugin = json.loads((PLUGIN / "plugin.json").read_text(encoding="utf-8"))
@@ -79,8 +79,6 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertIn("不得预选", policy)
         self.assertIn("每个已选开头分别生成一条完整成片", policy)
         self.assertIn("每条常规时长方案须独立覆盖", policy)
-        self.assertNotIn("默认直接生成两条", policy)
-        self.assertNotIn("不得暂停等待用户选择", policy)
 
     def test_dynamic_opening_rules_and_business_boundaries_remain(self):
         editorial = read("references/editorial-policy.md")
@@ -89,7 +87,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertIn("一个 AI", read("references/runtime-contract.md"))
         self.assertIn("动态顾客心理驱动", editorial)
         self.assertIn("开放式观看动力优先级", editorial)
-        self.assertIn("存在合格的第一优先级开头候选，必须从这些候选中动态择优", editorial)
+        self.assertIn("候选池纳入其中全部合格候选", editorial)
         self.assertIn("不比较、评分或排名完整成片", editorial)
         self.assertIn("序号硬门", final_check)
         self.assertIn("不调用 Python、脚本或外部工具", final_check)

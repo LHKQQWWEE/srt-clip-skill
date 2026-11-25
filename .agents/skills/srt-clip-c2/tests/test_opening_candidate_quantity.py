@@ -26,6 +26,27 @@ def cuts_for_selection(candidates):
     return list(candidates)
 
 
+def render_clips(selected_openers, bodies, required_points):
+    """Build test outputs keyed to the user's exact opener and audit each independently."""
+    if len(selected_openers) > 3:
+        raise ValueError("用户最多选择 3 个开头")
+    clips = []
+    for opener in selected_openers:
+        body = bodies[opener["id"]]
+        clips.append({
+            "opening_id": opener["id"],
+            "opening_text": opener["开头原话"],
+            "cues": [opener, *body],
+            "blocks": ["opening", *[item["block"] for item in body]],
+        })
+    for clip, opener in zip(clips, selected_openers):
+        if clip["cues"][0]["id"] != opener["id"] or clip["cues"][0]["开头原话"] != opener["开头原话"]:
+            raise AssertionError("成片未从对应用户所选开头开始")
+        if not required_points.issubset({point for item in clip["cues"] for point in item.get("points", set())}):
+            raise AssertionError("单条成片未覆盖全部有效卖点")
+    return clips
+
+
 class OpeningCandidateQuantityTests(unittest.TestCase):
     def test_policy_explicitly_separates_uncapped_display_from_selection_cap(self):
         self.assertIn("所有达到现有质量门槛", POLICY)
@@ -37,9 +58,8 @@ class OpeningCandidateQuantityTests(unittest.TestCase):
         self.assertIn("遗漏任何达到现有质量门槛的候选", FINAL_CHECK)
         self.assertIn("不设识别或展示数量上限", CONSTITUTION)
         self.assertIn("用户最多选择三个", CONSTITUTION)
-        self.assertNotIn("最多三个且无预选", FINAL_CHECK)
-        self.assertNotIn("候选最多三个", POLICY)
-        self.assertNotIn("最多 3 个真实、合格的开头候选", POLICY)
+        self.assertIn("展示全部合格且彼此实质不同的候选", EDITORIAL)
+        self.assertIn("候选展示不设数量上限", EDITORIAL)
 
     def test_all_qualified_candidate_count_cases(self):
         for count in (0, 1, 3, 5, 10):
@@ -74,6 +94,32 @@ class OpeningCandidateQuantityTests(unittest.TestCase):
         self.assertIn("每个已选开头分别生成一条完整成片", POLICY)
         self.assertIn("每条常规时长方案须独立覆盖", POLICY)
 
+    def test_each_cut_starts_with_exact_selected_opener_and_has_full_coverage(self):
+        openers = [
+            {"id": "A", "开头原话": "这件上身特别利落", "points": {"fit"}},
+            {"id": "B", "开头原话": "这块面料很有垂感", "points": {"fabric"}},
+        ]
+        bodies = {
+            "A": [
+                {"id": "A2", "block": "fit-proof", "points": {"fit-proof"}},
+                {"id": "A3", "block": "fabric", "points": {"fabric"}},
+                {"id": "A4", "block": "fabric-proof", "points": {"fabric-proof"}},
+            ],
+            "B": [
+                {"id": "B2", "block": "fabric-proof", "points": {"fabric-proof"}},
+                {"id": "B3", "block": "fit", "points": {"fit"}},
+                {"id": "B4", "block": "fit-proof", "points": {"fit-proof"}},
+            ],
+        }
+        required = {"fit", "fit-proof", "fabric", "fabric-proof"}
+        clips = render_clips(openers, bodies, required)
+        self.assertEqual(len(clips), len(openers))
+        for clip, opener in zip(clips, openers):
+            self.assertEqual(clip["cues"][0]["id"], opener["id"])
+            self.assertEqual(clip["cues"][0]["开头原话"], opener["开头原话"])
+            self.assertEqual({point for cue in clip["cues"] for point in cue.get("points", set())}, required)
+        self.assertNotEqual(clips[0]["blocks"], clips[1]["blocks"])
+
     def test_fixed_fields_and_open_hook_rules_remain(self):
         self.assertIn("每个候选只显示四项", POLICY)
         for field in FIELDS:
@@ -81,7 +127,7 @@ class OpeningCandidateQuantityTests(unittest.TestCase):
         self.assertIn("开放式观看动力优先级", EDITORIAL)
         self.assertIn("前 2 秒", EDITORIAL)
         self.assertIn("前 5 秒", EDITORIAL)
-        self.assertIn("存在合格的第一优先级开头候选，必须从这些候选中动态择优", EDITORIAL)
+        self.assertIn("候选池纳入其中全部合格候选", EDITORIAL)
 
 
 if __name__ == "__main__":

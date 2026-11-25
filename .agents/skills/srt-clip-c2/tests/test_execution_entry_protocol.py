@@ -43,11 +43,11 @@ class EntryProtocolTests(unittest.TestCase):
         companion = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         manifest = json.loads((ROOT / "references/runtime-manifest.json").read_text(encoding="utf-8"))
         self.assertEqual((PLUGIN / "VERSION").read_text(encoding="utf-8").strip(), "0.4.7")
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.39")
-        self.assertEqual(plugin["version"], "0.4.39")
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.40")
+        self.assertEqual(plugin["version"], "0.4.40")
         self.assertEqual(companion["version"], plugin["version"])
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.39")
+        self.assertEqual(manifest["skill_version"], "0.4.40")
 
 
 if __name__ == "__main__":

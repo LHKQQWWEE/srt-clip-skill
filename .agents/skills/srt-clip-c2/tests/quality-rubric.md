@@ -1,4 +1,4 @@
-# C2 Universal Core 0.4.7｜Skill 0.4.37 质量验收
+# C2 Universal Core 0.4.7｜Skill 0.4.38 质量验收
 
 本标准用于开发和发布验收，不增加日常剪辑步骤。AI 仍是唯一语义判断者；日常执行不调用 Python、脚本或外部工具。
 

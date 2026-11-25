@@ -30,3 +30,7 @@ These commands must not be used for routine SRT execution.
 Example: `python scripts/prohibited_term_guard.py input.srt --selected-ids 12,18 --final-text final-copy.txt`
 
 Exit code `0` means no direct hit was found in the selected cues or final text; `1` means selected content or final copy contains a direct formal term; `2` means invalid input or invocation. A scan without `--selected-ids` reports every cue hit and never edits the source. The guard does not decide semantic equivalence, product facts, context risk, or point coverage, and it never removes adjacent cues automatically.
+
+## Canonical-to-mirror sync (development only)
+
+Maintain skills/srt-clip-c2 as the canonical Skill tree. After rebuilding generated files, run scripts/sync_skill_mirror.py from the canonical Skill directory to replace the .agents mirror from that source. The sync ignores Python caches. Verify the two trees with the mirror regression before creating the Skill-only ZIP. This script is never part of routine SRT execution.

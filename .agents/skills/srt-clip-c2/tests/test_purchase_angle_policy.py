@@ -14,8 +14,8 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
         plugin = ROOT.parents[1]
         manifest = json.loads(read("references/runtime-manifest.json"))
         self.assertEqual((plugin / "VERSION").read_text(encoding="utf-8").strip(), "0.4.7")
-        self.assertEqual(json.loads((plugin / "plugin.json").read_text(encoding="utf-8"))["version"], "0.4.28")
-        self.assertEqual(manifest["skill_version"], "0.4.28")
+        self.assertEqual(json.loads((plugin / "plugin.json").read_text(encoding="utf-8"))["version"], "0.4.29")
+        self.assertEqual(manifest["skill_version"], "0.4.29")
 
     def test_opening_choice_uses_dynamic_customer_motivation(self):
         editorial = read("references/editorial-policy.md")

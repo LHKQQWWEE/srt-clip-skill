@@ -12,8 +12,8 @@ class C2UniversalIntegrityTests(unittest.TestCase):
   for path in ("product-knowledge-packs/womens-fashion.md","product-knowledge-packs/shoes.md","product-knowledge-packs/scarves.md"): self.assertTrue((ROOT/path).is_file(),path)
  def test_core_and_plugin_versions_are_aligned(self):
   a=json.loads((PLUGIN/"plugin.json").read_text(encoding="utf-8")); b=json.loads((PLUGIN/".codex-plugin/plugin.json").read_text(encoding="utf-8")); m=json.loads((ROOT/"references/runtime-manifest.json").read_text(encoding="utf-8"))
-  self.assertEqual((PLUGIN/"VERSION").read_text().strip(),"0.4.7"); self.assertEqual(a["version"],"0.4.28"); self.assertEqual(b["version"],a["version"]); self.assertEqual(m["core_version"],"0.4.7"); self.assertEqual(m["skill_version"],"0.4.28")
-  self.assertIn("0.4.28",read("C2-Universal-Portable.md"))
+  self.assertEqual((PLUGIN/"VERSION").read_text().strip(),"0.4.7"); self.assertEqual(a["version"],"0.4.29"); self.assertEqual(b["version"],a["version"]); self.assertEqual(m["core_version"],"0.4.7"); self.assertEqual(m["skill_version"],"0.4.29")
+  self.assertIn("0.4.29",read("C2-Universal-Portable.md"))
  def test_plugin_identity_entry_and_connection_metadata_remain(self):
   a=json.loads((PLUGIN/"plugin.json").read_text(encoding="utf-8")); b=json.loads((PLUGIN/".codex-plugin/plugin.json").read_text(encoding="utf-8"))
   self.assertEqual(a["name"],"srt-clip-c2"); self.assertEqual(b["name"],a["name"]); self.assertEqual(a["skills"],"./skills"); self.assertEqual(b["skills"],"./skills")

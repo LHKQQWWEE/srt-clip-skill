@@ -60,7 +60,7 @@ class WorkflowRevision047Tests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         runtime = ROOT / manifest["runtime_file"]
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.28")
+        self.assertEqual(manifest["skill_version"], "0.4.29")
         self.assertTrue(manifest["source_map"])
         self.assertEqual(hashlib.sha256(runtime.read_bytes()).hexdigest(), manifest["runtime_sha256"])
         for relative, digest in manifest["source_hashes"].items():

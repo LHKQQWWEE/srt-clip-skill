@@ -1,4 +1,4 @@
 interface:
-  display_name: "SRT Clip C2 Universal 0.4.7 / Skill 0.4.28"
+  display_name: "SRT Clip C2 Universal 0.4.7 / Skill 0.4.29"
   short_description: "原话剪辑，默认双方案与超长动态处理"
-  default_prompt: "【C2 Universal 0.4.7 / Skill 0.4.28】触发 srt文案、srt切片文案、str文案或 C2完整精简版时，先按 SKILL.md 校验 references/execution-summary.json。首次运行、版本/manifest/规则 SHA-256 不匹配或摘要无效时，完整读取 references/runtime-current.md 和相关权威规则并刷新摘要；有效摘要可复用，不要求每次完整重读。缓存仅可选，丢失不影响有效持久摘要；摘要始终从属于原始规则。普通任务无需脚本或工具门槛。默认直接生成两个具有独立购买核心的方案；开头指定单条/按推荐版时仅出一条。方案数量、逐条独立覆盖、120 秒和超长预设唯一按 references/clip-selection-policy.md。保留真实原话/序号、商品归属、多商品确认、正式禁词逐句边界、风险提示分离、重复判断、动态购买结构、动态顾客心理驱动钩子机制、原文促单、固定五部分、AI-First 与工具最小化。"
+  default_prompt: "【C2 Universal 0.4.7 / Skill 0.4.29】触发 srt文案、srt切片文案、str文案或 C2完整精简版时，先按 SKILL.md 校验 references/execution-summary.json。首次运行、摘要缺失/无效、版本/manifest/规则 SHA-256 不匹配时，完整读取 references/runtime-current.md 和相关权威规则并刷新；有效摘要可复用，不要求每次完整重读。缓存可选，摘要从属原规则；普通任务无需脚本或工具门槛。完整读取目标商品并建立全部有效信息池后，将真实钩子与紧邻承接联合编排，综合判断前2秒吸引力和前5秒连续吸引力；默认1.2倍速对应原素材累计2.4秒/6秒，仅作参考、不硬截原话。承接动态延续情绪、视觉期待、种草兴趣或购买收益，不固定类型、顺序、权重、评分或额外语义轮次。默认直接生成两个独立购买核心方案；开头指定单条/按推荐版时只出一条。方案数量、逐条独立覆盖、120秒及超长预设唯一按 references/clip-selection-policy.md。保留真实原话/序号、商品归属与多商品确认、正式禁词逐句边界、风险提示分离、重复判断、动态购买结构、原文促单、固定五部分、AI-First 与工具最小化。"

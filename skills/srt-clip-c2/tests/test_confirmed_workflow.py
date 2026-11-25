@@ -39,7 +39,7 @@ class ConfirmedWorkflowPolicyTests(unittest.TestCase):
 
     def test_03_each_selected_opening_has_its_own_complete_dynamic_cut(self):
         self.assertIn("每个已选开头分别生成一条完整成片", self.policy)
-        self.assertIn("每条独立重新编排", self.policy)
+        self.assertIn("每条独立动态划分和重排内容板块", self.policy)
         self.assertIn("信息池内全部有效卖点", self.policy)
         self.assertIn("120 秒不是目标，也不是硬上限", self.policy)
         self.assertIn("明显超过 120 秒", self.policy)

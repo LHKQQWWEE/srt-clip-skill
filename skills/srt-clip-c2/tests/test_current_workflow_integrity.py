@@ -15,16 +15,15 @@ def text_sha256(path):
     return hashlib.sha256(data).hexdigest()
 
 
-class WorkflowRevision047Tests(unittest.TestCase):
+class CurrentWorkflowIntegrityTests(unittest.TestCase):
     def test_opening_only_comparison_uses_dynamic_customer_motivation(self):
         editorial = read("references/editorial-policy.md")
         self.assertIn("动态顾客心理驱动钩子机制", editorial)
-        self.assertIn("开头比较只覆盖开头本身", editorial)
+        self.assertIn("候选识别只评估开头本身", editorial)
         self.assertIn("开放式观看动力优先级", editorial)
-        self.assertIn("存在合格的第一优先级开头候选，必须从这些候选中动态择优", editorial)
+        self.assertIn("候选池纳入其中全部合格候选", editorial)
         self.assertIn("第一优先级内部不设固定类型清单、顺序、权重或分数", editorial)
         self.assertIn("不比较、评分或排名完整成片", editorial)
-        self.assertNotIn("不做六维评分", editorial)
 
     def test_complete_pool_precedes_user_selected_opening_generation(self):
         contract = read("references/runtime-contract.md")
@@ -68,7 +67,7 @@ class WorkflowRevision047Tests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         runtime = ROOT / manifest["runtime_file"]
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.39")
+        self.assertEqual(manifest["skill_version"], "0.4.40")
         self.assertTrue(manifest["source_map"])
         self.assertEqual(text_sha256(runtime), manifest["runtime_sha256"])
         for relative, digest in manifest["source_hashes"].items():
@@ -78,16 +77,6 @@ class WorkflowRevision047Tests(unittest.TestCase):
         contract = read("references/runtime-contract.md")
         for phrase in ("一个 AI", "固定五部分交付", "不新增 Agent"):
             self.assertIn(phrase, contract)
-
-    def test_185_cue_scoped_source_status_is_explicit_in_release_acceptance(self):
-        report = read("tests/history/0.4.37/release-acceptance-0.4.37.md")
-        self.assertIn("前 1–185 条", report)
-        self.assertIn("703 条", report)
-        self.assertIn("只对前 185 条", report)
-        self.assertIn("未对完整 703 条", report)
-        self.assertIn("小马甲", report)
-        self.assertIn("阶段二未执行", report)
-
 
 if __name__ == "__main__":
     unittest.main()

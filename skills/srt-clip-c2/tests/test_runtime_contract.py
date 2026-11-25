@@ -20,11 +20,12 @@ class RuntimeContractTests(unittest.TestCase):
     def test_opening_compares_dynamic_hook_candidates_only(self):
         editorial = read("references/editorial-policy.md")
         self.assertIn("动态顾客心理驱动钩子机制", editorial)
-        self.assertIn("开头比较只覆盖开头本身", editorial)
+        self.assertIn("候选识别只评估开头本身", editorial)
         self.assertIn("开放式观看动力优先级", editorial)
-        self.assertIn("存在合格的第一优先级开头候选，必须从这些候选中动态择优", editorial)
-        self.assertIn("只有不存在合格的第一优先级候选时，才从其他有效钩子候选中择优", editorial)
-        self.assertIn("多方案", editorial)
+        self.assertIn("候选池纳入其中全部合格候选", editorial)
+        self.assertIn("只有完全不存在合格的第一优先级候选时", editorial)
+        self.assertIn("候选展示不设数量上限", editorial)
+        self.assertIn("主体内容可合理复用", editorial)
         self.assertIn("不比较、评分或排名完整成片", editorial)
 
     def test_pool_is_complete_before_plan_count_and_generation(self):

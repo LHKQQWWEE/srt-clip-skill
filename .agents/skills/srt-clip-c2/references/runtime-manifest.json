@@ -31,19 +31,19 @@
     "references/product-knowledge-registry.md",
     "references/final-check.md"
   ],
-  "skill_version": "0.4.39",
+  "skill_version": "0.4.40",
   "summary_file": "references/execution-summary.json",
   "source_hashes": {
-    "references/ai-first-constitution.md": "601f72c20907b805e737d812307930b14ec6bd5c4178486b8c39840393cc9ad8",
-    "references/runtime-contract.md": "a931e2cdcc8fda1b9c4aa4d2e052bc196050e17fa9f28497316786cf82eee4a2",
-    "references/clip-selection-policy.md": "6bc6447c4509546e95a731d080c3d55f292e47f57e8970b28bf716b7a35cc51e",
+    "references/ai-first-constitution.md": "5f182c499d9e3ba68088dda84a7a6436ceec65e70b4a6d0f30b32031562f2893",
+    "references/runtime-contract.md": "c56d34250e9110153d319acbe16e1ba0250286b5f6a265c6dedf4ab792bdf929",
+    "references/clip-selection-policy.md": "f158d904ff4e3964311a8997c5b510bc3aff0503cb27247f02552ea3de2a9b5d",
     "references/global-rules.md": "ec1a9a15df40943d12a0753708a7b9fd02c4f205286d57a8a27a75f74a4e212a",
-    "references/editorial-policy.md": "4276e259d10e6b8cde915ad559e34074a470cc0d7806c501691b2e692d883dde",
+    "references/editorial-policy.md": "e14bc3ee5006cae012e46025eca571fbb6b43986d02ebd2c96fcc625337c07c0",
     "references/highlight-selection.md": "b04c43f54ee6fe9d079c015bbbd472b5341e8ab0f96ee1251a13fc8c73f60764",
     "references/product-knowledge-registry.md": "d5125b4d4ba910ec8dc1c2fcbfe5ce55440a056232ae1ba7ed81b89f8c6d0a77",
-    "references/final-check.md": "efeb83dbabeccbb54f3bda91c3f6d8ff6f3f02206c3c741ad94855ae134d3ddf"
+    "references/final-check.md": "e0a03d8c5aa9127dccf7faed835f4d5584a1fba118162860e742e13870eae3fe"
   },
-  "runtime_sha256": "84d43b4865b6707a19ebef6b096d44a711cd177558ae97d257e232844195bd11",
+  "runtime_sha256": "47db4d4366155648886938cd4bb1c9f5124c5da495e9a30494864da7a659e0d7",
   "source_map": [
     {
       "rule_id": "SRC01.L0001",

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://c2-universal.local/schemas/selection-0.4.37.json",
+  "$id": "https://c2-universal.local/schemas/selection-0.4.40.json",
   "title": "C2 Selection JSON",
   "description": "Development/test record for one actual user-selected final cut. Selling points describe the complete product pool; selected_ids and roles describe only this plan. Opening choice is an AI record, not a machine judgment. Routine SRT execution never calls this JSON schema or Python tools. Create one independent record for each user-selected opening.",
   "type": "object",
@@ -202,7 +202,7 @@
     },
     "opening_choice": {
       "type": "object",
-      "description": "Optional AI record of a real hook and its immediate bridge, evaluated jointly for attention in the first 2 seconds and continuity through the first 5 seconds. Prefer a dynamically classified, open-ended viewing-motivation hook whenever any qualified candidate exists; fall back to other valid hooks only when none exists. Classify by actual viewing motivation, not product-benefit category or type label. No fixed order, weight, or score within the first priority; multiple plans may share one best hook. At default 1.2x, 2.4 and 6 cumulative source seconds are references only, never hard cuts. This schema is not a workflow dependency.",
+      "description": "Optional record of the exact real opening selected by the user, including its necessary immediate bridge. Candidate qualification uses the open-ended viewing-motivation priority: show every distinct qualified first-priority candidate when any exist; otherwise use qualified fallback candidates. This priority defines the candidate pool and does not rank a winner or select for the user. Candidate display has no count limit; the user may select up to three, and each selected opening starts its own independent complete cut. Classify by actual viewing motivation, not product-benefit category or type label. No fixed order, weight, or score within the first priority. At default 1.2x, 2.4 and 6 cumulative source seconds are references only, never hard cuts. This schema is not a workflow dependency.",
       "properties": {
         "cue_ids": {
           "type": "array",

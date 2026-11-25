@@ -21,10 +21,10 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
         self.assertIn("超长预设", policy)
         self.assertIn("逐项说明被省略的有效信息", policy)
 
-    def test_empathy_first_opening_and_customer_value_remain(self):
+    def test_dynamic_opening_and_customer_value_remain(self):
         editorial = read("references/editorial-policy.md")
-        self.assertIn("共情入口优先", editorial)
-        self.assertIn("具体可信", editorial)
+        self.assertIn("动态顾客心理驱动钩子机制", editorial)
+        self.assertIn("普遍但具体、可信且有支撑的购买结果仍可胜出", editorial)
         self.assertIn("颜色、搭配、材质或外观表达不按关键词禁用或排除", editorial)
 
     def test_under_limit_preserves_valid_points_but_overlong_is_dynamic(self):

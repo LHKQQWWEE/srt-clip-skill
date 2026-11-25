@@ -69,14 +69,12 @@
       "cue_ids": [
         "1"
       ],
-      "priority": "empathy",
       "basis": "对应原文提出的穿着活动顾虑"
     },
     {
       "cue_ids": [
         "1"
       ],
-      "priority": "empathy",
       "basis": "对应原文呈现的搭配顾虑"
     }
   ]

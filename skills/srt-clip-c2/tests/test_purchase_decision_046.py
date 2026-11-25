@@ -11,7 +11,7 @@ def read(path):
 class PurchaseDecisionPolicyTests(unittest.TestCase):
     def test_complete_inventory_precedes_opening_and_plan_generation(self):
         contract = read("references/runtime-contract.md")
-        self.assertLess(contract.index("建立完整信息池"), contract.index("按共情优先层级比较开头"))
+        self.assertLess(contract.index("建立完整信息池"), contract.index("4. 信息池完成后"))
         self.assertLess(contract.index("建立完整信息池"), contract.index("单条/多方案数量"))
 
     def test_each_plan_starts_from_the_same_pool_and_does_not_use_union_coverage(self):

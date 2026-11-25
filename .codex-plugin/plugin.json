@@ -2,15 +2,15 @@
   "interface": {
     "capabilities": [],
     "category": "Productivity",
-    "defaultPrompt": "【C2 Universal 0.4.7 / Skill 0.4.27】触发 srt文案、srt切片文案、str文案或 C2完整精简版时，先按 SKILL.md 校验 references/execution-summary.json。首次运行、版本/manifest/规则 SHA-256 不匹配或摘要无效时，完整读取 references/runtime-current.md 和相关权威规则并刷新摘要；有效摘要可复用，不要求每次完整重读。缓存仅可选，丢失不影响有效持久摘要；摘要始终从属于原始规则。普通任务无需脚本或工具门槛。默认直接生成两个具有独立购买核心的方案；开头指定单条/按推荐版时仅出一条。方案数量、逐条独立覆盖、120 秒和超长预设唯一按 references/clip-selection-policy.md。保留真实原话/序号、商品归属、多商品确认、正式禁词逐句边界、风险提示分离、重复判断、动态购买结构、共情优先开头、原文促单、固定五部分、AI-First 与工具最小化。",
+    "defaultPrompt": "【C2 Universal 0.4.7 / Skill 0.4.28】触发 srt文案、srt切片文案、str文案或 C2完整精简版时，先按 SKILL.md 校验 references/execution-summary.json。首次运行、版本/manifest/规则 SHA-256 不匹配或摘要无效时，完整读取 references/runtime-current.md 和相关权威规则并刷新摘要；有效摘要可复用，不要求每次完整重读。缓存仅可选，丢失不影响有效持久摘要；摘要始终从属于原始规则。普通任务无需脚本或工具门槛。默认直接生成两个具有独立购买核心的方案；开头指定单条/按推荐版时仅出一条。方案数量、逐条独立覆盖、120 秒和超长预设唯一按 references/clip-selection-policy.md。保留真实原话/序号、商品归属、多商品确认、正式禁词逐句边界、风险提示分离、重复判断、动态购买结构、动态顾客心理驱动钩子机制、原文促单、固定五部分、AI-First 与工具最小化。",
     "developerName": "惠康 黎",
-    "displayName": "SRT Clip C2 Universal 0.4.7 / Skill 0.4.27",
-    "longDescription": "C2 Universal Core 0.4.7 / Skill 0.4.27。基于完整信息池和真实原话组织购买决策，按共情优先选择开头。默认直接生成两个具有独立购买核心的方案；用户开头指定‘单条’或‘按推荐版’时只生成一条；第二条无法成立或会降低质量时说明具体原因。每条分别编排、计算时长和终检；120 秒仅在完整编排后明显超出时触发动态超长预设，必要时允许适度超时。摘要按版本与规则哈希复用，失效时回查原规则。保留合规原文促单、商品归属、正式禁词边界和五部分输出。",
+    "displayName": "SRT Clip C2 Universal 0.4.7 / Skill 0.4.28",
+    "longDescription": "C2 Universal Core 0.4.7 / Skill 0.4.28。完整读取目标商品并建立全部有效信息池后，按动态顾客心理驱动机制比较真实开头原话与必要紧邻承接，以陌生潜在买家的继续观看欲望和商品相关兴趣为目标；不设置固定钩子类型优先级、权重、分数或额外语义轮次。真实性、商品归属、正式合规、自然语义和后文兑现是硬边界。默认直接生成两个具有独立购买核心的方案；用户开头指定单条或按推荐版时只生成一条；第二条无法成立或会降低质量时说明具体原因。每条独立编排、计算时长和终检；摘要按版本与规则哈希复用。保留适用且合规的原文促单、商品归属、正式禁词边界和固定五部分输出。",
     "shortDescription": "原话剪辑，默认双方案与超长动态处理",
     "version": null
   },
   "name": "srt-clip-c2",
-  "version": "0.4.27",
+  "version": "0.4.28",
   "description": "SRT Clip C2 Universal 0.4.7：摘要有效时复用；默认双方案，逐条独立编排；超长按购买核心动态处理。",
   "author": {
     "name": "惠康 黎",

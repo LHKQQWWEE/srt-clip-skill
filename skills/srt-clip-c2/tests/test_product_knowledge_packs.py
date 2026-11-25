@@ -11,7 +11,7 @@ class ProductKnowledgePackTests(unittest.TestCase):
    text=read(path); self.assertTrue((ROOT/path).is_file()); self.assertIn("事实",text); self.assertIn("归属",text); self.assertNotIn("固定卖点顺序",text)
  def test_universal_rules_own_dynamic_structure(self):
   runtime=read("references/runtime-current.md"); editorial=read("references/editorial-policy.md")
-  self.assertIn("共情优先",runtime); self.assertIn("内容结构",editorial); self.assertIn("不存在所有商品通用的段落成交模板",editorial)
+  self.assertIn("动态顾客心理驱动",runtime); self.assertIn("内容结构",editorial); self.assertIn("不存在所有商品通用的段落成交模板",editorial)
  def test_no_old_category_routing_paths_remain(self):
   active=read("references/runtime-current.md")+read("references/product-knowledge-registry.md")+"".join(read(p) for p in PACKS)
   self.assertNotIn("categories/",active); self.assertNotIn("category-registry.md",active)

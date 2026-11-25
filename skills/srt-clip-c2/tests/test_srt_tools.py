@@ -231,7 +231,7 @@ class SelectionPipelineTests(unittest.TestCase):
                 if cue_id in selected_ids
             ],
             "flags": [],
-            "opening_choice": {"cue_ids": ["1"], "priority": "empathy", "basis": "完整呈现顾客处境"},
+            "opening_choice": {"cue_ids": ["1"], "basis": "按当前目标顾客与素材动态判断"},
             "known_unaccelerated_ms": 150,
         }
 

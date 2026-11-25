@@ -16,7 +16,7 @@ Stable findings must include:
 
 - the same complete pool at the same semantic granularity;
 - the same required evidence, conditions, ownership, and hard-rule boundaries;
-- opening candidates compared only as openings and necessary adjacent responses, with empathy first;
+- opening candidates compared only as openings and necessary adjacent responses, dynamically for the unfamiliar target customer’s desire to keep watching and product interest, with no fixed hook-category order, weights, or scores;
 - default two materially distinct plans with real independent purchase cores, unless the user starts with “单条” or “按推荐版” or a second plan would lack independent purchase value or lower quality;
 - every plan independently arranges the full point pool and required evidence/conditions; union coverage is invalid;
 - duration is calculated after full arrangement; at or below the slight-overrun region every valid point is retained, while only a clearly over-120-second complete plan may use core-specific dynamic selection and must list omitted valid points;

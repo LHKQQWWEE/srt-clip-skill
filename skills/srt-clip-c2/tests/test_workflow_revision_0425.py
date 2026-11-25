@@ -11,17 +11,18 @@ def read(path):
 
 
 class WorkflowRevision047Tests(unittest.TestCase):
-    def test_opening_only_comparison_is_empathy_first(self):
+    def test_opening_only_comparison_uses_dynamic_customer_motivation(self):
         editorial = read("references/editorial-policy.md")
-        self.assertIn("共情入口优先", editorial)
-        self.assertIn("只比较开头本身", editorial)
+        self.assertIn("动态顾客心理驱动钩子机制", editorial)
+        self.assertIn("开头比较只覆盖开头本身", editorial)
+        self.assertIn("不设置固定钩子类型优先级", editorial)
         self.assertIn("不比较、评分或排名完整成片", editorial)
         self.assertNotIn("不做六维评分", editorial)
 
     def test_complete_pool_precedes_direct_dual_plan(self):
         contract = read("references/runtime-contract.md")
         policy = read("references/clip-selection-policy.md")
-        self.assertLess(contract.index("建立完整信息池"), contract.index("按共情优先层级比较开头"))
+        self.assertLess(contract.index("建立完整信息池"), contract.index("4. 信息池完成后"))
         self.assertLess(contract.index("建立完整信息池"), contract.index("单条/多方案数量"))
         self.assertIn("默认直接生成两条", policy)
         self.assertIn("不得暂停等待用户选择", policy)
@@ -59,7 +60,7 @@ class WorkflowRevision047Tests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         runtime = ROOT / manifest["runtime_file"]
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.27")
+        self.assertEqual(manifest["skill_version"], "0.4.28")
         self.assertTrue(manifest["source_map"])
         self.assertEqual(hashlib.sha256(runtime.read_bytes()).hexdigest(), manifest["runtime_sha256"])
         for relative, digest in manifest["source_hashes"].items():

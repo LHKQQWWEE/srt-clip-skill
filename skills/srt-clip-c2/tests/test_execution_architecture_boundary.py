@@ -133,9 +133,10 @@ class ExecutionArchitectureBoundaryTests(unittest.TestCase):
         self.assertIn("不得固定某些卖点永远低价值", self.runtime)
         self.assertIn("不把某类商品信息固定成高、中、低等级", self.selection)
 
-    def test_17_opening_comparison_is_empathy_first_and_never_scores_full_cuts(self):
-        self.assertIn("只比较开头", self.editorial)
-        self.assertIn("共情入口优先", self.editorial)
+    def test_17_opening_comparison_is_dynamic_and_never_scores_full_cuts(self):
+        self.assertIn("开头比较只覆盖开头本身", self.editorial)
+        self.assertIn("不设置固定钩子类型优先级", self.editorial)
+        self.assertIn("动态顾客心理驱动钩子机制", self.editorial)
         self.assertIn("不比较、评分或排名完整成片", self.editorial)
         for dimension in ["顾客问题强度", "首屏停留价值", "核心理由完整度", "全卖点承载自然度", "叙事连贯度", "购买决策效率"]:
             self.assertNotIn(dimension, self.editorial)

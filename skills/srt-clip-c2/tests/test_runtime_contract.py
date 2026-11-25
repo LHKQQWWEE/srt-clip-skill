@@ -17,15 +17,16 @@ class RuntimeContractTests(unittest.TestCase):
         self.assertIn("risk_hint", final_check)
         self.assertIn("信息池完整性", final_check)
 
-    def test_opening_compares_only_empathy_first_openings(self):
+    def test_opening_compares_dynamic_hook_candidates_only(self):
         editorial = read("references/editorial-policy.md")
-        self.assertIn("共情入口优先", editorial)
-        self.assertIn("只比较开头本身", editorial)
+        self.assertIn("动态顾客心理驱动钩子机制", editorial)
+        self.assertIn("开头比较只覆盖开头本身", editorial)
+        self.assertIn("不设置固定钩子类型优先级", editorial)
         self.assertIn("不比较、评分或排名完整成片", editorial)
 
     def test_pool_is_complete_before_plan_count_and_generation(self):
         contract = read("references/runtime-contract.md")
-        self.assertLess(contract.index("建立完整信息池"), contract.index("按共情优先层级比较开头"))
+        self.assertLess(contract.index("建立完整信息池"), contract.index("4. 信息池完成后"))
         self.assertLess(contract.index("建立完整信息池"), contract.index("单条/多方案数量"))
         self.assertNotIn("暂停生成正式成片", contract)
 

@@ -1,6 +1,6 @@
 # SRT Clip C2 Universal 0.4.7
 
-插件包版本：**0.4.27**；业务内核：**0.4.7**。日常入口完整读取 `skills/srt-clip-c2/SKILL.md` 与唯一编译正文 `skills/srt-clip-c2/references/runtime-current.md`；清单、源映射和开发规则用于构建与验收，不作为普通素材任务的额外读取要求。
+插件包版本：**0.4.28**；业务内核：**0.4.7**。日常入口完整读取 `skills/srt-clip-c2/SKILL.md` 与唯一编译正文 `skills/srt-clip-c2/references/runtime-current.md`；清单、源映射和开发规则用于构建与验收，不作为普通素材任务的额外读取要求。
 
 一个 AI 在一次语义分析和现有一次终检中完成购买决策与原话剪辑。先读完目标商品的全部有效窗口并建立完整信息池，再比较开头并编排方案。
 

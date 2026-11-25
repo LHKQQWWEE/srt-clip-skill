@@ -98,7 +98,7 @@ class ExecutionSummaryTests(unittest.TestCase):
             self.assertEqual(code, 0)
             self.assertTrue(summary.is_file())
             data = json.loads(summary.read_text(encoding="utf-8"))
-            self.assertEqual(data["skill_version"], "0.4.36")
+            self.assertEqual(data["skill_version"], "0.4.37")
             self.assertEqual(data["core_version"], "0.4.7")
             self.assertTrue(data["rule_hashes"])
             code, status = self.run_summary("validate", "--skill-root", str(root), "--summary", str(summary))

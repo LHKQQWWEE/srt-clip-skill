@@ -1,3 +1,9 @@
+# Plugin 0.4.37 / Core 0.4.7 / Skill 0.4.37（2026-11-25）
+
+- 修复 canonical Skill 与 `.agents/skills` 镜像中的 Portable 文件版本不一致，并新增镜像同步回归检查。
+- 完成前 185 条字幕范围的第一阶段商品归属回归；确认旧候选中存在无法证实属于小马甲的片段，新流程必须先锁定商品再列开头。
+- 仅发布镜像与验收记录修复；不改变业务规则、固定五部分、单 AI 路径或“不进入阶段二”的范围约束。
+
 # Plugin 0.4.30 / Core 0.4.7 / Skill 0.4.30（2026-11-25）
 
 - 建立开放式观看动力优先级：存在合格的观看动力驱动型钩子时必须从中择优，仅当不存在时才从其他有效钩子择优；类型按实际观看动力动态归类。
@@ -58,7 +64,7 @@
 - Keep formal direct-term hits separate from risk hints; keep selling-point completeness, support meaning, product attribution, conditions, transitions, and candidate quality with AI.
 - Compare compact complete candidate paths and expand only the selected result; cap ordinary omitted-content notes at three one-line items while listing facts, risks, and key limits separately.
 - Add baseline hashes, synthetic replay fixtures, and acceptance protocol. Real-source regression adds recognition of exact leading paste labels without weakening BLOCKED handling for other malformed rows. No rule-file consolidation is included. Publication status is recorded separately.
-# Plugin 0.4.36 / Core 0.4.7 / Skill 0.4.36（2026-11-25）
+# Plugin 0.4.37 / Core 0.4.7 / Skill 0.4.37（2026-11-25）
 
 - 从上传包和同步渠道清除一次失败复制留下的 7 个临时文件，恢复源、插件镜像与安装缓存的精确文件一致性。
 - 只涉及发布包清理；运行规则、固定五部分、序号硬门和 Core 0.4.7 不变。

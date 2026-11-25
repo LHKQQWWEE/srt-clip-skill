@@ -31,11 +31,11 @@
     "references/product-knowledge-registry.md",
     "references/final-check.md"
   ],
-  "skill_version": "0.4.36",
+  "skill_version": "0.4.37",
   "summary_file": "references/execution-summary.json",
   "source_hashes": {
     "references/ai-first-constitution.md": "96843364f4eab037b592561f1ab75fcf2ee473d90ab25b89236a8d5fd8525eb4",
-    "references/runtime-contract.md": "9a496926bfaf2a29faa486e702eed66d711a2b3ccd3d943dcf8f1e8a340ea8c6",
+    "references/runtime-contract.md": "a10f83f3d40f53eb8e559cdf976fc089128becb850a4b62b436f48b384fa0f1a",
     "references/clip-selection-policy.md": "c81ac91ff8c29ac5648cf25e39b58abc054e85a0b13894e984edf80e0dfa9614",
     "references/global-rules.md": "ec1a9a15df40943d12a0753708a7b9fd02c4f205286d57a8a27a75f74a4e212a",
     "references/editorial-policy.md": "1de9837bd785444b86b6197aaa7b9b06754ebb4fdf857888a8fc71439067b910",
@@ -43,7 +43,7 @@
     "references/product-knowledge-registry.md": "d5125b4d4ba910ec8dc1c2fcbfe5ce55440a056232ae1ba7ed81b89f8c6d0a77",
     "references/final-check.md": "eef25bcb105b38f65de48952816c7a56de841fbfa75899132c3a58c9968f9a0a"
   },
-  "runtime_sha256": "1450a89825072f361fbdae9ea8694578908424528cc301ee4ed514546bf655f2",
+  "runtime_sha256": "1925ec374c4c3fa317c8202d337fc51364fe19c56f1d556d29d6d862bc17a325",
   "source_map": [
     {
       "rule_id": "SRC01.L0001",

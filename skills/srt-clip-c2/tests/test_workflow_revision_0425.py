@@ -67,7 +67,7 @@ class WorkflowRevision047Tests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         runtime = ROOT / manifest["runtime_file"]
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.36")
+        self.assertEqual(manifest["skill_version"], "0.4.37")
         self.assertTrue(manifest["source_map"])
         self.assertEqual(text_sha256(runtime), manifest["runtime_sha256"])
         for relative, digest in manifest["source_hashes"].items():
@@ -78,11 +78,14 @@ class WorkflowRevision047Tests(unittest.TestCase):
         for phrase in ("一个 AI", "固定五部分交付", "不新增 Agent"):
             self.assertIn(phrase, contract)
 
-    def test_185_line_source_status_is_explicit_in_release_acceptance(self):
-        report = read("tests/release-acceptance-0.4.36.md")
-        self.assertIn("185 行原始 SRT", report)
-        self.assertIn("BLOCKED", report)
-        self.assertIn("未提供", report)
+    def test_185_cue_scoped_source_status_is_explicit_in_release_acceptance(self):
+        report = read("tests/release-acceptance-0.4.37.md")
+        self.assertIn("前 1–185 条", report)
+        self.assertIn("703 条", report)
+        self.assertIn("只对前 185 条", report)
+        self.assertIn("未对完整 703 条", report)
+        self.assertIn("小马甲", report)
+        self.assertIn("阶段二未执行", report)
 
 
 if __name__ == "__main__":

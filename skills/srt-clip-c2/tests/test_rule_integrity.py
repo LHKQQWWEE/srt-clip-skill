@@ -18,6 +18,18 @@ def text_sha256(path):
 
 
 class C2UniversalIntegrityTests(unittest.TestCase):
+    def test_canonical_and_hidden_skill_mirrors_are_synchronized(self):
+        mirror = PLUGIN / ".agents/skills/srt-clip-c2"
+
+        def tracked_files(root):
+            return {
+                path.relative_to(root).as_posix(): path.read_bytes()
+                for path in root.rglob("*")
+                if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc"
+            }
+
+        self.assertEqual(tracked_files(ROOT), tracked_files(mirror))
+
     def test_required_sources_and_knowledge_packs_exist(self):
         for path in (
             "SKILL.md", "references/runtime-manifest.json", "references/runtime-current.md",
@@ -39,12 +51,12 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         companion = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         manifest = json.loads(read("references/runtime-manifest.json"))
         self.assertEqual((PLUGIN / "VERSION").read_text(encoding="utf-8").strip(), "0.4.7")
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.36")
-        self.assertEqual(plugin["version"], "0.4.36")
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.37")
+        self.assertEqual(plugin["version"], "0.4.37")
         self.assertEqual(companion["version"], plugin["version"])
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.36")
-        self.assertIn("0.4.36", read("C2-Universal-Portable.md"))
+        self.assertEqual(manifest["skill_version"], "0.4.37")
+        self.assertIn("0.4.37", read("C2-Universal-Portable.md"))
 
     def test_plugin_identity_and_entry_prompts_remain_aligned(self):
         plugin = json.loads((PLUGIN / "plugin.json").read_text(encoding="utf-8"))

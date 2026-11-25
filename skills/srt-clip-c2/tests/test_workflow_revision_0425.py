@@ -67,7 +67,7 @@ class WorkflowRevision047Tests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         runtime = ROOT / manifest["runtime_file"]
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.32")
+        self.assertEqual(manifest["skill_version"], "0.4.36")
         self.assertTrue(manifest["source_map"])
         self.assertEqual(text_sha256(runtime), manifest["runtime_sha256"])
         for relative, digest in manifest["source_hashes"].items():
@@ -79,7 +79,7 @@ class WorkflowRevision047Tests(unittest.TestCase):
             self.assertIn(phrase, contract)
 
     def test_185_line_source_status_is_explicit_in_release_acceptance(self):
-        report = read("tests/release-acceptance-0.4.32.md")
+        report = read("tests/release-acceptance-0.4.36.md")
         self.assertIn("185 行原始 SRT", report)
         self.assertIn("BLOCKED", report)
         self.assertIn("未提供", report)

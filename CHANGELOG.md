@@ -58,6 +58,26 @@
 - Keep formal direct-term hits separate from risk hints; keep selling-point completeness, support meaning, product attribution, conditions, transitions, and candidate quality with AI.
 - Compare compact complete candidate paths and expand only the selected result; cap ordinary omitted-content notes at three one-line items while listing facts, risks, and key limits separately.
 - Add baseline hashes, synthetic replay fixtures, and acceptance protocol. Real-source regression adds recognition of exact leading paste labels without weakening BLOCKED handling for other malformed rows. No rule-file consolidation is included. Publication status is recorded separately.
+# Plugin 0.4.36 / Core 0.4.7 / Skill 0.4.36（2026-11-25）
+
+- 从上传包和同步渠道清除一次失败复制留下的 7 个临时文件，恢复源、插件镜像与安装缓存的精确文件一致性。
+- 只涉及发布包清理；运行规则、固定五部分、序号硬门和 Core 0.4.7 不变。
+
+# Plugin 0.4.35 / Core 0.4.7 / Skill 0.4.35（2026-11-25）
+
+- 清除插件历史 overlay 中仅存在于旧发布包的三份 0.4.22/0.4.23 基线、计划和设计文档；当前源仓库及运行规则不变。
+- 继续保持 canonical 与 `.agents` 镜像一致，并保留所有验收材料的版本归档。
+
+# Plugin 0.4.34 / Core 0.4.7 / Skill 0.4.34（2026-11-25）
+
+- 清除插件更新时保留在当前路径的旧验收副本（0.4.31、0.4.32、0.4.33），对应历史报告保存在归档目录。
+- 本版本只修复插件 canonical 与 `.agents` 镜像的一致性；运行规则、固定五部分、序号硬门和 Core 0.4.7 均不变。
+
+# Plugin 0.4.33 / Core 0.4.7 / Skill 0.4.33（2026-11-25）
+
+- 仅清理私有插件 `.agents` 镜像中重复放在当前路径的 0.4.31 验收文件；历史记录仍保留在版本归档目录。
+- 0.4.32 已确认的运行规则、固定五部分、序号硬门和 Core 0.4.7 均不变；本版本仅用于同步一致性。
+
 # Plugin 0.4.32 / Core 0.4.7 / Skill 0.4.32（2026-11-25）
 
 - 按 LF 规范化文本哈希，避免 Windows CRLF 与 LF 检出导致运行摘要误判失效。

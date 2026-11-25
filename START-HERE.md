@@ -1,6 +1,6 @@
 # SRT Clip C2 Universal 0.4.7｜开始使用
 
-插件包与 Skill 版本：**0.4.32**；业务内核：**0.4.7**。从 `skills/srt-clip-c2/SKILL.md` 进入。日常任务不调用 Python、脚本或 CLI；运行规则见 `skills/srt-clip-c2/references/runtime-current.md`。
+插件包与 Skill 版本：**0.4.36**；业务内核：**0.4.7**。从 `skills/srt-clip-c2/SKILL.md` 进入。日常任务不调用 Python、脚本或 CLI；运行规则见 `skills/srt-clip-c2/references/runtime-current.md`。
 
 ## 输入与边界
 

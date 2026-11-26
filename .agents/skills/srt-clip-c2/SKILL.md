@@ -1,11 +1,11 @@
 ---
 name: srt-clip-c2
-description: "当用户发送‘srt文案’‘srt切片文案’‘str文案’或‘C2完整精简版’，并提供 SRT 文件或逐条时长文本时使用。执行 C2 Universal Core 0.4.7 / Skill 0.4.40。"
+description: "当用户发送‘srt文案’‘srt切片文案’‘str文案’或‘C2完整精简版’，并提供 SRT 文件或逐条时长文本时使用。执行 C2 Universal Core 0.4.7 / Skill 0.4.41。"
 ---
 
 # SRT Clip C2 Universal 0.4.7｜运行入口
 
-Skill 版本：**0.4.40**。
+Skill 版本：**0.4.41**。
 
 ## 版本化执行摘要与规则读取
 

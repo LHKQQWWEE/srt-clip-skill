@@ -77,9 +77,9 @@ class DynamicHookPolicyTests(unittest.TestCase):
         self.assertIn("each selected opening starts its own independent complete cut", opening["description"])
 
     def test_current_regression_matrix_covers_all_required_selection_edges(self) -> None:
-        matrix = read("tests/opening-selection-regression-0.4.40.md")
-        for term in ("5 个以上", "不预选", "超过 3 个", "对应用户所选开头", "动态板块编排", "完整有效卖点", "固定五部分", "真实历史字幕素材", "不是带时间码的 `.srt`"):
-            self.assertIn(term, matrix)
+        policy = read("references/clip-selection-policy.md")
+        for term in ("不设候选识别数或展示数上限", "不得预选", "用户最多选择 3 个候选", "对应用户所选开头原话开始", "每条独立重新编排正文并动态重排", "每条常规时长方案须独立覆盖", "不新增第六部分"):
+            self.assertIn(term, policy)
 
     def test_versions_manifest_hashes_and_mirror_agree(self) -> None:
         plugin_root = ROOT.parent.parent
@@ -89,8 +89,8 @@ class DynamicHookPolicyTests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         summary = json.loads(read("references/execution-summary.json"))
         self.assertEqual(core_version, "0.4.7")
-        self.assertEqual(skill_version, "0.4.40")
-        self.assertEqual(plugin["version"], "0.4.40")
+        self.assertEqual(skill_version, "0.4.41")
+        self.assertEqual(plugin["version"], "0.4.41")
         self.assertEqual(manifest["core_version"], core_version)
         self.assertEqual(manifest["skill_version"], skill_version)
         self.assertEqual(summary["core_version"], core_version)

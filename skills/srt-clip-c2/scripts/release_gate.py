@@ -16,7 +16,7 @@ from pathlib import Path
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = next(parent for parent in SKILL_ROOT.parents if (parent / "VERSION").is_file())
 EXPECTED_CORE = "0.4.7"
-EXPECTED_SKILL = "0.4.40"
+EXPECTED_SKILL = "0.4.41"
 ACTIVE_SURFACES = (
     "SKILL.md", "README.md", "START-HERE.md", "ENVIRONMENT.md", "agents/openai.yaml",
     "references/ai-first-constitution.md", "references/runtime-contract.md",
@@ -82,17 +82,22 @@ def tracked_files(root: Path) -> dict[str, bytes]:
 def assert_current_test_contract() -> None:
     tests = SKILL_ROOT / "tests"
     required = {
-        "opening-selection-regression-0.4.40.md": ("5 个以上", "超过 3 个", "对应用户所选开头", "完整有效卖点", "固定五部分"),
+        "test_phase1_scope_boundary.py": ("deferred_block_ordering_is_absent_from_active_rules", "phase_one_keeps_dynamic_body_order_and_candidate_limit", "development_governance_stays_out_of_daily_runtime", "mirror_sync_removes_stale_files"),
+        "test_opening_candidate_quantity.py": ("test_policy_explicitly_separates_uncapped_display_from_selection_cap", "test_user_selection_limit_is_three_and_selected_count_maps_to_cuts"),
+        "test_confirmed_workflow.py": ("test_04_text_only_context_tracks_event_lifecycle", "test_immutable_cue_records_bind_id_text_and_exact_duration", "test_any_text_or_final_sequence_mismatch_fails"),
     }
     for relative, phrases in required.items():
         path = tests / relative
         if not path.is_file():
-            raise ValueError(f"current regression matrix missing: {relative}")
+            raise ValueError(f"required current regression test missing: {relative}")
         content = path.read_text(encoding="utf-8")
         for phrase in phrases:
             if phrase not in content:
-                raise ValueError(f"regression matrix lacks {phrase!r}: {relative}")
-    stale_tokens = ("tests/history/", "release-acceptance-0.4.37", "dynamic-hook-regression-0.4.30")
+                raise ValueError(f"required regression assertion missing: {phrase!r} in {relative}")
+    stale_tokens = (
+        "tests/history/", "release-acceptance-0.4.37", "dynamic-hook-regression-0.4.30",
+        "opening-selection-regression-0.4.40", "run_historical_material_acceptance.py",
+    )
     for path in tests.rglob("*"):
         if path.is_file() and path.suffix in {".py", ".md", ".json"}:
             text = path.read_text(encoding="utf-8")
@@ -102,13 +107,6 @@ def assert_current_test_contract() -> None:
     for phrase in ("def render_clips", "clip[\"cues\"][0][\"id\"]", "全部有效卖点"):
         if phrase not in opener_test:
             raise ValueError(f"opening regression assertions missing: {phrase}")
-    historical_runner = tests / "run_historical_material_acceptance.py"
-    if not historical_runner.is_file():
-        raise ValueError("historical-material acceptance runner is missing")
-    runner = historical_runner.read_text(encoding="utf-8")
-    for phrase in ("EXPECTED_SOURCE_SHA256", "user_choice_gate", "verify_final_output", "duration-text (not timecoded .srt)"):
-        if phrase not in runner:
-            raise ValueError(f"historical acceptance runner lacks required check: {phrase}")
 
 
 def assert_no_historical_package_files() -> None:
@@ -198,9 +196,8 @@ def assert_semantic_surfaces() -> None:
         (editorial, "候选展示不设数量上限", "editorial-policy.md"),
         (editorial, "不用于给候选排出一个胜者", "editorial-policy.md"),
         (editorial, "每条成片必须以对应的用户所选开头原话开始", "editorial-policy.md"),
-        (selection, "每条独立动态划分和重排内容板块", "clip-selection-policy.md"),
+        (selection, "每条独立重新编排正文并动态重排", "clip-selection-policy.md"),
         (final_check, "每条成片从对应用户所选开头原话开始", "final-check.md"),
-        (final_check, "板块类别和数量由素材动态决定", "final-check.md"),
     ):
         if phrase not in text:
             raise ValueError(f"required active rule missing from {source}: {phrase}")

@@ -2,16 +2,16 @@
   "interface": {
     "capabilities": [],
     "category": "Productivity",
-    "defaultPrompt": "【C2 Universal Core 0.4.7 / Skill 0.4.40】触发 SRT 文案任务时按 SKILL.md 与 runtime-current.md 执行。多商品先列商品身份及原始讲解窗口并等用户选择；完整信息池后展示全部达到现有质量门槛且彼此实质不同的开头候选，不设候选数量上限；每项仅显示方案名、开头原话、原始 SRT 序号、预估时长。不预选、不代选、不凑数；用户最多选择 3 个，超出时暂停重选。用户选择几个开头，就分别生成几条独立完整成片；每条必须以对应用户所选开头原话开始，不得替换。主体可合理复用，但每条独立动态划分、编排内容板块，并覆盖完整有效卖点及必要证据、条件与限制。时长与超长规则遵循 references/clip-selection-policy.md。日常不调用 Python、脚本或外部工具；按原话/序号映射核对，固定五部分交付。",
+    "defaultPrompt": "【C2 Universal Core 0.4.7 / Skill 0.4.41】触发 SRT 文案任务时按 SKILL.md 与 runtime-current.md 执行。多商品先列商品身份及原始讲解窗口并等用户选择；完整信息池后展示全部达到现有质量门槛且彼此实质不同的开头候选，不设候选数量上限；每项仅显示方案名、开头原话、原始 SRT 序号、预估时长。不预选、不代选、不凑数；用户最多选择 3 个，超出时暂停重选。用户选择几个开头，就分别生成几条独立完整成片；每条必须以对应用户所选开头原话开始，不得替换。主体可合理复用，但每条独立动态排序与重组正文，并覆盖完整有效卖点及必要证据、条件与限制。时长与超长规则遵循 references/clip-selection-policy.md。日常不调用 Python、脚本或外部工具；按原话/序号映射核对，固定五部分交付。",
     "developerName": "惠康 黎",
-    "displayName": "SRT Clip C2 Universal 0.4.7 / Skill 0.4.40",
-    "longDescription": "C2 Universal Core 0.4.7 / Skill 0.4.40。多商品先选商品；信息池完成后展示全部达到质量门槛且实质不同的开头候选，不设上限。用户最多选择三个，选择几个就生成几条独立成片；每条从对应用户所选开头开始。保留动态板块编排、逐条完整有效卖点覆盖、超长例外、原话/合规/商品边界、前2秒与前5秒连续吸引力、固定五部分及来源序号硬门。日常执行不调用 Python 或脚本。",
+    "displayName": "SRT Clip C2 Universal 0.4.7 / Skill 0.4.41",
+    "longDescription": "C2 Universal Core 0.4.7 / Skill 0.4.41。多商品先选商品；信息池完成后展示全部达到质量门槛且实质不同的开头候选，不设上限。用户最多选择三个，选择几个就生成几条独立成片；每条从对应用户所选开头开始。保留正文动态排序、逐条完整有效卖点覆盖、超长例外、原话/合规/商品边界、前2秒与前5秒连续吸引力、固定五部分及来源序号硬门。日常执行不调用 Python 或脚本。",
     "shortDescription": "先选商品与开头，每个开头独立成片",
     "version": null
   },
   "name": "srt-clip-c2",
-  "version": "0.4.40",
-  "description": "SRT Clip C2 Universal 0.4.7 / Skill 0.4.40：用户选择几个开头，就生成几条独立成片；每条从所选开头开始。",
+  "version": "0.4.41",
+  "description": "SRT Clip C2 Universal 0.4.7 / Skill 0.4.41：用户选择几个开头，就生成几条独立成片；每条从所选开头开始。",
   "author": {
     "name": "惠康 黎",
     "email": "lihuikang23@gmail.com"

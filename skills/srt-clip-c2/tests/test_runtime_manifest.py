@@ -29,7 +29,7 @@ class RuntimeManifestTests(unittest.TestCase):
 
     def test_source_hashes_runtime_hash_and_source_map_are_current(self):
         self.assertEqual(self.manifest["core_version"], "0.4.7")
-        self.assertEqual(self.manifest["skill_version"], "0.4.40")
+        self.assertEqual(self.manifest["skill_version"], "0.4.41")
         self.assertTrue(self.manifest["source_map"])
         self.assertEqual(text_sha256(ROOT / self.manifest["runtime_file"]), self.manifest["runtime_sha256"])
         for path, digest in self.manifest["source_hashes"].items():

@@ -28,7 +28,7 @@ class ReleaseGateSemanticTests(unittest.TestCase):
         self.assertEqual(release_gate.semantic_conflicts(current), [])
 
     def test_allows_negated_fixed_template_prohibition(self):
-        current = "不得按固定模板排列内容板块；板块类型和数量由当前素材决定。"
+        current = "不得按固定成交模板排列正文；正文根据真实购买信息动态组织。"
         self.assertEqual(release_gate.semantic_conflicts(current), [])
 
 

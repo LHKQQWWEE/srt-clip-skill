@@ -67,7 +67,7 @@ class CurrentWorkflowIntegrityTests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         runtime = ROOT / manifest["runtime_file"]
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.42")
+        self.assertEqual(manifest["skill_version"], "0.4.43")
         self.assertTrue(manifest["source_map"])
         self.assertEqual(text_sha256(runtime), manifest["runtime_sha256"])
         for relative, digest in manifest["source_hashes"].items():

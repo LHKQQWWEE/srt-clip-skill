@@ -87,7 +87,7 @@ class PreprocessTests(unittest.TestCase):
         self.assertIn("numbering_inversion", codes)
         self.assertGreaterEqual(sum(code == "non_positive_duration" for code in [item["code"] for item in report["diagnostics"]]), 2)
 
-    def test_direct_term_split_across_adjacent_cues_marks_only_participants(self):
+    def test_direct_term_is_not_assembled_across_adjacent_cues(self):
         source = (
             "1\n00:00:00,000 --> 00:00:00,500\n這件就是羊\n\n"
             "2\n00:00:00,500 --> 00:00:01,000\n毛含量不清\n\n"
@@ -96,8 +96,8 @@ class PreprocessTests(unittest.TestCase):
 
         report = preprocess_text(source, formal_terms=["羊毛"])
 
-        self.assertEqual(report["direct_hits"], [{"term": "羊毛", "cue_ids": ["1", "2"]}])
-        self.assertEqual([row["mark"] for row in report["compact_table"]], ["HIT", "HIT", ""])
+        self.assertEqual(report["direct_hits"], [])
+        self.assertEqual([row["mark"] for row in report["compact_table"]], ["", "", ""])
         self.assertEqual(report["compact_table"][2]["original_text"], "特殊纖維，還做了防靜電處理")
         self.assertEqual(report["status"], "PASS")
 

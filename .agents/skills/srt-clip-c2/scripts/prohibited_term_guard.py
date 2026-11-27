@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Deterministic direct-term guard for SRT and numbered duration-text inputs.
+"""Development-only scanner for the C2 prohibited-term registry.
 
-This tool checks only the exact terms listed in references/global-rules.md.
-Semantic equivalents remain an AI judgment; a direct hit excludes its full
-cue only. The script uses the Python standard library and is optional at
-runtime: the same rule must be followed manually when it cannot be run.
+Direct entries and their explicitly listed equivalents are mechanical hard
+matches. Contextual entries are returned for semantic review and never
+automatically excluded by this script. Daily editing remains AI-first and does
+not depend on this tool.
 """
 
 from __future__ import annotations
@@ -34,6 +34,20 @@ class Cue:
     text: str
 
 
+@dataclass(frozen=True)
+class TermEntry:
+    term: str
+    match_class: str
+    category: str
+    source: str
+    trigger_condition: str
+    allowed_exceptions: tuple[str, ...]
+    confirmed_equivalents: tuple[str, ...]
+    scope: str
+    test_cases: tuple[str, ...]
+    version_record: str
+
+
 def normalize_for_match(text: str) -> str:
     normalized = unicodedata.normalize("NFKC", text).casefold()
     return "".join(
@@ -44,16 +58,54 @@ def normalize_for_match(text: str) -> str:
     )
 
 
-def load_formal_terms(path: Path = RULES_PATH) -> list[str]:
+def _cell_values(value: str) -> tuple[str, ...]:
+    if value.strip() in {"", "—", "-", "无"}:
+        return ()
+    return tuple(part.strip().strip("`") for part in value.split("、") if part.strip())
+
+
+def load_term_registry(path: Path = RULES_PATH) -> list[TermEntry]:
     rules = path.read_text(encoding="utf-8-sig")
     try:
         section = rules.split("## 正式禁用词库", 1)[1].split("\n## ", 1)[0]
     except IndexError as error:
         raise ValueError("formal prohibited-term section is missing") from error
-    terms = re.findall(r"^\s*-\s+`([^`]+)`", section, flags=re.MULTILINE)
-    if not terms:
-        raise ValueError("formal prohibited-term list is empty")
-    return terms
+
+    entries: list[TermEntry] = []
+    for line in section.splitlines():
+        if not line.startswith("| `"):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) != 10:
+            raise ValueError(f"invalid prohibited-term registry row: {line}")
+        term = cells[0].strip("`")
+        match_class = cells[1].strip("`")
+        if match_class not in {"direct", "contextual"}:
+            raise ValueError(f"invalid match class for {term}: {match_class}")
+        entries.append(
+            TermEntry(
+                term=term,
+                match_class=match_class,
+                category=cells[2],
+                source=cells[3],
+                trigger_condition=cells[4],
+                allowed_exceptions=_cell_values(cells[5]),
+                confirmed_equivalents=_cell_values(cells[6]),
+                scope=cells[7],
+                test_cases=_cell_values(cells[8]),
+                version_record=cells[9],
+            )
+        )
+    if not entries:
+        raise ValueError("formal prohibited-term registry is empty")
+    if len({entry.term for entry in entries}) != len(entries):
+        raise ValueError("formal prohibited-term registry contains duplicate terms")
+    return entries
+
+
+def load_formal_terms(path: Path = RULES_PATH) -> list[str]:
+    """Backward-compatible helper returning direct canonical entries only."""
+    return [entry.term for entry in load_term_registry(path) if entry.match_class == "direct"]
 
 
 def parse_srt_blocks(text: str) -> list[Cue]:
@@ -89,7 +141,31 @@ def parse_cues(text: str) -> list[Cue]:
     return cues
 
 
+def _entries(entries: Iterable[TermEntry | str]) -> list[TermEntry]:
+    normalized: list[TermEntry] = []
+    for entry in entries:
+        if isinstance(entry, TermEntry):
+            normalized.append(entry)
+        else:
+            normalized.append(
+                TermEntry(
+                    term=str(entry),
+                    match_class="direct",
+                    category="legacy direct term",
+                    source="legacy caller",
+                    trigger_condition="literal match",
+                    allowed_exceptions=(),
+                    confirmed_equivalents=(),
+                    scope="full cue",
+                    test_cases=(),
+                    version_record="legacy caller",
+                )
+            )
+    return normalized
+
+
 def find_direct_hits(cues: Iterable[Cue], terms: Iterable[str]) -> list[dict[str, object]]:
+    """Legacy literal matcher; only use with a direct-term list."""
     normalized_terms = [(term, normalize_for_match(term)) for term in terms]
     hits = []
     for cue in cues:
@@ -100,16 +176,64 @@ def find_direct_hits(cues: Iterable[Cue], terms: Iterable[str]) -> list[dict[str
     return hits
 
 
+def _hits_for_entries(cues: Iterable[Cue], entries: list[TermEntry], match_class: str) -> list[dict[str, object]]:
+    eligible = [entry for entry in entries if entry.match_class == match_class]
+    hits: list[dict[str, object]] = []
+    for cue in cues:
+        normalized_text = normalize_for_match(cue.text)
+        matched_terms = []
+        for entry in eligible:
+            match_text = normalized_text
+            for allowed in entry.allowed_exceptions:
+                match_text = match_text.replace(normalize_for_match(allowed), "")
+            if normalize_for_match(entry.term) in match_text:
+                matched_terms.append(entry.term)
+        if matched_terms:
+            hits.append({"cue_id": cue.cue_id, "matched_terms": matched_terms})
+    return hits
+
+
+def _confirmed_equivalent_hits(cues: Iterable[Cue], entries: list[TermEntry]) -> list[dict[str, object]]:
+    aliases = [
+        (entry.term, alias, normalize_for_match(alias))
+        for entry in entries
+        if entry.match_class == "direct"
+        for alias in entry.confirmed_equivalents
+    ]
+    hits: list[dict[str, object]] = []
+    for cue in cues:
+        normalized_text = normalize_for_match(cue.text)
+        matched = []
+        for term, alias, normalized_alias in aliases:
+            entry = next(item for item in entries if item.term == term)
+            match_text = normalized_text
+            for allowed in entry.allowed_exceptions:
+                match_text = match_text.replace(normalize_for_match(allowed), "")
+            if normalized_alias in match_text:
+                matched.append({"term": term, "expression": alias})
+        if matched:
+            hits.append({"cue_id": cue.cue_id, "matched_equivalents": matched})
+    return hits
+
+
+def _cue_ids(*hit_groups: list[dict[str, object]]) -> list[str]:
+    return list(dict.fromkeys(str(hit["cue_id"]) for group in hit_groups for hit in group))
+
+
 def build_report(
     cues: list[Cue],
-    terms: list[str],
+    terms: list[TermEntry] | list[str],
     selected_ids: Optional[list[str]] = None,
     final_text: Optional[str] = None,
 ) -> dict[str, object]:
-    direct_hits = find_direct_hits(cues, terms)
-    hit_ids = [str(hit["cue_id"]) for hit in direct_hits]
+    entries = _entries(terms)
+    direct_hits = _hits_for_entries(cues, entries, "direct")
+    equivalent_hits = _confirmed_equivalent_hits(cues, entries)
+    contextual_candidates = _hits_for_entries(cues, entries, "contextual")
+    hard_hit_ids = set(_cue_ids(direct_hits, equivalent_hits))
+    excluded_ids = [cue.cue_id for cue in cues if cue.cue_id in hard_hit_ids]
     selected_hit_ids = (
-        [cue_id for cue_id in selected_ids if cue_id in set(hit_ids)]
+        [cue_id for cue_id in selected_ids if cue_id in hard_hit_ids]
         if selected_ids is not None
         else []
     )
@@ -119,18 +243,51 @@ def build_report(
         if selected_ids is not None
         else []
     )
-    final_text_hits = find_direct_hits([Cue("final_text", final_text)], terms) if final_text is not None else []
+    final_cues = [Cue("final_text", final_text)] if final_text is not None else []
+    final_text_hits = _hits_for_entries(final_cues, entries, "direct")
+    final_equivalent_hits = _confirmed_equivalent_hits(final_cues, entries)
+    final_contextual_candidates = _hits_for_entries(final_cues, entries, "contextual")
+    selected_set = set(selected_ids or [])
+
+    def attach_source_ids(hit: dict[str, object], expressions: Iterable[str]) -> None:
+        normalized_expressions = [normalize_for_match(expression) for expression in expressions]
+        matched_source_ids = [
+            cue.cue_id
+            for cue in cues
+            if any(expression in normalize_for_match(cue.text) for expression in normalized_expressions)
+        ]
+        hit["source_cue_ids"] = matched_source_ids
+        hit["selected_source_cue_ids"] = [cue_id for cue_id in matched_source_ids if cue_id in selected_set]
+
+    for hit in final_text_hits:
+        attach_source_ids(hit, hit["matched_terms"])
+    for hit in final_equivalent_hits:
+        attach_source_ids(hit, [item["expression"] for item in hit["matched_equivalents"]])
+    for hit in final_contextual_candidates:
+        attach_source_ids(hit, hit["matched_terms"])
     validating_output = selected_ids is not None or final_text is not None
-    failed = bool(selected_hit_ids or unknown_selected_ids or final_text_hits)
+    failed = bool(selected_hit_ids or unknown_selected_ids or final_text_hits or final_equivalent_hits)
+    needs_context_review = bool(contextual_candidates or final_contextual_candidates)
+    status = "FAIL" if failed else "REVIEW_CONTEXT" if needs_context_review else "PASS" if validating_output else "SCAN_COMPLETE"
     return {
-        "status": "FAIL" if failed else "PASS" if validating_output else "SCAN_COMPLETE",
+        "status": status,
         "source_rows": len(cues),
-        "formal_terms": terms,
+        "formal_terms": [entry.term for entry in entries if entry.match_class == "direct"],
+        "contextual_terms": [entry.term for entry in entries if entry.match_class == "contextual"],
         "direct_hits": direct_hits,
-        "excluded_full_cue_ids": hit_ids,
+        "confirmed_equivalent_hits": equivalent_hits,
+        "contextual_candidates": contextual_candidates,
+        "selected_contextual_candidate_ids": [cue_id for cue_id in selected_ids or [] if cue_id in set(_cue_ids(contextual_candidates))],
+        "excluded_full_cue_ids": excluded_ids,
         "selected_hit_ids": selected_hit_ids,
         "unknown_selected_ids": unknown_selected_ids,
         "final_text_hits": final_text_hits,
+        "final_confirmed_equivalent_hits": final_equivalent_hits,
+        "final_contextual_candidates": final_contextual_candidates,
+        "contextual_candidate_ids": _cue_ids(contextual_candidates),
+        "asr_suspicions": [],
+        "unresolved_expressions": [],
+        "validated_source_cue_ids": selected_hit_ids,
     }
 
 
@@ -152,10 +309,10 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     try:
         cues = parse_cues(args.source.read_text(encoding="utf-8-sig"))
-        terms = load_formal_terms()
+        registry = load_term_registry()
         selected_ids = parse_selected_ids(args.selected_ids)
         final_text = args.final_text.read_text(encoding="utf-8-sig") if args.final_text else None
-        report = build_report(cues, terms, selected_ids, final_text)
+        report = build_report(cues, registry, selected_ids, final_text)
     except (OSError, UnicodeError, ValueError) as error:
         print(str(error), file=sys.stderr)
         return 2
@@ -163,7 +320,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False, sort_keys=True))
-    return 1 if report["status"] == "FAIL" else 0
+    return {"FAIL": 1, "REVIEW_CONTEXT": 2}.get(str(report["status"]), 0)
 
 
 if __name__ == "__main__":

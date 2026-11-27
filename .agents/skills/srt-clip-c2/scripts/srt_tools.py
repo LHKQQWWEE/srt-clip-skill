@@ -13,7 +13,7 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from pathlib import Path
 from typing import Iterable, Optional
 
-from prohibited_term_guard import load_formal_terms, normalize_for_match
+from prohibited_term_guard import TermEntry, load_term_registry, normalize_for_match
 
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
@@ -321,37 +321,65 @@ def parse_source(text: str, source_sha256: Optional[str] = None) -> SourceReport
     return report
 
 
-def find_direct_hits(cues: Iterable[Cue], terms: Iterable[str]) -> list[dict[str, object]]:
-    """Match only listed terms; map cross-cue matches to every participating source cue."""
-    cue_list = list(cues)
-    term_list = [(term, normalize_for_match(term)) for term in terms]
-    matched_ids: dict[str, list[str]] = {term: [] for term, _ in term_list}
-    index = 0
-    while index < len(cue_list):
-        group = [cue_list[index]]
-        index += 1
-        while index < len(cue_list) and cue_list[index].source_order == group[-1].source_order + 1:
-            group.append(cue_list[index])
-            index += 1
-        normalized = ""
-        cue_for_character: list[str] = []
-        for cue in group:
-            normalized_text = normalize_for_match(cue.original_text)
-            normalized += normalized_text
-            cue_for_character.extend([cue.cue_id] * len(normalized_text))
-        for original_term, normalized_term in term_list:
-            if not normalized_term:
+def find_direct_hits(cues: Iterable[Cue], terms: Iterable[str | TermEntry]) -> list[dict[str, object]]:
+    """Match listed direct terms cue-by-cue; never combine neighboring subtitles."""
+    entry_list = list(terms)
+    direct_entries = [entry for entry in entry_list if isinstance(entry, TermEntry) and entry.match_class == "direct"]
+    legacy_terms = [str(entry) for entry in entry_list if not isinstance(entry, TermEntry)]
+    matched_ids: dict[str, list[str]] = {}
+    for entry in direct_entries:
+        matched_ids.setdefault(entry.term, [])
+    for term in legacy_terms:
+        matched_ids.setdefault(term, [])
+
+    for cue in cues:
+        normalized_text = normalize_for_match(cue.original_text)
+        for entry in direct_entries:
+            match_text = normalized_text
+            for allowed in entry.allowed_exceptions:
+                match_text = match_text.replace(normalize_for_match(allowed), "")
+            if normalize_for_match(entry.term) in match_text:
+                if cue.cue_id not in matched_ids[entry.term]:
+                    matched_ids[entry.term].append(cue.cue_id)
+        for term in legacy_terms:
+            if normalize_for_match(term) in normalized_text and cue.cue_id not in matched_ids[term]:
+                matched_ids[term].append(cue.cue_id)
+    return [{"term": term, "cue_ids": cue_ids} for term, cue_ids in matched_ids.items() if cue_ids]
+
+
+def _find_registry_candidates(cues: Iterable[Cue], entries: list[TermEntry], match_class: str) -> list[dict[str, object]]:
+    matched_ids: dict[str, list[str]] = {
+        entry.term: [] for entry in entries if entry.match_class == match_class
+    }
+    for cue in cues:
+        normalized_text = normalize_for_match(cue.original_text)
+        for entry in entries:
+            if entry.match_class != match_class:
                 continue
-            found = normalized.find(normalized_term)
-            while found >= 0:
-                participating = cue_for_character[found:found + len(normalized_term)]
-                for cue_id in participating:
-                    if cue_id not in matched_ids[original_term]:
-                        matched_ids[original_term].append(cue_id)
-                found = normalized.find(normalized_term, found + 1)
+            if normalize_for_match(entry.term) in normalized_text and cue.cue_id not in matched_ids[entry.term]:
+                matched_ids[entry.term].append(cue.cue_id)
+    return [{"term": term, "cue_ids": cue_ids} for term, cue_ids in matched_ids.items() if cue_ids]
+
+
+def _find_confirmed_equivalent_hits(cues: Iterable[Cue], entries: list[TermEntry]) -> list[dict[str, object]]:
+    matched: dict[tuple[str, str], list[str]] = {}
+    for entry in entries:
+        if entry.match_class != "direct":
+            continue
+        for equivalent in entry.confirmed_equivalents:
+            matched[(entry.term, equivalent)] = []
+    for cue in cues:
+        normalized_text = normalize_for_match(cue.original_text)
+        for term, equivalent in matched:
+            entry = next(item for item in entries if item.term == term)
+            match_text = normalized_text
+            for allowed in entry.allowed_exceptions:
+                match_text = match_text.replace(normalize_for_match(allowed), "")
+            if normalize_for_match(equivalent) in match_text and cue.cue_id not in matched[(term, equivalent)]:
+                matched[(term, equivalent)].append(cue.cue_id)
     return [
-        {"term": term, "cue_ids": cue_ids}
-        for term, cue_ids in matched_ids.items()
+        {"term": term, "expression": equivalent, "cue_ids": cue_ids}
+        for (term, equivalent), cue_ids in matched.items()
         if cue_ids
     ]
 
@@ -425,9 +453,13 @@ def preprocess_text(
 ) -> dict[str, object]:
     """Return a lossless mechanical report, with an optional single-view compact schema."""
     source = parse_source(text, source_sha256=source_sha256)
-    terms = list(formal_terms) if formal_terms is not None else load_formal_terms()
+    terms = list(formal_terms) if formal_terms is not None else load_term_registry()
+    registry_entries = [entry for entry in terms if isinstance(entry, TermEntry)]
     direct_hits = find_direct_hits(source.cues, terms)
-    hit_ids = {cue_id for hit in direct_hits for cue_id in hit["cue_ids"]}
+    equivalent_hits = _find_confirmed_equivalent_hits(source.cues, registry_entries)
+    contextual_candidates = _find_registry_candidates(source.cues, registry_entries, "contextual")
+    hit_ids = {cue_id for hit in direct_hits + equivalent_hits for cue_id in hit["cue_ids"]}
+    contextual_ids = {cue_id for hit in contextual_candidates for cue_id in hit["cue_ids"]}
 
     if compact:
         return {
@@ -443,6 +475,11 @@ def preprocess_text(
             "unparsed_ranges": source.unparsed_ranges,
             "diagnostics": source.diagnostics,
             "direct_hits": direct_hits,
+            "confirmed_equivalent_hits": equivalent_hits,
+            "contextual_candidates": contextual_candidates,
+            "contextual_candidate_ids": [cue.cue_id for cue in source.cues if cue.cue_id in contextual_ids],
+            "semantic_review_required": True,
+            "contextual_review_required": bool(contextual_candidates),
             "rows": [
                 {
                     "id": cue.cue_id,
@@ -506,6 +543,11 @@ def preprocess_text(
         "diagnostics": source.diagnostics,
         "cues": [cue.to_dict() for cue in source.cues],
         "direct_hits": direct_hits,
+        "confirmed_equivalent_hits": equivalent_hits,
+        "contextual_candidates": contextual_candidates,
+        "contextual_candidate_ids": [cue.cue_id for cue in source.cues if cue.cue_id in contextual_ids],
+        "semantic_review_required": True,
+        "contextual_review_required": bool(contextual_candidates),
         "compact_table": compact_table,
         "compact_table_text": "\n".join(compact_lines),
         "timeline_map": timeline_map,
@@ -642,15 +684,29 @@ def validate_selection(
         if role_counts.get(cue_id, 0) != 1:
             failures.append(_failure("role_cardinality", "each selected cue must have exactly one role", cue_id=cue_id, count=role_counts.get(cue_id, 0)))
 
-    terms = list(formal_terms) if formal_terms is not None else load_formal_terms()
+    terms = list(formal_terms) if formal_terms is not None else load_term_registry()
+    registry_entries = [entry for entry in terms if isinstance(entry, TermEntry)]
     direct_hits = find_direct_hits(source.cues, terms)
-    hit_ids = {str(cue_id) for hit in direct_hits for cue_id in hit["cue_ids"]}
+    equivalent_hits = _find_confirmed_equivalent_hits(source.cues, registry_entries)
+    contextual_candidates = _find_registry_candidates(source.cues, registry_entries, "contextual")
+    hard_hit_ids = {
+        str(cue_id)
+        for hit in direct_hits + equivalent_hits
+        for cue_id in hit["cue_ids"]
+    }
+    contextual_ids = {
+        str(cue_id)
+        for hit in contextual_candidates
+        for cue_id in hit["cue_ids"]
+    }
     for cue_id in selected_ids:
-        if cue_id in hit_ids:
+        if cue_id in hard_hit_ids:
             failures.append(_failure("selected_direct_formal_term", "selected cue contains a direct formal prohibited-term hit", cue_id=cue_id))
     final_text_hits = find_direct_hits([Cue("final_text", -1, -1, 0, 0, final_text, 0, 0, 0)], terms) if final_text is not None else []
-    if final_text_hits:
-        failures.append(_failure("final_text_direct_formal_term", "final text contains a direct formal prohibited-term hit", direct_hits=final_text_hits))
+    final_equivalent_hits = _find_confirmed_equivalent_hits([Cue("final_text", -1, -1, 0, 0, final_text, 0, 0, 0)], registry_entries) if final_text is not None else []
+    final_contextual_candidates = _find_registry_candidates([Cue("final_text", -1, -1, 0, 0, final_text, 0, 0, 0)], registry_entries, "contextual") if final_text is not None else []
+    if final_text_hits or final_equivalent_hits:
+        failures.append(_failure("final_text_direct_formal_term", "final text contains a direct formal prohibited-term hit or confirmed equivalent", direct_hits=final_text_hits, confirmed_equivalent_hits=final_equivalent_hits))
 
     raw_flags = selection.get("flags")
     flags = raw_flags if isinstance(raw_flags, list) else []
@@ -698,8 +754,17 @@ def validate_selection(
         "selling_point_ids": sorted(point_ids),
         "support_ids": sorted(support_ids_seen),
         "direct_hits": direct_hits,
+        "confirmed_equivalent_hits": equivalent_hits,
+        "contextual_candidates": contextual_candidates,
+        "selected_contextual_candidate_ids": [cue_id for cue_id in selected_ids if cue_id in contextual_ids],
         "final_text_hits": final_text_hits,
+        "final_confirmed_equivalent_hits": final_equivalent_hits,
+        "final_contextual_candidates": final_contextual_candidates,
         "semantic_review_required": True,
+        "contextual_review_required": bool(
+            any(cue_id in contextual_ids for cue_id in selected_ids)
+            or final_contextual_candidates
+        ),
         "analysis_started": True,
         "full_source_checked": source.status != "BLOCKED",
     }

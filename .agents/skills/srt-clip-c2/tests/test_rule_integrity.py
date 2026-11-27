@@ -51,12 +51,12 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         companion = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         manifest = json.loads(read("references/runtime-manifest.json"))
         self.assertEqual((PLUGIN / "VERSION").read_text(encoding="utf-8").strip(), "0.4.7")
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.42")
-        self.assertEqual(plugin["version"], "0.4.42")
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.43")
+        self.assertEqual(plugin["version"], "0.4.43")
         self.assertEqual(companion["version"], plugin["version"])
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.42")
-        self.assertIn("0.4.42", read("C2-Universal-Portable.md"))
+        self.assertEqual(manifest["skill_version"], "0.4.43")
+        self.assertIn("0.4.43", read("C2-Universal-Portable.md"))
 
     def test_plugin_identity_and_entry_prompts_remain_aligned(self):
         plugin = json.loads((PLUGIN / "plugin.json").read_text(encoding="utf-8"))

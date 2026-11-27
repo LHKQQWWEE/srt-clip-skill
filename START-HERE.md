@@ -1,11 +1,12 @@
 # SRT Clip C2 Universal 0.4.7｜开始使用
 
-插件包与 Skill 版本：**0.4.42**；业务内核：**0.4.7**。可处理抖音电商增长咨询，也可执行 SRT 文案剪辑。咨询规则见 skills/srt-clip-c2/SKILL.md；SRT 运行规则见 skills/srt-clip-c2/references/runtime-current.md。日常任务不调用 Python、脚本或 CLI。
+插件包与 Skill 版本：**0.4.43**；业务内核：**0.4.7**。可处理抖音电商增长咨询，也可执行 SRT 文案剪辑。咨询规则见 skills/srt-clip-c2/SKILL.md；SRT 运行规则见 skills/srt-clip-c2/references/runtime-current.md。日常任务不调用 Python、脚本或 CLI。
 
 ## 输入与边界
 
 - 触发词：`srt文案`、`srt切片文案`、`str文案`、`C2完整精简版`。
 - 支持 SRT 或逐条时长文本。没有文本时不声称核验视频画面或原声。
+- 违禁词按唯一正式词库扫描；先过滤命中整句，再建信息池，编排后复扫并核序号。语境词结合商品判断；未确认的 ASR/谐音只提示，不自动拦截。价格与促单继续执行既有规则。
 - 所有语义判断由一个 AI 完成；Python 与脚本只用于开发、构建和发布测试，不进入日常素材任务。
 
 ## 处理顺序

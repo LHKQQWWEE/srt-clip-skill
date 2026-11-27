@@ -16,7 +16,7 @@ from pathlib import Path
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = next(parent for parent in SKILL_ROOT.parents if (parent / "VERSION").is_file())
 EXPECTED_CORE = "0.4.7"
-EXPECTED_SKILL = "0.4.42"
+EXPECTED_SKILL = "0.4.43"
 ACTIVE_SURFACES = (
     "SKILL.md", "README.md", "START-HERE.md", "ENVIRONMENT.md", "agents/openai.yaml",
     "references/ai-first-constitution.md", "references/runtime-contract.md",

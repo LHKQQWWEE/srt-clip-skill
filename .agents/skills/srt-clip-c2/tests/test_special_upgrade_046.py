@@ -48,8 +48,8 @@ class SpecialUpgrade046Tests(unittest.TestCase):
     def test_formal_wool_and_cashmere_terms_do_not_expand_to_static_control(self):
         self.assertTrue("## 正式禁用词库" in GLOBAL_RULES, "formal list heading is missing")
         self.assertTrue("羊毛" in GLOBAL_RULES, "user-authorized wool term is missing")
-        self.assertTrue("`羊绒`：" in GLOBAL_RULES, "user-authorized cashmere term is missing")
-        self.assertTrue("直接匹配字面词及其组合" in GLOBAL_RULES, "cashmere match scope must be explicit")
+        self.assertTrue("| `羊绒` | direct |" in GLOBAL_RULES, "user-authorized cashmere term is missing")
+        self.assertTrue("字面词匹配，包括组合和比例表达" in GLOBAL_RULES, "cashmere match scope must be explicit")
         self.assertTrue("防静电不是正式禁词" in GLOBAL_RULES, "static-control claims must stay outside the ban")
 
     def test_guard_normalizes_spacing_and_punctuation_but_keeps_related_cues(self):

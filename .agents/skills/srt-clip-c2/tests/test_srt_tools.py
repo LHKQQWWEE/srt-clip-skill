@@ -217,6 +217,8 @@ class SelectionPipelineTests(unittest.TestCase):
             "verification_mode": mode,
             "source_sha256": getattr(source, "source_sha256", "missing"),
             "selected_ids": list(selected_ids),
+            "estimated_duration_seconds": 90,
+            "content_blocks": [{"id": "body", "name": "商品信息", "cue_ids": list(selected_ids)}] if selected_ids else [],
             "selling_points": [
                 {
                     "id": "P1",
@@ -313,6 +315,8 @@ class SelectionPipelineTests(unittest.TestCase):
             "verification_mode": "script",
             "source_sha256": getattr(source, "source_sha256", "missing"),
             "selected_ids": ["2"],
+            "estimated_duration_seconds": 90,
+            "content_blocks": [{"id": "body", "name": "商品信息", "cue_ids": ["2"]}],
             "selling_points": [{"id": "P1", "support_ids": ["2"]}],
             "roles": [{"cue_id": "2", "role": "独立卖点"}],
             "flags": [{"type": "risk_hint", "cue_ids": ["2"], "note": "事实依据待核实"}],
@@ -321,6 +325,7 @@ class SelectionPipelineTests(unittest.TestCase):
         risk_result = srt_tools.validate_selection(source, selection, formal_terms=["羊毛"])
         title_result = srt_tools.validate_selection(source, selection, formal_terms=["羊毛"], final_text="这款羊毛外套")
         selection["selected_ids"] = ["1", "2"]
+        selection["content_blocks"][0]["cue_ids"] = ["1", "2"]
         selection["selling_points"][0]["support_ids"] = ["1", "2"]
         selection["roles"].append({"cue_id": "1", "role": "证据"})
         hit_result = srt_tools.validate_selection(source, selection, formal_terms=["羊毛"])
@@ -369,13 +374,14 @@ class SelectionPipelineTests(unittest.TestCase):
     def test_applicable_original_cta_role_is_valid_and_assembly_keeps_source_verbatim(self):
         source = srt_tools.parse_source("1 1.0 原文行动提示")
         selection = self.make_selection(source, selected_ids=("1",))
-        selection["selling_points"] = [{
-            "id": "P1",
-            "support_ids": ["1"],
-            "necessary_evidence_ids": [],
-            "required_condition_ids": [],
+        selection["selling_points"] = []
+        selection["roles"] = [{
+            "cue_id": "1",
+            "role": "适用促单原话",
+            "cta_type": "直接行动型",
+            "transaction_info": {"dynamic_items": [], "sku_list_price_verified": False},
         }]
-        selection["roles"] = [{"cue_id": "1", "role": "适用促单原话"}]
+        selection["content_blocks"] = [{"id": "promotion", "name": "促单", "cue_ids": ["1"]}]
 
         checked = srt_tools.validate_selection(source, selection, formal_terms=[])
         assembled = srt_tools.assemble_selection(source, selection, formal_terms=[])

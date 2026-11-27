@@ -8,6 +8,9 @@
     "4",
     "5"
   ],
+  "content_blocks": [
+    {"id": "all-content", "name": "完整商品信息", "cue_ids": ["1", "2", "3", "4", "5"]}
+  ],
   "selling_points": [
     {
       "id": "P1",

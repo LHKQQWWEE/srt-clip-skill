@@ -656,6 +656,10 @@ def preprocess_file(path: Path, compact: bool = False) -> dict[str, object]:
 
 VALID_ROLES = {"独立卖点", "证据", "条件", "必要衔接", "适用促单原话"}
 VALID_FLAG_TYPES = {"fact_pending", "risk_hint", "key_limit"}
+VALID_CTA_TYPES = {"直接行动型", "种草/推荐/购买信心强化型"}
+VALID_DYNAMIC_TRANSACTION_ITEMS = {
+    "成交价", "优惠", "赠品", "直播福利", "倒计时", "库存/稀缺", "其他实时交易信息"
+}
 
 
 def _failure(code: str, message: str, **details: object) -> dict[str, object]:
@@ -752,6 +756,8 @@ def validate_selection(
         failures.append(_failure("roles_not_list", "roles must be a list"))
         role_rows = []
     role_counts: dict[str, int] = {}
+    role_by_id: dict[str, object] = {}
+    promotion_ids: set[str] = set()
     for role_row in role_rows:
         if not isinstance(role_row, dict):
             failures.append(_failure("role_not_object", "each role row must be an object"))
@@ -759,6 +765,7 @@ def validate_selection(
         cue_id = str(role_row.get("cue_id", ""))
         role = role_row.get("role")
         role_counts[cue_id] = role_counts.get(cue_id, 0) + 1
+        role_by_id[cue_id] = role
         if cue_id not in source_ids:
             if source.status == "BLOCKED":
                 blocked_refs.append({"code": "role_reference_in_unparsed_scope", "cue_id": cue_id})
@@ -768,9 +775,113 @@ def validate_selection(
             failures.append(_failure("role_id_not_selected", "role cue ID is not selected", cue_id=cue_id))
         if role not in VALID_ROLES:
             failures.append(_failure("invalid_role", "role is not one of the five allowed roles", cue_id=cue_id, role=role))
+        if role == "适用促单原话":
+            promotion_ids.add(cue_id)
+            if role_row.get("cta_type") not in VALID_CTA_TYPES:
+                failures.append(_failure("promotion_classification_required", "promotion needs a distinct supported CTA classification", cue_id=cue_id))
+        elif "cta_type" in role_row:
+            failures.append(_failure("promotion_classification_on_non_promotion", "only promotion cues may carry a CTA classification", cue_id=cue_id))
+
+        transaction_info = role_row.get("transaction_info")
+        if transaction_info is not None:
+            if not isinstance(transaction_info, dict) or set(transaction_info) != {"dynamic_items", "sku_list_price_verified"}:
+                failures.append(_failure("invalid_transaction_info", "transaction_info needs dynamic_items and sku_list_price_verified", cue_id=cue_id))
+                continue
+            dynamic_items = transaction_info.get("dynamic_items")
+            verified_price = transaction_info.get("sku_list_price_verified")
+            if not isinstance(dynamic_items, list) or any(item not in VALID_DYNAMIC_TRANSACTION_ITEMS for item in dynamic_items):
+                failures.append(_failure("invalid_dynamic_transaction_info", "dynamic transaction information must use the supported list", cue_id=cue_id))
+                continue
+            if not isinstance(verified_price, bool):
+                failures.append(_failure("invalid_sku_price_verification", "sku_list_price_verified must be a boolean", cue_id=cue_id))
+                continue
+            if role == "适用促单原话" and (dynamic_items or verified_price):
+                failures.append(_failure("promotion_contains_dynamic_transaction_info", "closing promotion must omit every dynamic transaction item and every price", cue_id=cue_id, items=dynamic_items, verified_sku_price=verified_price))
+            elif role != "适用促单原话" and dynamic_items:
+                failures.append(_failure("selected_dynamic_transaction_info", "selected body cues may only retain a separately verified current-SKU list price", cue_id=cue_id, items=dynamic_items))
+        elif role == "适用促单原话":
+            failures.append(_failure("promotion_transaction_info_required", "promotion cues need an explicit empty dynamic-information check", cue_id=cue_id))
+
     for cue_id in selected_ids:
         if role_counts.get(cue_id, 0) != 1:
             failures.append(_failure("role_cardinality", "each selected cue must have exactly one role", cue_id=cue_id, count=role_counts.get(cue_id, 0)))
+
+    for cue_id in support_ids_seen & promotion_ids:
+        failures.append(_failure("promotion_in_selling_point_support", "promotion cues cannot support or rank a selling point", cue_id=cue_id))
+
+    raw_blocks = selection.get("content_blocks")
+    content_blocks: list[dict[str, object]] = []
+    content_block_ids: set[str] = set()
+    flattened_block_cues: list[str] = []
+    if not isinstance(raw_blocks, list) or not raw_blocks:
+        failures.append(_failure("content_blocks_required", "content_blocks must describe this cut's ordered boards"))
+        raw_blocks = []
+    for index, block in enumerate(raw_blocks):
+        if not isinstance(block, dict):
+            failures.append(_failure("invalid_content_block", "each content block must be an object", index=index))
+            continue
+        block_id = str(block.get("id", ""))
+        name = str(block.get("name", ""))
+        cue_ids = block.get("cue_ids")
+        if not block_id or not name or not isinstance(cue_ids, list) or not cue_ids:
+            failures.append(_failure("invalid_content_block", "each content block needs an ID, open name, and non-empty cue_ids", index=index))
+            continue
+        if block_id in content_block_ids:
+            failures.append(_failure("duplicate_content_block_id", "a content block must remain one contiguous group", block_id=block_id))
+        content_block_ids.add(block_id)
+        normalized_cue_ids = [str(cue_id) for cue_id in cue_ids]
+        flattened_block_cues.extend(normalized_cue_ids)
+        content_blocks.append({"id": block_id, "name": name, "cue_ids": normalized_cue_ids})
+        if any(cue_id not in selected_set for cue_id in normalized_cue_ids):
+            failures.append(_failure("content_block_cue_not_selected", "content blocks may contain only cues in this cut", block_id=block_id))
+    if flattened_block_cues != selected_ids:
+        failures.append(_failure("content_blocks_do_not_match_selected_order", "selected cue playback order must follow complete, non-interleaved content blocks"))
+    if promotion_ids:
+        final_block_cues = set(content_blocks[-1]["cue_ids"]) if content_blocks else set()
+        if not promotion_ids <= final_block_cues:
+            failures.append(_failure("promotion_not_in_last_block", "all applicable promotion cues must be in the last block"))
+        if selected_ids and selected_ids[-1] not in promotion_ids:
+            failures.append(_failure("promotion_not_at_end", "the final selected cue must preserve the closing promotion"))
+
+    duration_review = selection.get("duration_review")
+    estimated_duration = selection.get("estimated_duration_seconds")
+    if estimated_duration is not None:
+        if isinstance(estimated_duration, bool) or not isinstance(estimated_duration, (int, float)) or estimated_duration < 0:
+            failures.append(_failure("invalid_estimated_duration", "estimated duration must be a nonnegative number"))
+        elif estimated_duration > 100 and duration_review is None:
+            failures.append(_failure("duration_review_required", "a cut above the 100-second reference needs an individual review record"))
+    omitted_block_ids: list[str] = []
+    if duration_review is not None:
+        if not isinstance(duration_review, dict) or set(duration_review) != {"outcome", "review_reason", "omitted_blocks"}:
+            failures.append(_failure("invalid_duration_review", "duration_review needs outcome, review_reason, and omitted_blocks"))
+        else:
+            outcome = duration_review.get("outcome")
+            review_reason = duration_review.get("review_reason")
+            omitted_blocks = duration_review.get("omitted_blocks")
+            if outcome not in {"retain_all", "omit_low_value_blocks"} or not isinstance(review_reason, str) or not review_reason.strip() or not isinstance(omitted_blocks, list):
+                failures.append(_failure("invalid_duration_review", "duration review needs a supported outcome, reason, and omitted-block list"))
+                omitted_blocks = []
+            if outcome == "retain_all" and omitted_blocks:
+                failures.append(_failure("duration_review_outcome_mismatch", "retain_all cannot list omitted blocks"))
+            if outcome == "omit_low_value_blocks" and not omitted_blocks:
+                failures.append(_failure("duration_review_omissions_missing", "omitting low-value content requires complete-block records"))
+            for index, omitted in enumerate(omitted_blocks):
+                if not isinstance(omitted, dict) or set(omitted) != {"id", "name", "cue_ids", "selling_point_ids", "reason"}:
+                    failures.append(_failure("invalid_omitted_block", "each omission needs its block, source cues, selling points, and reason", index=index))
+                    continue
+                block_id = str(omitted.get("id", ""))
+                cue_ids = omitted.get("cue_ids")
+                point_refs = omitted.get("selling_point_ids")
+                if not block_id or not str(omitted.get("name", "")).strip() or not isinstance(cue_ids, list) or not cue_ids or not isinstance(point_refs, list) or not str(omitted.get("reason", "")).strip():
+                    failures.append(_failure("invalid_omitted_block", "omitted blocks need source cues, linked points, and an individual reason", index=index))
+                    continue
+                omitted_block_ids.append(block_id)
+                if block_id in content_block_ids or any(str(cue_id) in selected_set for cue_id in cue_ids):
+                    failures.append(_failure("omitted_block_is_selected", "an omitted board must remain absent as a whole", block_id=block_id))
+                if any(str(cue_id) not in source_ids for cue_id in cue_ids):
+                    failures.append(_failure("omitted_block_cue_not_in_source", "omitted board cues must trace to the source", block_id=block_id))
+                if any(str(point_id) not in point_ids for point_id in point_refs):
+                    failures.append(_failure("omitted_block_point_not_in_pool", "omitted board points must be recorded in the information pool", block_id=block_id))
 
     terms = list(formal_terms) if formal_terms is not None else load_term_registry()
     registry_entries = [entry for entry in terms if isinstance(entry, TermEntry)]
@@ -874,6 +985,10 @@ def validate_selection(
         "selected_ids": selected_ids,
         "selling_point_ids": sorted(point_ids),
         "support_ids": sorted(support_ids_seen),
+        "promotion_ids": sorted(promotion_ids),
+        "content_blocks": content_blocks,
+        "duration_review": duration_review,
+        "omitted_block_ids": omitted_block_ids,
         "direct_hits": direct_hits,
         "confirmed_equivalent_hits": equivalent_hits,
         "contextual_candidates": contextual_candidates,
@@ -988,6 +1103,15 @@ def assemble_selection(
                 "duration_ms_exact": _decimal_string(cue.duration_ms),
             }
             for cue in cues
+        ],
+        "content_blocks": [
+            {
+                "id": block["id"],
+                "name": block["name"],
+                "cue_ids": block["cue_ids"],
+                "text": "\n".join(by_id[str(cue_id)].original_text for cue_id in block["cue_ids"]),
+            }
+            for block in validation["content_blocks"]
         ],
         "body_text": "\n".join(cue.original_text for cue in cues),
         "source_groups": groups,

@@ -27,20 +27,20 @@ class SpecialUpgrade046Tests(unittest.TestCase):
                 check=False,
             )
 
-    def test_user_selected_openings_and_long_form_exception_are_explicit(self):
+    def test_user_selected_openings_and_capacity_review_are_explicit(self):
         policy = (ROOT / "references" / "clip-selection-policy.md").read_text(encoding="utf-8")
         contract = (ROOT / "references" / "runtime-contract.md").read_text(encoding="utf-8")
         self.assertIn("不设候选识别数或展示数上限", policy)
         self.assertIn("用户最多选择 3 个候选", policy)
         self.assertIn("每个已选开头分别生成一条完整成片", policy)
-        self.assertIn("每条常规时长方案须独立覆盖", policy)
-        self.assertIn("超长预设", policy)
+        self.assertIn("每条成片先完整覆盖", policy)
+        self.assertIn("超过 100 秒须逐条复核", policy)
         self.assertIn("用户选择商品", contract)
 
     def test_duration_is_approximate_and_final_audit_is_selected_only(self):
         highlight = (ROOT / "references" / "highlight-selection.md").read_text(encoding="utf-8")
         policy = (ROOT / "references" / "clip-selection-policy.md").read_text(encoding="utf-8")
-        self.assertIn("120 秒不是目标，也不是硬上限", policy)
+        self.assertIn("90 秒是有效信息密度目标", policy)
         self.assertIn("先完成全部有效卖点的完整编排，再计算时长", policy)
         self.assertIn("只对实际写出的成片执行终检", FINAL_CHECK)
         self.assertIn("同一根因最多三轮", FINAL_CHECK)

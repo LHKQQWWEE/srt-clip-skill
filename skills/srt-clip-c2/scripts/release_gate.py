@@ -16,7 +16,7 @@ from pathlib import Path
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = next(parent for parent in SKILL_ROOT.parents if (parent / "VERSION").is_file())
 EXPECTED_CORE = "0.4.7"
-EXPECTED_SKILL = "0.4.44"
+EXPECTED_SKILL = "0.4.45"
 ACTIVE_SURFACES = (
     "SKILL.md", "README.md", "START-HERE.md", "ENVIRONMENT.md", "agents/openai.yaml",
     "references/ai-first-constitution.md", "references/runtime-contract.md",
@@ -27,7 +27,8 @@ ACTIVE_SURFACES = (
     "references/runtime-current.md", "references/execution-summary.json",
     "scripts/prohibited_term_guard.py", "scripts/srt_tools.py",
     "tests/prohibited-term-regression-cases.md", "tests/test_phase3_duplicate_control.py",
-    "tests/test_phase3_absolute_terms.py", "C2-Universal-Portable.md",
+    "tests/test_phase3_absolute_terms.py", "tests/test_dynamic_blocks_and_duration.py",
+    "tests/test_selection_structure.py", "C2-Universal-Portable.md",
 )
 PLUGIN_SURFACES = ("README.md", "START-HERE.md", "CHANGELOG.md", "plugin.json", ".codex-plugin/plugin.json")
 
@@ -84,11 +85,26 @@ def tracked_files(root: Path) -> dict[str, bytes]:
 def assert_current_test_contract() -> None:
     tests = SKILL_ROOT / "tests"
     required = {
-        "test_phase1_scope_boundary.py": ("deferred_block_ordering_is_absent_from_active_rules", "phase_one_keeps_dynamic_body_order_and_candidate_limit", "development_governance_stays_out_of_daily_runtime", "mirror_sync_removes_stale_files"),
         "test_opening_candidate_quantity.py": ("test_policy_explicitly_separates_uncapped_display_from_selection_cap", "test_user_selection_limit_is_three_and_selected_count_maps_to_cuts"),
         "test_confirmed_workflow.py": ("test_04_text_only_context_tracks_event_lifecycle", "test_immutable_cue_records_bind_id_text_and_exact_duration", "test_any_text_or_final_sequence_mismatch_fails"),
         "test_phase3_duplicate_control.py": ("test_differently_worded_generic_praise_competes_for_one_best_line", "test_useful_information_can_continue_past_90_seconds_without_hard_cut"),
         "test_phase3_absolute_terms.py": ("test_confirmed_product_claims_are_blocked_as_full_cues", "test_first_and_best_ordinary_language_is_allowed", "test_unconfirmed_asr_lookalikes_do_not_become_hits"),
+        "test_dynamic_blocks_and_duration.py": (
+            "test_duration_policy_has_target_tolerance_and_review_without_old_threshold",
+            "test_content_boards_are_open_and_dynamically_ordered_as_units",
+            "test_promotion_is_separate_and_ends_with_a_compliant_original_quote",
+            "test_schema_records_open_boards_promotion_and_per_plan_duration_review",
+        ),
+        "test_selection_structure.py": (
+            "test_promotion_cue_cannot_support_or_rank_as_a_selling_point",
+            "test_cta_must_have_a_distinct_promotion_classification",
+            "test_promotion_block_must_be_last",
+            "test_selected_cues_cannot_cross_and_reenter_a_board",
+            "test_dynamic_price_offer_gift_benefit_countdown_and_scarcity_are_rejected_in_cta",
+            "test_verified_current_sku_list_price_is_allowed_in_body",
+            "test_absolute_product_claims_remain_blocked_inside_promotion",
+            "test_duration_over_100_seconds_requires_a_review_without_forcing_omission",
+        ),
     }
     for relative, phrases in required.items():
         path = tests / relative
@@ -242,11 +258,20 @@ def assert_semantic_surfaces() -> None:
         (editorial, "候选展示不设数量上限", "editorial-policy.md"),
         (editorial, "不用于给候选排出一个胜者", "editorial-policy.md"),
         (editorial, "每条成片必须以对应的用户所选开头原话开始", "editorial-policy.md"),
-        (selection, "每条独立重新编排正文并动态重排", "clip-selection-policy.md"),
+        (selection, "每条成片独立划分和编排内容板块", "clip-selection-policy.md"),
         (final_check, "每条成片从对应用户所选开头原话开始", "final-check.md"),
     ):
         if phrase not in text:
             raise ValueError(f"required active rule missing from {source}: {phrase}")
+
+    duration_surfaces = [(relative, SKILL_ROOT / relative) for relative in ACTIVE_SURFACES if not relative.startswith("tests/")]
+    duration_surfaces.extend((relative, PLUGIN_ROOT / relative) for relative in PLUGIN_SURFACES)
+    duration_surfaces.append(("docs/platform-adapter-interface.md", PLUGIN_ROOT / "docs/platform-adapter-interface.md"))
+    for relative, path in duration_surfaces:
+        if re.search(r"\b120\s*秒", path.read_text(encoding="utf-8")):
+            raise ValueError(f"retired 120-second duration rule remains in {relative}")
+    if "只有用户明确要求制作有效期明确的活动素材" in editorial or "且确认活动与发布时段仍有效，才对该任务例外" in editorial:
+        raise ValueError("retired closing-promotion activity exception remains")
 
 
 def assert_mirror() -> None:

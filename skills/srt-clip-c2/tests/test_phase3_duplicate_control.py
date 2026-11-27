@@ -76,8 +76,9 @@ class Phase3DuplicateControlTests(unittest.TestCase):
     def test_active_duration_policy_names_90_second_reference_not_hard_cut(self):
         policy = (ROOT / "references" / "clip-selection-policy.md").read_text(encoding="utf-8")
         self.assertIn("90 秒", policy)
-        self.assertIn("信息密度参考目标", policy)
-        self.assertIn("不是硬截断条件", policy)
+        self.assertIn("90 秒是有效信息密度目标", policy)
+        self.assertIn("100 秒可作为可接受参考", policy)
+        self.assertIn("不得自动截断", policy)
 
 
 if __name__ == "__main__":

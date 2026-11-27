@@ -16,9 +16,9 @@ class PurchaseDecisionPolicyTests(unittest.TestCase):
 
     def test_each_plan_starts_from_the_same_pool_and_does_not_use_union_coverage(self):
         policy = read("references/clip-selection-policy.md")
-        self.assertIn("每条常规时长方案须独立覆盖", policy)
-        self.assertIn("不得以另一条方案或方案并集补足", policy)
-        self.assertIn("超长预设", policy)
+        self.assertIn("每条成片先完整覆盖", policy)
+        self.assertIn("方案之间不互相补足", policy)
+        self.assertIn("容量复核", policy)
 
     def test_point_granularity_keeps_examples_grouped_and_facts_distinct(self):
         editorial = read("references/editorial-policy.md")

@@ -14,8 +14,8 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
         plugin = ROOT.parents[1]
         manifest = json.loads(read("references/runtime-manifest.json"))
         self.assertEqual((plugin / "VERSION").read_text(encoding="utf-8").strip(), "0.4.7")
-        self.assertEqual(json.loads((plugin / "plugin.json").read_text(encoding="utf-8"))["version"], "0.4.44")
-        self.assertEqual(manifest["skill_version"], "0.4.44")
+        self.assertEqual(json.loads((plugin / "plugin.json").read_text(encoding="utf-8"))["version"], "0.4.45")
+        self.assertEqual(manifest["skill_version"], "0.4.45")
 
     def test_opening_choice_uses_dynamic_customer_motivation(self):
         editorial = read("references/editorial-policy.md")
@@ -46,12 +46,12 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
         self.assertIn("用户最多选择 3 个候选", policy)
         self.assertIn("只为用户选中的开头生成成片", policy)
 
-    def test_each_plan_is_independent_and_long_form_is_explicit(self):
+    def test_each_plan_is_independent_and_capacity_review_is_explicit(self):
         policy = read("references/clip-selection-policy.md")
-        self.assertIn("每条常规时长方案须独立覆盖", policy)
-        self.assertIn("不得以另一条方案或方案并集补足", policy)
-        self.assertIn("超长预设", policy)
-        self.assertIn("省略的有效信息", policy)
+        self.assertIn("每条成片先完整覆盖", policy)
+        self.assertIn("方案之间不互相补足", policy)
+        self.assertIn("超过 100 秒须逐条复核", policy)
+        self.assertIn("省略的完整板块", policy)
 
     def test_fixed_output_and_prohibited_terms_are_preserved(self):
         runtime = read("references/runtime-current.md")

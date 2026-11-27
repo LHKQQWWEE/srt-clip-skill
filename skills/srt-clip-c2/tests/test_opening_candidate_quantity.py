@@ -92,7 +92,7 @@ class OpeningCandidateQuantityTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "最多选择 3 个"):
             cuts_for_selection(candidates[:4])
         self.assertIn("每个已选开头分别生成一条完整成片", POLICY)
-        self.assertIn("每条常规时长方案须独立覆盖", POLICY)
+        self.assertIn("每条成片先完整覆盖", POLICY)
 
     def test_each_cut_starts_with_exact_selected_opener_and_has_full_coverage(self):
         openers = [

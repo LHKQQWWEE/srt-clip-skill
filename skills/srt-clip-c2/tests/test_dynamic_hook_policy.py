@@ -64,7 +64,7 @@ class DynamicHookPolicyTests(unittest.TestCase):
         selection = read("references/clip-selection-policy.md")
         self.assertIn("每条方案继续覆盖全部有效卖点", policy)
         self.assertIn("原文保留适用且合规的促单", policy)
-        self.assertIn("每条常规时长方案须独立覆盖信息池内全部有效卖点", selection)
+        self.assertIn("每条成片先完整覆盖信息池内全部有效卖点", selection)
 
     def test_schema_describes_user_choice_and_uncapped_candidates(self) -> None:
         schema = json.loads(read("scripts/selection.schema.json"))
@@ -78,7 +78,7 @@ class DynamicHookPolicyTests(unittest.TestCase):
 
     def test_current_regression_matrix_covers_all_required_selection_edges(self) -> None:
         policy = read("references/clip-selection-policy.md")
-        for term in ("不设候选识别数或展示数上限", "不得预选", "用户最多选择 3 个候选", "对应用户所选开头原话开始", "每条独立重新编排正文并动态重排", "每条常规时长方案须独立覆盖", "不新增第六部分"):
+        for term in ("不设候选识别数或展示数上限", "不得预选", "用户最多选择 3 个候选", "对应用户所选开头原话开始", "每条成片独立划分和编排内容板块", "每条成片先完整覆盖", "不新增第六部分"):
             self.assertIn(term, policy)
 
     def test_versions_manifest_hashes_and_mirror_agree(self) -> None:
@@ -89,8 +89,8 @@ class DynamicHookPolicyTests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         summary = json.loads(read("references/execution-summary.json"))
         self.assertEqual(core_version, "0.4.7")
-        self.assertEqual(skill_version, "0.4.44")
-        self.assertEqual(plugin["version"], "0.4.44")
+        self.assertEqual(skill_version, "0.4.45")
+        self.assertEqual(plugin["version"], "0.4.45")
         self.assertEqual(manifest["core_version"], core_version)
         self.assertEqual(manifest["skill_version"], skill_version)
         self.assertEqual(summary["core_version"], core_version)

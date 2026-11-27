@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://c2-universal.local/schemas/selection-0.4.41.json",
+  "$id": "https://c2-universal.local/schemas/selection-0.4.45.json",
   "title": "C2 Selection JSON",
-  "description": "Development/test record for one actual user-selected final cut. Selling points describe the complete product pool; selected_ids and roles describe only this plan. Opening choice is an AI record, not a machine judgment. Routine SRT execution never calls this JSON schema or Python tools. Create one independent record for each user-selected opening.",
+  "description": "Development/test record for one actual user-selected final cut. Selling points describe product reasons only, while content_blocks records this plan's open, dynamic section order and roles keep promotion separate. Routine SRT execution never calls this JSON schema or Python tools. Create one independent record for each user-selected opening.",
   "type": "object",
   "required": [
     "verification_mode",
@@ -10,7 +10,8 @@
     "selected_ids",
     "selling_points",
     "roles",
-    "flags"
+    "flags",
+    "content_blocks"
   ],
   "properties": {
     "verification_mode": {
@@ -42,37 +43,61 @@
     "estimated_duration_seconds": {
       "type": "number",
       "minimum": 0,
-      "description": "Approximate duration for this completely arranged plan, calculated after arrangement. 120 seconds is not a target or hard cap."
+      "description": "Approximate duration for this fully arranged plan, calculated after complete valid-point coverage. 90 seconds is the target, 100 seconds is an acceptable reference, and neither is a hard cut. Above 100 seconds requires a per-plan review."
     },
-    "duration_mode": {
-      "enum": [
-        "at_or_under_120_all_effective_points",
-        "clearly_over_120_dynamic_long_form"
+    "duration_review": {
+      "type": "object",
+      "required": ["outcome", "review_reason", "omitted_blocks"],
+      "properties": {
+        "outcome": {"enum": ["retain_all", "omit_low_value_blocks"]},
+        "review_reason": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Explain the per-plan capacity review and how complete purchase reasoning, necessary evidence, conditions, and transitions were protected."
+        },
+        "omitted_blocks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "cue_ids", "selling_point_ids", "reason"],
+            "properties": {
+              "id": {"type": "string", "minLength": 1},
+              "name": {"type": "string", "minLength": 1},
+              "cue_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+              "selling_point_ids": {"type": "array", "items": {"type": "string"}},
+              "reason": {"type": "string", "minLength": 1}
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"outcome": {"const": "omit_low_value_blocks"}}, "required": ["outcome"]},
+          "then": {"properties": {"omitted_blocks": {"minItems": 1}}}
+        },
+        {
+          "if": {"properties": {"outcome": {"const": "retain_all"}}, "required": ["outcome"]},
+          "then": {"properties": {"omitted_blocks": {"maxItems": 0}}}
+        }
       ],
-      "description": "Per-plan classification after full arrangement; a slight overrun can retain decision-critical content."
+      "additionalProperties": false,
+      "description": "Above 100 seconds, record a review even when retaining every board. If lower-value complete boards are omitted, list every board, its source cues, points, and individual reason."
     },
-    "omitted_selling_points": {
+    "content_blocks": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "type": "object",
-        "required": [
-          "selling_point_id",
-          "reason"
-        ],
+        "required": ["id", "name", "cue_ids"],
         "properties": {
-          "selling_point_id": {
-            "type": "string",
-            "minLength": 1
-          },
-          "reason": {
-            "type": "string",
-            "minLength": 1,
-            "description": "For a long-form omission, explain its lower contribution to this plan's core while confirming that the purchase decision remains complete."
-          }
+          "id": {"type": "string", "minLength": 1},
+          "name": {"type": "string", "minLength": 1, "description": "Open-ended board name based on this product and cut. Do not use a fixed category list."},
+          "cue_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}}
         },
         "additionalProperties": false
       },
-      "description": "Any valid pool point omitted by this individual plan after the clearly-over-120-second dynamic preset; disclose these in the final plan. Never use another plan's union to cover an omission."
+      "description": "Boards are ordered as whole units. Cue order within each board can change. The flattened cue_ids must exactly match selected_ids, so boards cannot be crossed or interleaved. Put all applicable compliant promotion cues in the last board."
     },
     "selling_points": {
       "type": "array",
@@ -109,7 +134,7 @@
         },
         "additionalProperties": true
       },
-      "description": "The complete valid independent purchase-information pool for this product. Each plan starts from this pool and independently covers all effective points when at or below 120 seconds; over 120 seconds follows the dynamic long-form policy and records valid omissions."
+      "description": "The complete valid independent purchase-information pool for this product. Promotion is excluded from this pool and every support, evidence, and condition reference. Each plan first covers every valid point and then follows its individual duration review."
     },
     "roles": {
       "type": "array",
@@ -131,9 +156,32 @@
               "必要衔接",
               "适用促单原话"
             ],
-            "description": "适用促单原话必须来自原文；适用于当前商品和成片且符合规则时完整保留，不得编造、改写、补充或跨商品移用。"
+            "description": "Promotion is a separate role and is never a selling point or support cue. Applicable compliant source wording remains complete in the last board and receives the same prohibited-claim review as other source text."
+          },
+          "cta_type": {
+            "enum": ["直接行动型", "种草/推荐/购买信心强化型"]
+          },
+          "transaction_info": {
+            "type": "object",
+            "required": ["dynamic_items", "sku_list_price_verified"],
+            "properties": {
+              "dynamic_items": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {"enum": ["成交价", "优惠", "赠品", "直播福利", "倒计时", "库存/稀缺", "其他实时交易信息"]}
+              },
+              "sku_list_price_verified": {"type": "boolean"}
+            },
+            "additionalProperties": false,
+            "description": "A verified current-SKU list price may be retained in body text under the existing rule. Closing promotion contains no price or dynamic transaction information."
           }
         },
+        "allOf": [
+          {
+            "if": {"properties": {"role": {"const": "适用促单原话"}}, "required": ["role"]},
+            "then": {"required": ["cta_type", "transaction_info"]}
+          }
+        ],
         "additionalProperties": false
       }
     },
@@ -222,5 +270,11 @@
       "description": "Optional estimate supplement for display only; duration remains approximate and is never used for acceptance, pause, or splitting."
     }
   },
-  "additionalProperties": true
+  "additionalProperties": true,
+  "allOf": [
+    {
+      "if": {"properties": {"estimated_duration_seconds": {"type": "number", "exclusiveMinimum": 100}}, "required": ["estimated_duration_seconds"]},
+      "then": {"required": ["duration_review"]}
+    }
+  ]
 }

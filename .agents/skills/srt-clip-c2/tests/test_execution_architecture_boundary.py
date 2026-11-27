@@ -162,6 +162,8 @@ class ExecutionArchitectureBoundaryTests(unittest.TestCase):
             "verification_mode": "script",
             "source_sha256": source.source_sha256,
             "selected_ids": ["398", "400"],
+            "estimated_duration_seconds": 90,
+            "content_blocks": [{"id": "product", "name": "商品信息", "cue_ids": ["398", "400"]}],
             "selling_points": [{"id": "P1", "support_ids": ["398"], "necessary_evidence_ids": ["400"], "required_condition_ids": []}],
             "roles": [{"cue_id": "398", "role": "独立卖点"}, {"cue_id": "400", "role": "证据"}],
             "flags": [],

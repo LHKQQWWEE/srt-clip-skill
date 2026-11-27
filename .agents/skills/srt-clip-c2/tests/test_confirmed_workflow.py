@@ -39,10 +39,11 @@ class ConfirmedWorkflowPolicyTests(unittest.TestCase):
 
     def test_03_each_selected_opening_has_its_own_complete_dynamic_cut(self):
         self.assertIn("每个已选开头分别生成一条完整成片", self.policy)
-        self.assertIn("每条独立重新编排正文并动态重排", self.policy)
-        self.assertIn("信息池内全部有效卖点", self.policy)
-        self.assertIn("120 秒不是目标，也不是硬上限", self.policy)
-        self.assertIn("明显超过 120 秒", self.policy)
+        self.assertIn("每条成片独立划分和编排内容板块", self.policy)
+        self.assertIn("每条成片先完整覆盖信息池内全部有效卖点", self.policy)
+        self.assertIn("90 秒是有效信息密度目标", self.policy)
+        self.assertIn("100 秒可作为可接受参考", self.policy)
+        self.assertIn("超过 100 秒须逐条复核", self.policy)
 
     def test_04_text_only_context_tracks_event_lifecycle(self):
         for state in ("待回应", "延迟回应", "已回应", "删除但保留必要铺垫", "无法确定"):
@@ -86,6 +87,8 @@ class ImmutableSequenceGateTests(unittest.TestCase):
             "verification_mode": "script",
             "source_sha256": self.source.source_sha256,
             "selected_ids": ["1", "2", "3", "5"],
+            "estimated_duration_seconds": 90,
+            "content_blocks": [{"id": "body", "name": "商品信息", "cue_ids": ["1", "2", "3", "5"]}],
             "selling_points": [
                 {"id": "P1", "support_ids": ["2"], "necessary_evidence_ids": ["3"], "required_condition_ids": []},
                 {"id": "P2", "support_ids": ["5"], "necessary_evidence_ids": [], "required_condition_ids": []},
@@ -136,6 +139,7 @@ class ImmutableSequenceGateTests(unittest.TestCase):
         other = dict(
             self.selection,
             selected_ids=["1", "5", "2", "3"],
+            content_blocks=[{"id": "body", "name": "商品信息", "cue_ids": ["1", "5", "2", "3"]}],
             roles=[self.selection["roles"][0], self.selection["roles"][3], self.selection["roles"][1], self.selection["roles"][2]],
         )
         second = srt_tools.assemble_selection(self.source, other, formal_terms=[])

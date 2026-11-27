@@ -51,12 +51,12 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         companion = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         manifest = json.loads(read("references/runtime-manifest.json"))
         self.assertEqual((PLUGIN / "VERSION").read_text(encoding="utf-8").strip(), "0.4.7")
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.44")
-        self.assertEqual(plugin["version"], "0.4.44")
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.45")
+        self.assertEqual(plugin["version"], "0.4.45")
         self.assertEqual(companion["version"], plugin["version"])
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.44")
-        self.assertIn("0.4.44", read("C2-Universal-Portable.md"))
+        self.assertEqual(manifest["skill_version"], "0.4.45")
+        self.assertIn("0.4.45", read("C2-Universal-Portable.md"))
 
     def test_plugin_identity_and_entry_prompts_remain_aligned(self):
         plugin = json.loads((PLUGIN / "plugin.json").read_text(encoding="utf-8"))
@@ -78,7 +78,7 @@ class C2UniversalIntegrityTests(unittest.TestCase):
         self.assertIn("方案名称、开头原话、原始 SRT 序号、预估时长", policy)
         self.assertIn("不得预选", policy)
         self.assertIn("每个已选开头分别生成一条完整成片", policy)
-        self.assertIn("每条常规时长方案须独立覆盖", policy)
+        self.assertIn("每条成片先完整覆盖", policy)
 
     def test_dynamic_opening_rules_and_business_boundaries_remain(self):
         editorial = read("references/editorial-policy.md")

@@ -38,15 +38,15 @@ class RuntimeContractTests(unittest.TestCase):
         final_check = read("references/final-check.md")
         self.assertIn("只对实际写出的成片执行终检", final_check)
         self.assertIn("方案数量", final_check)
-        self.assertIn("超长例外", final_check)
+        self.assertIn("容量复核", final_check)
 
     def test_duration_and_original_cta_contract(self):
         policy = read("references/clip-selection-policy.md")
         editorial = read("references/editorial-policy.md")
         self.assertIn("先完成全部有效卖点的完整编排，再计算时长", policy)
-        self.assertIn("120 秒不是目标，也不是硬上限", policy)
-        self.assertIn("明显超过 120 秒", policy)
-        self.assertIn("原文存在适用且合规的促单话术时，必须保留", editorial)
+        self.assertIn("90 秒是有效信息密度目标", policy)
+        self.assertIn("超过 100 秒须逐条复核", policy)
+        self.assertIn("促单独立分类", editorial)
         self.assertIn("原文没有促单时，禁止编造、改写或补充", editorial)
 
     def test_five_part_output_and_single_ai_remain(self):
@@ -61,8 +61,8 @@ class RuntimeContractTests(unittest.TestCase):
         self.assertIn("Routine SRT execution never calls this JSON schema or Python tools", schema["description"])
         self.assertIn("opening_choice", schema["properties"])
         self.assertIn("plan_core", schema["properties"])
-        self.assertIn("duration_mode", schema["properties"])
-        self.assertIn("omitted_selling_points", schema["properties"])
+        self.assertIn("duration_review", schema["properties"])
+        self.assertIn("content_blocks", schema["properties"])
         self.assertNotIn("multi_video_opportunity", schema["properties"])
         self.assertNotIn("checkpoint_status", schema["properties"])
         self.assertNotIn("candidate_comparison", schema["properties"])

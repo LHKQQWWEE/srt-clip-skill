@@ -14,10 +14,20 @@ class DynamicBlocksAndDurationTests(unittest.TestCase):
         self.assertIn("默认按 1.2 倍速估算", policy)
         self.assertIn("100 秒可作为可接受参考", policy)
         self.assertIn("超过 100 秒", policy)
+        self.assertIn("超过 90 秒时", policy)
         self.assertIn("不得自动截断", policy)
         self.assertIn("完整覆盖", policy)
         self.assertIn("低价值完整板块", policy)
         self.assertIsNone(re.search(r"\b120\s*秒", policy))
+
+    def test_reference_surfaces_keep_the_same_two_duration_review_stages(self):
+        policy = (ROOT / "references" / "clip-selection-policy.md").read_text(encoding="utf-8")
+        editorial = (ROOT / "references" / "editorial-policy.md").read_text(encoding="utf-8")
+        highlight = (ROOT / "references" / "highlight-selection.md").read_text(encoding="utf-8")
+        for surface in (editorial, highlight):
+            self.assertIn("超过 90 秒", surface)
+            self.assertIn("超过 100 秒", surface)
+        self.assertIn("完整覆盖所有有效卖点", policy)
 
     def test_content_boards_are_open_and_dynamically_ordered_as_units(self):
         policy = (ROOT / "references" / "clip-selection-policy.md").read_text(encoding="utf-8")

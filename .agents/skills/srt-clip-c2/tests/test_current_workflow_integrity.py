@@ -54,7 +54,8 @@ class CurrentWorkflowIntegrityTests(unittest.TestCase):
         self.assertIn("90 秒是有效信息密度目标", policy)
         self.assertIn("100 秒可作为可接受参考", policy)
         self.assertIn("超过 100 秒须逐条复核", policy)
-        self.assertIn("90 秒为目标，100 秒为可接受参考", check)
+        self.assertIn("90 秒为目标", check)
+        self.assertIn("超过 90 秒比较", check)
         for path in (policy, check):
             for unsupported in ("45 秒", "45秒", "130 秒", "130秒"):
                 self.assertNotIn(unsupported, path)
@@ -68,7 +69,7 @@ class CurrentWorkflowIntegrityTests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         runtime = ROOT / manifest["runtime_file"]
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.45")
+        self.assertEqual(manifest["skill_version"], "0.4.47")
         self.assertTrue(manifest["source_map"])
         self.assertEqual(text_sha256(runtime), manifest["runtime_sha256"])
         for relative, digest in manifest["source_hashes"].items():

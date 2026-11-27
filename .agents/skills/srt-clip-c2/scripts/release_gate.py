@@ -16,7 +16,7 @@ from pathlib import Path
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = next(parent for parent in SKILL_ROOT.parents if (parent / "VERSION").is_file())
 EXPECTED_CORE = "0.4.7"
-EXPECTED_SKILL = "0.4.45"
+EXPECTED_SKILL = "0.4.47"
 ACTIVE_SURFACES = (
     "SKILL.md", "README.md", "START-HERE.md", "ENVIRONMENT.md", "agents/openai.yaml",
     "references/ai-first-constitution.md", "references/runtime-contract.md",
@@ -26,8 +26,8 @@ ACTIVE_SURFACES = (
     "references/update-protocol.md", "tests/quality-rubric.md",
     "references/runtime-current.md", "references/execution-summary.json",
     "scripts/prohibited_term_guard.py", "scripts/srt_tools.py",
-    "tests/prohibited-term-regression-cases.md", "tests/test_phase3_duplicate_control.py",
-    "tests/test_phase3_absolute_terms.py", "tests/test_dynamic_blocks_and_duration.py",
+    "tests/prohibited-term-regression-cases.md", "tests/test_duplicate_expression_policy.py",
+    "tests/test_absolute_term_policy.py", "tests/test_dynamic_blocks_and_duration.py",
     "tests/test_selection_structure.py", "C2-Universal-Portable.md",
 )
 PLUGIN_SURFACES = ("README.md", "START-HERE.md", "CHANGELOG.md", "plugin.json", ".codex-plugin/plugin.json")
@@ -51,7 +51,22 @@ _FIXED_BLOCK_ORDER = re.compile(
     r"(?:内容结构|板块顺序|成交结构).{0,35}(?:固定|统一|必须按|一律按|始终按).{0,30}(?:模板|顺序|结构)",
     re.IGNORECASE,
 )
-_NEGATION = ("不得", "禁止", "不设", "不要求", "不存在", "不能", "无需", "不应", "不按")
+_DURATION_CAP = re.compile(
+    r"(?:超过|大于|高于|达到|满)\s*(?:120\s*秒|两分钟|二分钟|2\s*分钟)(?:后|之后)?"
+    r"[^。！？；;!?]{0,24}(?:才|允许|可以|可|删|截|压缩|裁剪)",
+    re.IGNORECASE,
+)
+_CLOSING_ACTIVITY_EXCEPTION = re.compile(
+    r"(?:福利|优惠|活动).{0,12}(?:仍在|正处于|有效期内|活动期|期间).{0,28}"
+    r"(?:可以|可|允许|能够).{0,15}(?:留在|放在|保留|置于).{0,8}(?:最后|结尾)"
+    r"|活动(?:有效期|期内).{0,25}(?:可以|可|允许).{0,12}(?:保留|放在|留在|置于).{0,5}(?:最后|结尾)",
+    re.IGNORECASE,
+)
+_VERSION_MENTION = re.compile(r"\b(?:Skill|Plugin)(?:\s*/\s*Plugin)?\s*(?:版本\s*)?`?(\d+\.\d+\.\d+)`?", re.IGNORECASE)
+_DIRECT_NEGATION = re.compile(
+    r"(?:不得|禁止|不应|不许|不要|避免|不能|不可|不允许|不可以)"
+    r"(?:规定|设置|限制|采用|让|把|将|再|按|使用|提出|输出|展示|保留|核验|发布|写入|写)?[^。！？；;!?]{0,14}$"
+)
 
 
 def normalized_sha256(data: bytes) -> str:
@@ -62,15 +77,26 @@ def semantic_conflicts(text: str) -> list[tuple[int, str, str]]:
     """Return positive claims that revive a retired selection or structure rule."""
     conflicts = []
     for line_number, line in enumerate(text.splitlines(), 1):
-        candidates = (
-            ("hook_reuse", _MULTI_HOOK_SHARE),
-            ("candidate_display_cap", _CANDIDATE_CAP),
-            ("automatic_user_choice", _AUTO_PICK),
-            ("fixed_block_order", _FIXED_BLOCK_ORDER),
-        )
-        for label, pattern in candidates:
-            if pattern.search(line) and not any(negation in line for negation in _NEGATION):
-                conflicts.append((line_number, label, line.strip()))
+        for clause in re.split(r"(?<=[。！？；;!?])", line):
+            if not clause.strip():
+                continue
+            candidates = (
+                ("hook_reuse", _MULTI_HOOK_SHARE),
+                ("candidate_display_cap", _CANDIDATE_CAP),
+                ("automatic_user_choice", _AUTO_PICK),
+                ("fixed_block_order", _FIXED_BLOCK_ORDER),
+                ("duration_cap", _DURATION_CAP),
+                ("closing_activity_exception", _CLOSING_ACTIVITY_EXCEPTION),
+            )
+            for label, pattern in candidates:
+                match = pattern.search(clause)
+                if match and not _DIRECT_NEGATION.search(clause[: match.start()]):
+                    conflicts.append((line_number, label, clause.strip()))
+            for match in _VERSION_MENTION.finditer(clause):
+                version = tuple(int(part) for part in match.group(1).split("."))
+                expected = tuple(int(part) for part in EXPECTED_SKILL.split("."))
+                if version < expected and not _DIRECT_NEGATION.search(clause[: match.start()]):
+                    conflicts.append((line_number, "stale_version", clause.strip()))
     return conflicts
 
 
@@ -86,9 +112,17 @@ def assert_current_test_contract() -> None:
     tests = SKILL_ROOT / "tests"
     required = {
         "test_opening_candidate_quantity.py": ("test_policy_explicitly_separates_uncapped_display_from_selection_cap", "test_user_selection_limit_is_three_and_selected_count_maps_to_cuts"),
-        "test_confirmed_workflow.py": ("test_04_text_only_context_tracks_event_lifecycle", "test_immutable_cue_records_bind_id_text_and_exact_duration", "test_any_text_or_final_sequence_mismatch_fails"),
-        "test_phase3_duplicate_control.py": ("test_differently_worded_generic_praise_competes_for_one_best_line", "test_useful_information_can_continue_past_90_seconds_without_hard_cut"),
-        "test_phase3_absolute_terms.py": ("test_confirmed_product_claims_are_blocked_as_full_cues", "test_first_and_best_ordinary_language_is_allowed", "test_unconfirmed_asr_lookalikes_do_not_become_hits"),
+        "test_confirmed_workflow.py": ("test_mixed_dynamic_cues_remain_atomic_for_source_and_timing_verification", "test_04_text_only_context_tracks_event_lifecycle", "test_immutable_cue_records_bind_id_text_and_exact_duration", "test_any_text_or_final_sequence_mismatch_fails"),
+        "test_duplicate_expression_policy.py": ("test_differently_worded_generic_praise_competes_for_one_best_line", "test_useful_information_can_continue_past_90_seconds_without_hard_cut"),
+        "test_absolute_term_policy.py": ("test_confirmed_product_claims_are_blocked_as_full_cues", "test_first_and_best_ordinary_language_is_allowed", "test_unconfirmed_asr_lookalikes_do_not_become_hits"),
+        "test_commerce_advisory_policy.py": ("test_current_platform_research_is_not_blocked_by_the_srt_tool_boundary", "test_advice_distinguishes_evidence_and_gives_actionable_measurement", "test_plugin_launcher_scopes_tools_and_shows_the_90_second_review"),
+        "test_release_gate.py": (
+            "test_unrelated_negation_does_not_hide_a_retired_candidate_cap",
+            "test_detects_retired_duration_and_closing_activity_rules_in_plain_chinese",
+            "test_stale_phase_plan_is_blocked_from_current_release_source",
+            "test_stale_runtime_policy_markers_are_blocked",
+            "test_semantic_scan_excludes_gitignored_superpowers_work_notes",
+        ),
         "test_dynamic_blocks_and_duration.py": (
             "test_duration_policy_has_target_tolerance_and_review_without_old_threshold",
             "test_content_boards_are_open_and_dynamically_ordered_as_units",
@@ -131,11 +165,30 @@ def assert_current_test_contract() -> None:
 
 def assert_no_historical_package_files() -> None:
     for path in PLUGIN_ROOT.rglob("*"):
+        if not path.is_file():
+            continue
         relative = path.relative_to(PLUGIN_ROOT)
-        if any(component.casefold() in {"history", "historical", "acceptance"} for component in relative.parts):
+        components = {component.casefold() for component in relative.parts}
+        if components & {"history", "historical", "acceptance", "archive"}:
             raise ValueError(f"historical directory/file remains in release source: {relative}")
+        if relative.as_posix().casefold().startswith("docs/superpowers/plans/"):
+            raise ValueError(f"historical plan remains in release source: {relative}")
         if path.is_file() and (path.suffix.lower() == ".zip" or re.search(r"(?:old|legacy|history|release-acceptance).*\.(?:md|txt)$", path.name, re.I)):
             raise ValueError(f"historical archive or report remains in release source: {relative}")
+    changelog = PLUGIN_ROOT / "CHANGELOG.md"
+    if changelog.is_file():
+        releases = re.findall(r"(?m)^## Skill / Plugin (\d+\.\d+\.\d+)", changelog.read_text(encoding="utf-8"))
+        if releases and releases != [EXPECTED_SKILL]:
+            raise ValueError("historical version entries remain in the current changelog")
+    references = PLUGIN_ROOT / "skills" / "srt-clip-c2" / "references"
+    stale_markers = ("0.4." + "43", "0.4." + "44", "old-" + "dictionary", "第三" + "阶段")
+    if references.is_dir():
+        for path in references.rglob("*"):
+            if path.is_file() and path.suffix.lower() in {".md", ".json"}:
+                content = path.read_text(encoding="utf-8")
+                for marker in stale_markers:
+                    if marker in content:
+                        raise ValueError(f"stale rule/version marker remains in release source: {path.relative_to(PLUGIN_ROOT)}")
 
 
 def assert_versions_and_generated_files() -> None:
@@ -186,6 +239,12 @@ def assert_prohibited_term_contract() -> None:
 
     entries = guard.load_term_registry()
     by_term = {entry.term: entry for entry in entries}
+    direct = {entry.term for entry in entries if entry.match_class == "direct"}
+    if not {"兔毛", "羊皮"} <= direct:
+        raise ValueError("user-confirmed global literal terms are missing")
+    field_rules = (SKILL_ROOT / "references/global-rules.md").read_text(encoding="utf-8")
+    if "标题与话题禁用“羽绒”" not in field_rules or "正文原话及商品识别不因此删除" not in field_rules or "羽绒服”**" in field_rules:
+        raise ValueError("the title/topic-only 羽绒 rule is missing or retains the superseded term")
     absolute = {"国家级", "最高级", "顶级", "首选", "绝无仅有", "史无前例", "第一", "最好", "全网最好"}
     if not absolute <= by_term.keys() or any(by_term[term].match_class != "contextual" for term in absolute):
         raise ValueError("absolute-term registry is incomplete or classified inconsistently")
@@ -213,6 +272,7 @@ def assert_prohibited_term_contract() -> None:
 
 def assert_release_conflict_residuals() -> None:
     rules = (SKILL_ROOT / "references/global-rules.md").read_text(encoding="utf-8")
+    editorial = (SKILL_ROOT / "references/editorial-policy.md").read_text(encoding="utf-8")
     final_check = (SKILL_ROOT / "references/final-check.md").read_text(encoding="utf-8")
     if "不得设“我的首选”“首选搭配”等商品宣传白名单" not in rules:
         raise ValueError("the dictionary must explicitly prevent 首选 promo whitelists")
@@ -220,20 +280,28 @@ def assert_release_conflict_residuals() -> None:
         raise ValueError("final check does not enforce the 首选 rule")
     if "客观事实证明不解除拦截" not in final_check:
         raise ValueError("final check must not create a proof-based exemption")
+    if "混合字幕按完整字幕句选取" not in editorial or "不得从字幕句内截取子句" not in editorial:
+        raise ValueError("mixed subtitle rules must preserve complete cue text and timing")
 
 
-def assert_semantic_surfaces() -> None:
+def semantic_surface_paths() -> list[Path]:
     text_suffixes = {".md", ".json", ".yaml", ".yml", ".py", ".toml", ".txt"}
-    # The detector's own regexes describe retired variants as patterns, not as
-    # operational rules. Its behavior is separately tested by encoded fixtures.
-    paths = [
+    # Ignore local, git-ignored Superpowers working notes; they are not release files.
+    return [
         path for path in PLUGIN_ROOT.rglob("*")
         if path.is_file()
         and path.suffix.lower() in text_suffixes
         and "__pycache__" not in path.parts
         and ".git" not in path.parts
+        and ".superpowers" not in path.parts
         and path.name != "release_gate.py"
     ]
+
+
+def assert_semantic_surfaces() -> None:
+    # The detector's own regexes describe retired variants as patterns, not as
+    # operational rules. Its behavior is separately tested by encoded fixtures.
+    paths = semantic_surface_paths()
     for path in paths:
         relative = path.relative_to(PLUGIN_ROOT).as_posix()
         text = path.read_text(encoding="utf-8")
@@ -259,6 +327,8 @@ def assert_semantic_surfaces() -> None:
         (editorial, "不用于给候选排出一个胜者", "editorial-policy.md"),
         (editorial, "每条成片必须以对应的用户所选开头原话开始", "editorial-policy.md"),
         (selection, "每条成片独立划分和编排内容板块", "clip-selection-policy.md"),
+        (selection, "超过 90 秒时", "clip-selection-policy.md"),
+        (selection, "超过 100 秒须逐条复核", "clip-selection-policy.md"),
         (final_check, "每条成片从对应用户所选开头原话开始", "final-check.md"),
     ):
         if phrase not in text:

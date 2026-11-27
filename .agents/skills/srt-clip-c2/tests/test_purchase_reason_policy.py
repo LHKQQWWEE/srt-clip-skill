@@ -30,7 +30,7 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
     def test_full_point_coverage_precedes_dynamic_board_review(self):
         policy = read("references/clip-selection-policy.md")
         self.assertIn("完整覆盖所有有效卖点", policy)
-        self.assertIn("确有必要时才考虑删去贡献较低", policy)
+        self.assertIn("仅可整块省略没有尚未覆盖的独立有效卖点", policy)
         self.assertIn("不得固定某些卖点永远低价值", policy)
         self.assertIn("不得自动截断", policy)
 

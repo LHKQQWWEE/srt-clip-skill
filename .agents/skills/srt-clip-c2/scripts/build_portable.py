@@ -33,7 +33,7 @@ def build() -> str:
     parts = [
         f"# SRT Clip C2 Universal · Core {core_version} · Plugin {package_version} Portable",
         "",
-        "This portable file embeds the slim entry and one compiled runtime body. The commerce advisory guide, long-context rules, and product knowledge packs are included for portability and loaded only when their stated conditions apply. Developer-only update procedures, tests, and source-map metadata are excluded.",
+        "This portable file embeds the slim entry and one compiled runtime body. The commerce advisory guide, long-context rules, and product knowledge packs are included for portability and loaded only when their stated conditions apply. Developer-only update procedures, tests, and scripts are excluded; the runtime manifest and source-line map remain included for integrity and traceability.",
         "",
         "---",
         "",

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://c2-universal.local/schemas/selection-0.4.45.json",
+  "$id": "https://c2-universal.local/schemas/selection-0.4.47.json",
   "title": "C2 Selection JSON",
   "description": "Development/test record for one actual user-selected final cut. Selling points describe product reasons only, while content_blocks records this plan's open, dynamic section order and roles keep promotion separate. Routine SRT execution never calls this JSON schema or Python tools. Create one independent record for each user-selected opening.",
   "type": "object",

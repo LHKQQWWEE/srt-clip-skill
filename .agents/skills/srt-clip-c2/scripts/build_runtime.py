@@ -39,7 +39,7 @@ def compile_bundle() -> tuple[str, dict[str, object]]:
         "",
         "本文件为构建生成的日常运行正文。其下各权威源文件按原文收录；不要手工编辑本文件。",
         "源文件 → 规则行 ID → 本文件源章节及行号的完整映射见同目录 `runtime-manifest.json`。",
-        "普通运行只读取入口 `SKILL.md` 与本文件；条件文件仅按规则需要读取。",
+        "普通运行先按入口 `SKILL.md` 校验版本化执行摘要；摘要有效时复用，缺失或失效时读取本完整正文。条件文件仅按规则需要读取。",
         "",
     ]
     source_hashes: dict[str, str] = {}

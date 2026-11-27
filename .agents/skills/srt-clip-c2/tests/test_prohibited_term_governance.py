@@ -25,7 +25,7 @@ class ProhibitedTermGovernanceTests(unittest.TestCase):
         contextual = {entry.term for entry in entries if entry.match_class == "contextual"}
         self.assertEqual(
             direct,
-            {"羊毛", "皮草", "羊绒", "特殊动物绒", "全金纺半高领", "不起球"},
+            {"羊毛", "皮草", "羊绒", "特殊动物绒", "全金纺半高领", "不起球", "兔毛", "羊皮"},
         )
         self.assertEqual(
             contextual,
@@ -54,10 +54,21 @@ class ProhibitedTermGovernanceTests(unittest.TestCase):
             guard.Cue("42", "这件不易起球，表面比较平整"),
             guard.Cue("43", "这件羊绒混纺"),
             guard.Cue("44", "袖口有罗纹"),
+            guard.Cue("45", "这件兔毛混纺针织衫"),
+            guard.Cue("46", "这件哑光小羊皮真好搭"),
         ]
         report = guard.build_report(cues, registry())
-        self.assertEqual(report["excluded_full_cue_ids"], ["41", "43"])
-        self.assertEqual([hit["cue_id"] for hit in report["direct_hits"]], ["41", "43"])
+        self.assertEqual(report["excluded_full_cue_ids"], ["41", "43", "45", "46"])
+        self.assertEqual([hit["cue_id"] for hit in report["direct_hits"]], ["41", "43", "45", "46"])
+
+    def test_down_keyword_is_title_and_topic_only_not_a_subtitle_ban(self):
+        entries = {entry.term: entry for entry in registry()}
+        self.assertNotIn("羽绒", entries)
+        rules = (ROOT / "references" / "global-rules.md").read_text(encoding="utf-8")
+        self.assertIn("标题与话题禁用“羽绒”", rules)
+        self.assertIn("正文原话及商品识别不因此删除", rules)
+        report = guard.build_report([guard.Cue("1", "穿羽绒服也好看")], registry())
+        self.assertEqual(report["excluded_full_cue_ids"], [])
 
     def test_contextual_terms_distinguish_claims_from_ordinary_language(self):
         cues = [

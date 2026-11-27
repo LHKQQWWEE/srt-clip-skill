@@ -23,6 +23,11 @@ class ConfirmedWorkflowPolicyTests(unittest.TestCase):
         cls.entry = read("SKILL.md")
         cls.runtime = read("references/runtime-current.md")
 
+    def test_mixed_dynamic_cues_remain_atomic_for_source_and_timing_verification(self):
+        editorial = read("references/editorial-policy.md")
+        self.assertIn("混合字幕按完整字幕句选取", editorial)
+        self.assertIn("不得从字幕句内截取子句", editorial)
+
     def test_01_multiple_products_pause_before_opening_candidates(self):
         self.assertIn("归类为主商品、独立讲解商品、搭配辅助或归属待定", self.contract)
         self.assertIn("等待用户选择商品", self.contract)

@@ -13,7 +13,8 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from pathlib import Path
 from typing import Iterable, Optional
 
-from prohibited_term_guard import TermEntry, load_term_registry, normalize_for_match
+from prohibited_term_guard import Cue as GuardCue
+from prohibited_term_guard import TermEntry, classify_contextual_hit, find_asr_suspicions, load_term_registry, normalize_for_match
 
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
@@ -361,6 +362,60 @@ def _find_registry_candidates(cues: Iterable[Cue], entries: list[TermEntry], mat
     return [{"term": term, "cue_ids": cue_ids} for term, cue_ids in matched_ids.items() if cue_ids]
 
 
+def _find_contextual_candidates(cues: Iterable[Cue], entries: list[TermEntry]) -> list[dict[str, object]]:
+    cue_list = list(cues)
+    matched_ids: dict[str, list[str]] = {
+        entry.term: [] for entry in entries if entry.match_class == "contextual"
+    }
+    for cue in cue_list:
+        normalized_text = normalize_for_match(cue.original_text)
+        for entry in entries:
+            if entry.match_class != "contextual":
+                continue
+            if normalize_for_match(entry.term) in normalized_text:
+                if cue.cue_id not in matched_ids[entry.term]:
+                    matched_ids[entry.term].append(cue.cue_id)
+    return [{"term": term, "cue_ids": cue_ids} for term, cue_ids in matched_ids.items() if cue_ids]
+
+
+def _find_contextual_equivalent_hits(cues: Iterable[Cue], entries: list[TermEntry]) -> list[dict[str, object]]:
+    cue_list = list(cues)
+    matched_ids: dict[tuple[str, str], list[str]] = {
+        (entry.term, alias): []
+        for entry in entries if entry.match_class == "contextual"
+        for alias in entry.confirmed_equivalents
+    }
+    for cue in cue_list:
+        normalized_text = normalize_for_match(cue.original_text)
+        for term, alias in matched_ids:
+            if normalize_for_match(alias) in normalized_text and cue.cue_id not in matched_ids[(term, alias)]:
+                matched_ids[(term, alias)].append(cue.cue_id)
+    return [
+        {"term": term, "expression": alias, "cue_ids": cue_ids}
+        for (term, alias), cue_ids in matched_ids.items() if cue_ids
+    ]
+
+
+def _classify_contextual_candidates(
+    cues: Iterable[Cue], candidates: list[dict[str, object]]
+) -> dict[str, list[dict[str, object]]]:
+    cue_by_id = {cue.cue_id: cue for cue in cues}
+    decisions: dict[str, dict[str, list[str]]] = {"block": {}, "allow": {}, "uncertain": {}}
+    for candidate in candidates:
+        term = str(candidate["term"])
+        for cue_id_value in candidate["cue_ids"]:
+            cue_id = str(cue_id_value)
+            decision = classify_contextual_hit(cue_by_id[cue_id].original_text, term)
+            decisions[decision].setdefault(term, []).append(cue_id)
+    return {
+        decision: [
+            {"term": term, "cue_ids": list(dict.fromkeys(cue_ids))}
+            for term, cue_ids in terms.items()
+        ]
+        for decision, terms in decisions.items()
+    }
+
+
 def _find_confirmed_equivalent_hits(cues: Iterable[Cue], entries: list[TermEntry]) -> list[dict[str, object]]:
     matched: dict[tuple[str, str], list[str]] = {}
     for entry in entries:
@@ -457,9 +512,22 @@ def preprocess_text(
     registry_entries = [entry for entry in terms if isinstance(entry, TermEntry)]
     direct_hits = find_direct_hits(source.cues, terms)
     equivalent_hits = _find_confirmed_equivalent_hits(source.cues, registry_entries)
-    contextual_candidates = _find_registry_candidates(source.cues, registry_entries, "contextual")
+    contextual_candidates = _find_contextual_candidates(source.cues, registry_entries)
+    contextual_equivalent_hits = _find_contextual_equivalent_hits(source.cues, registry_entries)
+    all_contextual_candidates = contextual_candidates + [
+        {"term": hit["term"], "cue_ids": hit["cue_ids"]}
+        for hit in contextual_equivalent_hits
+    ]
+    contextual_decisions = _classify_contextual_candidates(source.cues, all_contextual_candidates)
+    asr_suspicions = find_asr_suspicions(
+        [GuardCue(cue.cue_id, cue.original_text) for cue in source.cues], registry_entries
+    )
     hit_ids = {cue_id for hit in direct_hits + equivalent_hits for cue_id in hit["cue_ids"]}
-    contextual_ids = {cue_id for hit in contextual_candidates for cue_id in hit["cue_ids"]}
+    hit_ids.update(cue_id for hit in contextual_decisions["block"] for cue_id in hit["cue_ids"])
+    contextual_ids = {cue_id for hit in all_contextual_candidates for cue_id in hit["cue_ids"]}
+    contextual_block_ids = {cue_id for hit in contextual_decisions["block"] for cue_id in hit["cue_ids"]}
+    contextual_allow_ids = {cue_id for hit in contextual_decisions["allow"] for cue_id in hit["cue_ids"]}
+    contextual_unresolved_ids = {cue_id for hit in contextual_decisions["uncertain"] for cue_id in hit["cue_ids"]}
 
     if compact:
         return {
@@ -477,9 +545,19 @@ def preprocess_text(
             "direct_hits": direct_hits,
             "confirmed_equivalent_hits": equivalent_hits,
             "contextual_candidates": contextual_candidates,
+            "contextual_confirmed_equivalent_hits": contextual_equivalent_hits,
             "contextual_candidate_ids": [cue.cue_id for cue in source.cues if cue.cue_id in contextual_ids],
+            "contextual_block_hits": contextual_decisions["block"],
+            "contextual_allowed_hits": contextual_decisions["allow"],
+            "contextual_unresolved_hits": contextual_decisions["uncertain"],
+            "contextual_block_ids": [cue.cue_id for cue in source.cues if cue.cue_id in contextual_block_ids],
+            "contextual_allow_ids": [cue.cue_id for cue in source.cues if cue.cue_id in contextual_allow_ids],
+            "contextual_unresolved_ids": [cue.cue_id for cue in source.cues if cue.cue_id in contextual_unresolved_ids],
+            "excluded_full_cue_ids": [cue.cue_id for cue in source.cues if cue.cue_id in hit_ids],
             "semantic_review_required": True,
-            "contextual_review_required": bool(contextual_candidates),
+            "contextual_review_required": bool(contextual_unresolved_ids or asr_suspicions),
+            "asr_suspicions": asr_suspicions,
+            "unresolved_expressions": contextual_decisions["uncertain"],
             "rows": [
                 {
                     "id": cue.cue_id,
@@ -545,9 +623,19 @@ def preprocess_text(
         "direct_hits": direct_hits,
         "confirmed_equivalent_hits": equivalent_hits,
         "contextual_candidates": contextual_candidates,
+        "contextual_confirmed_equivalent_hits": contextual_equivalent_hits,
         "contextual_candidate_ids": [cue.cue_id for cue in source.cues if cue.cue_id in contextual_ids],
+        "contextual_block_hits": contextual_decisions["block"],
+        "contextual_allowed_hits": contextual_decisions["allow"],
+        "contextual_unresolved_hits": contextual_decisions["uncertain"],
+        "contextual_block_ids": [cue.cue_id for cue in source.cues if cue.cue_id in contextual_block_ids],
+        "contextual_allow_ids": [cue.cue_id for cue in source.cues if cue.cue_id in contextual_allow_ids],
+        "contextual_unresolved_ids": [cue.cue_id for cue in source.cues if cue.cue_id in contextual_unresolved_ids],
+        "excluded_full_cue_ids": [cue.cue_id for cue in source.cues if cue.cue_id in hit_ids | contextual_block_ids],
         "semantic_review_required": True,
-        "contextual_review_required": bool(contextual_candidates),
+        "contextual_review_required": bool(contextual_unresolved_ids or asr_suspicions),
+        "asr_suspicions": asr_suspicions,
+        "unresolved_expressions": contextual_decisions["uncertain"],
         "compact_table": compact_table,
         "compact_table_text": "\n".join(compact_lines),
         "timeline_map": timeline_map,
@@ -688,7 +776,16 @@ def validate_selection(
     registry_entries = [entry for entry in terms if isinstance(entry, TermEntry)]
     direct_hits = find_direct_hits(source.cues, terms)
     equivalent_hits = _find_confirmed_equivalent_hits(source.cues, registry_entries)
-    contextual_candidates = _find_registry_candidates(source.cues, registry_entries, "contextual")
+    contextual_candidates = _find_contextual_candidates(source.cues, registry_entries)
+    contextual_equivalent_hits = _find_contextual_equivalent_hits(source.cues, registry_entries)
+    all_contextual_candidates = contextual_candidates + [
+        {"term": hit["term"], "cue_ids": hit["cue_ids"]}
+        for hit in contextual_equivalent_hits
+    ]
+    contextual_decisions = _classify_contextual_candidates(source.cues, all_contextual_candidates)
+    asr_suspicions = find_asr_suspicions(
+        [GuardCue(cue.cue_id, cue.original_text) for cue in source.cues], registry_entries
+    )
     hard_hit_ids = {
         str(cue_id)
         for hit in direct_hits + equivalent_hits
@@ -696,17 +793,41 @@ def validate_selection(
     }
     contextual_ids = {
         str(cue_id)
-        for hit in contextual_candidates
+        for hit in all_contextual_candidates
+        for cue_id in hit["cue_ids"]
+    }
+    contextual_block_ids = {
+        str(cue_id)
+        for hit in contextual_decisions["block"]
+        for cue_id in hit["cue_ids"]
+    }
+    contextual_unresolved_ids = {
+        str(cue_id)
+        for hit in contextual_decisions["uncertain"]
         for cue_id in hit["cue_ids"]
     }
     for cue_id in selected_ids:
         if cue_id in hard_hit_ids:
             failures.append(_failure("selected_direct_formal_term", "selected cue contains a direct formal prohibited-term hit", cue_id=cue_id))
+        if cue_id in contextual_block_ids:
+            failures.append(_failure("selected_contextual_absolute_claim", "selected cue contains a confirmed contextual absolute product claim", cue_id=cue_id))
     final_text_hits = find_direct_hits([Cue("final_text", -1, -1, 0, 0, final_text, 0, 0, 0)], terms) if final_text is not None else []
     final_equivalent_hits = _find_confirmed_equivalent_hits([Cue("final_text", -1, -1, 0, 0, final_text, 0, 0, 0)], registry_entries) if final_text is not None else []
-    final_contextual_candidates = _find_registry_candidates([Cue("final_text", -1, -1, 0, 0, final_text, 0, 0, 0)], registry_entries, "contextual") if final_text is not None else []
+    final_cue = [Cue("final_text", -1, -1, 0, 0, final_text, 0, 0, 0)] if final_text is not None else []
+    final_contextual_candidates = _find_contextual_candidates(final_cue, registry_entries)
+    final_contextual_equivalent_hits = _find_contextual_equivalent_hits(final_cue, registry_entries)
+    all_final_contextual_candidates = final_contextual_candidates + [
+        {"term": hit["term"], "cue_ids": hit["cue_ids"]}
+        for hit in final_contextual_equivalent_hits
+    ]
+    final_contextual_decisions = _classify_contextual_candidates(final_cue, all_final_contextual_candidates)
+    final_asr_suspicions = find_asr_suspicions(
+        [GuardCue(cue.cue_id, cue.original_text) for cue in final_cue], registry_entries
+    )
     if final_text_hits or final_equivalent_hits:
         failures.append(_failure("final_text_direct_formal_term", "final text contains a direct formal prohibited-term hit or confirmed equivalent", direct_hits=final_text_hits, confirmed_equivalent_hits=final_equivalent_hits))
+    if final_contextual_decisions["block"]:
+        failures.append(_failure("final_text_contextual_absolute_claim", "final text contains a confirmed contextual absolute product claim", contextual_hits=final_contextual_decisions["block"]))
 
     raw_flags = selection.get("flags")
     flags = raw_flags if isinstance(raw_flags, list) else []
@@ -756,15 +877,30 @@ def validate_selection(
         "direct_hits": direct_hits,
         "confirmed_equivalent_hits": equivalent_hits,
         "contextual_candidates": contextual_candidates,
+        "contextual_confirmed_equivalent_hits": contextual_equivalent_hits,
+        "contextual_block_hits": contextual_decisions["block"],
+        "contextual_allowed_hits": contextual_decisions["allow"],
+        "contextual_unresolved_hits": contextual_decisions["uncertain"],
         "selected_contextual_candidate_ids": [cue_id for cue_id in selected_ids if cue_id in contextual_ids],
+        "selected_contextual_hit_ids": [cue_id for cue_id in selected_ids if cue_id in contextual_block_ids],
         "final_text_hits": final_text_hits,
         "final_confirmed_equivalent_hits": final_equivalent_hits,
         "final_contextual_candidates": final_contextual_candidates,
+        "final_contextual_confirmed_equivalent_hits": final_contextual_equivalent_hits,
+        "final_contextual_block_hits": final_contextual_decisions["block"],
+        "final_contextual_allowed_hits": final_contextual_decisions["allow"],
+        "final_contextual_unresolved_hits": final_contextual_decisions["uncertain"],
         "semantic_review_required": True,
         "contextual_review_required": bool(
-            any(cue_id in contextual_ids for cue_id in selected_ids)
-            or final_contextual_candidates
+            any(cue_id in contextual_unresolved_ids for cue_id in selected_ids)
+            or final_contextual_decisions["uncertain"]
+            or any(item["cue_id"] in selected_set for item in asr_suspicions)
+            or final_asr_suspicions
         ),
+        "asr_suspicions": asr_suspicions,
+        "final_asr_suspicions": final_asr_suspicions,
+        "unresolved_expressions": contextual_decisions["uncertain"],
+        "final_unresolved_expressions": final_contextual_decisions["uncertain"],
         "analysis_started": True,
         "full_source_checked": source.status != "BLOCKED",
     }

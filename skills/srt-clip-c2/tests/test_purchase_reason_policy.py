@@ -34,11 +34,12 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
         self.assertIn("不得固定某些卖点永远低价值", policy)
         self.assertIn("略超 120 秒", policy)
 
-    def test_repetition_policy_still_uses_semantic_increments(self):
+    def test_repetition_policy_competes_on_approximate_expression_tasks(self):
         editorial = read("references/editorial-policy.md")
-        self.assertIn("先判同事实", editorial)
-        self.assertIn("新增信息", editorial)
-        self.assertIn("说服增量", editorial)
+        self.assertIn("大致重复表达", editorial)
+        self.assertIn("没有新增独立事实、证据、体验、条件、场景、选择帮助或必要承接", editorial)
+        self.assertIn("情绪感染力、自然度、种草效果和当前上下文适配", editorial)
+        self.assertIn("不是字幕文本去重、关键词匹配或主题去重", editorial)
 
     def test_global_bans_remain_scoped_and_category_neutral(self):
         rules = read("references/global-rules.md")

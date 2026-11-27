@@ -16,16 +16,18 @@ from pathlib import Path
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = next(parent for parent in SKILL_ROOT.parents if (parent / "VERSION").is_file())
 EXPECTED_CORE = "0.4.7"
-EXPECTED_SKILL = "0.4.43"
+EXPECTED_SKILL = "0.4.44"
 ACTIVE_SURFACES = (
     "SKILL.md", "README.md", "START-HERE.md", "ENVIRONMENT.md", "agents/openai.yaml",
     "references/ai-first-constitution.md", "references/runtime-contract.md",
     "references/clip-selection-policy.md", "references/editorial-policy.md",
-    "references/final-check.md", "references/long-context-mode.md",
+    "references/final-check.md", "references/global-rules.md", "references/long-context-mode.md",
     "references/highlight-selection.md", "references/product-knowledge-registry.md",
     "references/update-protocol.md", "tests/quality-rubric.md",
     "references/runtime-current.md", "references/execution-summary.json",
-    "C2-Universal-Portable.md",
+    "scripts/prohibited_term_guard.py", "scripts/srt_tools.py",
+    "tests/prohibited-term-regression-cases.md", "tests/test_phase3_duplicate_control.py",
+    "tests/test_phase3_absolute_terms.py", "C2-Universal-Portable.md",
 )
 PLUGIN_SURFACES = ("README.md", "START-HERE.md", "CHANGELOG.md", "plugin.json", ".codex-plugin/plugin.json")
 
@@ -85,6 +87,8 @@ def assert_current_test_contract() -> None:
         "test_phase1_scope_boundary.py": ("deferred_block_ordering_is_absent_from_active_rules", "phase_one_keeps_dynamic_body_order_and_candidate_limit", "development_governance_stays_out_of_daily_runtime", "mirror_sync_removes_stale_files"),
         "test_opening_candidate_quantity.py": ("test_policy_explicitly_separates_uncapped_display_from_selection_cap", "test_user_selection_limit_is_three_and_selected_count_maps_to_cuts"),
         "test_confirmed_workflow.py": ("test_04_text_only_context_tracks_event_lifecycle", "test_immutable_cue_records_bind_id_text_and_exact_duration", "test_any_text_or_final_sequence_mismatch_fails"),
+        "test_phase3_duplicate_control.py": ("test_differently_worded_generic_praise_competes_for_one_best_line", "test_useful_information_can_continue_past_90_seconds_without_hard_cut"),
+        "test_phase3_absolute_terms.py": ("test_confirmed_product_claims_are_blocked_as_full_cues", "test_first_and_best_ordinary_language_is_allowed", "test_unconfirmed_asr_lookalikes_do_not_become_hits"),
     }
     for relative, phrases in required.items():
         path = tests / relative
@@ -158,6 +162,48 @@ def assert_versions_and_generated_files() -> None:
     portable_path = SKILL_ROOT / "C2-Universal-Portable.md"
     if portable_path.read_text(encoding="utf-8") != module.build():
         raise ValueError("portable runtime is not generated from current sources")
+
+
+def assert_prohibited_term_contract() -> None:
+    sys.path.insert(0, str(SKILL_ROOT / "scripts"))
+    import prohibited_term_guard as guard
+
+    entries = guard.load_term_registry()
+    by_term = {entry.term: entry for entry in entries}
+    absolute = {"国家级", "最高级", "顶级", "首选", "绝无仅有", "史无前例", "第一", "最好", "全网最好"}
+    if not absolute <= by_term.keys() or any(by_term[term].match_class != "contextual" for term in absolute):
+        raise ValueError("absolute-term registry is incomplete or classified inconsistently")
+    if by_term["不起球"].allowed_exceptions != ("不易起球",):
+        raise ValueError("the confirmed pilling-expression protection changed")
+    if by_term["最好"].confirmed_equivalents != ("全网没有比这件更好的",):
+        raise ValueError("the confirmed best-equivalent registration changed")
+    if by_term["首选"].allowed_exceptions:
+        raise ValueError("首选 must not have a product-promotion whitelist")
+
+    cues = [
+        guard.Cue("1", "销量第一"),
+        guard.Cue("2", "第一步先看版型"),
+        guard.Cue("3", "这件是我的首选"),
+        guard.Cue("4", "最好明天发货"),
+        guard.Cue("5", "这件不易起球"),
+        guard.Cue("6", "这件国家计级活动款"),
+    ]
+    report = guard.build_report(cues, entries)
+    if report["contextual_block_ids"] != ["1", "3"] or report["contextual_allow_ids"] != ["2", "4"]:
+        raise ValueError("contextual product claims or ordinary language failed the release sample")
+    if report["excluded_full_cue_ids"] != ["1", "3"] or any(item["auto_blocked"] for item in report["asr_suspicions"]):
+        raise ValueError("cue-scope or unconfirmed-ASR behavior changed")
+
+
+def assert_release_conflict_residuals() -> None:
+    rules = (SKILL_ROOT / "references/global-rules.md").read_text(encoding="utf-8")
+    final_check = (SKILL_ROOT / "references/final-check.md").read_text(encoding="utf-8")
+    if "不得设“我的首选”“首选搭配”等商品宣传白名单" not in rules:
+        raise ValueError("the dictionary must explicitly prevent 首选 promo whitelists")
+    if "商品语境中的“我的首选”“首选搭配”不得作为白名单" not in final_check:
+        raise ValueError("final check does not enforce the 首选 rule")
+    if "客观事实证明不解除拦截" not in final_check:
+        raise ValueError("final check must not create a proof-based exemption")
 
 
 def assert_semantic_surfaces() -> None:
@@ -235,6 +281,8 @@ def main() -> int:
         ("historical cleanup", assert_no_historical_package_files),
         ("current tests", assert_current_test_contract),
         ("versions and generated files", assert_versions_and_generated_files),
+        ("prohibited-term regression contract", assert_prohibited_term_contract),
+        ("prohibited-term conflict cleanup", assert_release_conflict_residuals),
         ("canonical/mirror parity", assert_mirror),
     ]
     if args.archive:

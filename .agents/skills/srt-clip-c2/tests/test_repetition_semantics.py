@@ -54,7 +54,7 @@ PANTS = {
 
 SHOE_SELECTED = [19, 21, 22, 25, 26, 27, 48, 34, 35, 37, 38,
                  102, 103, 106, 140, 141, 143, 144, 145, 146, 147]
-PANTS_SELECTED = [497, 498, 499, 501, 502, 504, 506, 507]
+PANTS_SELECTED = [498, 499, 501, 502, 504, 506, 507]
 
 
 def estimate(selected, cues):
@@ -78,11 +78,12 @@ class RepetitionSemanticRegressionTests(unittest.TestCase):
         self.assertNotIn(23, SHOE_SELECTED)  # unclear ASR wording, not needed for the complete benefit
         self.assertNotIn(24, SHOE_SELECTED)  # question/repair setup is unnecessary once 23 is omitted
 
-    def test_effective_emphasis_can_survive_without_new_fact(self):
-        # The pants clip retains the intensified restatement for memory and conviction.
+    def test_approximate_praise_competition_keeps_only_the_strongest_original(self):
+        # Phase 3 makes the similar praise lines compete; changed wording is not
+        # a reason to retain both when neither adds a distinct buying reason.
         self.assertEqual(PANTS[497][1], "对，显高显瘦")
         self.assertEqual(PANTS[498][1], "真显高显瘦")
-        self.assertIn(497, PANTS_SELECTED)
+        self.assertNotIn(497, PANTS_SELECTED)
         self.assertIn(498, PANTS_SELECTED)
 
     def test_overstatement_is_trimmed_without_losing_distinct_reason(self):
@@ -110,8 +111,8 @@ class RepetitionSemanticRegressionTests(unittest.TestCase):
         pants_raw, pants_1_2x = estimate(PANTS_SELECTED, PANTS)
         self.assertEqual(shoe_raw, Decimal("37.280"))
         self.assertEqual(shoe_1_2x, Decimal("31.067"))
-        self.assertEqual(pants_raw, Decimal("15.30"))
-        self.assertEqual(pants_1_2x, Decimal("12.750"))
+        self.assertEqual(pants_raw, Decimal("13.90"))
+        self.assertEqual(pants_1_2x, Decimal("11.583"))
         # These historical calculations are display estimates only; they do not
         # establish a quality gate, acceptance threshold, or reason to split.
 
@@ -123,8 +124,8 @@ class RepetitionSemanticRegressionTests(unittest.TestCase):
         final_check = (root / "references/final-check.md").read_text(encoding="utf-8")
         for category in ("机械性重复", "强调性重复", "递进性重复", "过度性重复"):
             self.assertIn(category, editorial)
-        self.assertIn("同一购买事实", selection)
-        self.assertIn("说服增量", selection)
+        self.assertIn("大致重复话术", editorial)
+        self.assertIn("进入同一竞争组", selection)
         self.assertIn("信息池", final_check)
 
 

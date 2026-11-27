@@ -25,11 +25,11 @@ class ProhibitedTermGovernanceTests(unittest.TestCase):
         contextual = {entry.term for entry in entries if entry.match_class == "contextual"}
         self.assertEqual(
             direct,
-            {"羊毛", "皮草", "羊绒", "特殊动物绒", "全金纺半高领", "不起球", "全网最好"},
+            {"羊毛", "皮草", "羊绒", "特殊动物绒", "全金纺半高领", "不起球"},
         )
         self.assertEqual(
             contextual,
-            {"国家级", "最高级", "顶级", "首选", "绝无仅有", "史无前例", "第一", "最好"},
+            {"国家级", "最高级", "顶级", "首选", "绝无仅有", "史无前例", "第一", "最好", "全网最好"},
         )
         for entry in entries:
             for field in (
@@ -59,7 +59,7 @@ class ProhibitedTermGovernanceTests(unittest.TestCase):
         self.assertEqual(report["excluded_full_cue_ids"], ["41", "43"])
         self.assertEqual([hit["cue_id"] for hit in report["direct_hits"]], ["41", "43"])
 
-    def test_contextual_terms_are_review_candidates_not_automatic_exclusions(self):
+    def test_contextual_terms_distinguish_claims_from_ordinary_language(self):
         cues = [
             guard.Cue("1", "第一件拿给大家看"),
             guard.Cue("2", "第一步先看版型"),
@@ -68,10 +68,12 @@ class ProhibitedTermGovernanceTests(unittest.TestCase):
             guard.Cue("5", "这款顶级面料"),
         ]
         report = guard.build_report(cues, registry())
-        self.assertEqual(report["excluded_full_cue_ids"], [])
+        self.assertEqual(report["excluded_full_cue_ids"], ["4", "5"])
         candidates = {hit["cue_id"] for hit in report.get("contextual_candidates", [])}
         self.assertEqual(candidates, {"1", "2", "3", "4", "5"})
-        self.assertEqual(report["status"], "REVIEW_CONTEXT")
+        self.assertEqual(report["contextual_block_ids"], ["4", "5"])
+        self.assertEqual(report["contextual_allow_ids"], ["1", "2", "3"])
+        self.assertEqual(report["status"], "SCAN_COMPLETE")
 
     def test_each_confirmed_contextual_term_is_scanned_for_semantic_review(self):
         cues = [
@@ -85,9 +87,10 @@ class ProhibitedTermGovernanceTests(unittest.TestCase):
             guard.Cue("18", "这是市场上最好的一款"),
         ]
         report = guard.build_report(cues, registry())
-        self.assertEqual(report["excluded_full_cue_ids"], [])
+        self.assertEqual(report["excluded_full_cue_ids"], [str(i) for i in range(11, 19)])
+        self.assertEqual(report["contextual_block_ids"], [str(i) for i in range(11, 19)])
         self.assertEqual(report["contextual_candidate_ids"], [str(i) for i in range(11, 19)])
-        self.assertEqual(report["status"], "REVIEW_CONTEXT")
+        self.assertEqual(report["status"], "SCAN_COMPLETE")
 
     def test_full_net_best_is_blocked_even_inside_a_call_to_action(self):
         cues = [guard.Cue("19", "点击商品卡下单，这款全网最好。")]
@@ -96,12 +99,13 @@ class ProhibitedTermGovernanceTests(unittest.TestCase):
         self.assertEqual(report["selected_hit_ids"], ["19"])
         self.assertEqual(report["status"], "FAIL")
 
-    def test_contextual_absolute_claim_in_a_call_to_action_is_still_presented_for_review(self):
+    def test_contextual_absolute_claim_in_a_call_to_action_is_still_blocked(self):
         cue = guard.Cue("20", "点击商品卡下单，这款顶级面料特别显身材。")
         report = guard.build_report([cue], registry())
-        self.assertEqual(report["excluded_full_cue_ids"], [])
+        self.assertEqual(report["excluded_full_cue_ids"], ["20"])
         self.assertEqual([hit["cue_id"] for hit in report["contextual_candidates"]], ["20"])
-        self.assertEqual(report["status"], "REVIEW_CONTEXT")
+        self.assertEqual(report["contextual_block_ids"], ["20"])
+        self.assertEqual(report["status"], "SCAN_COMPLETE")
 
     def test_guard_cli_separates_context_review_from_confirmed_hit(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -114,8 +118,8 @@ class ProhibitedTermGovernanceTests(unittest.TestCase):
                 encoding="utf-8",
                 check=False,
             )
-            self.assertEqual(review.returncode, 2)
-            self.assertEqual(json.loads(review.stdout)["status"], "REVIEW_CONTEXT")
+            self.assertEqual(review.returncode, 0)
+            self.assertEqual(json.loads(review.stdout)["contextual_block_ids"], ["9"])
             source.write_text("9 1.0 这款全网最好\n", encoding="utf-8")
             hit = subprocess.run(
                 [sys.executable, str(Path(guard.__file__)), str(source), "--selected-ids", "9"],
@@ -154,8 +158,10 @@ class ProhibitedTermGovernanceTests(unittest.TestCase):
             {"term": "第一", "cue_ids": ["1"]},
         ])
         self.assertTrue(report["semantic_review_required"])
-        self.assertTrue(report["contextual_review_required"])
-        self.assertEqual([row["mark"] for row in report["compact_table"]], ["", "", "HIT", "", "", ""])
+        self.assertFalse(report["contextual_review_required"])
+        self.assertEqual(report["contextual_block_ids"], ["2"])
+        self.assertEqual(report["contextual_allow_ids"], ["1"])
+        self.assertEqual([row["mark"] for row in report["compact_table"]], ["", "HIT", "HIT", "", "", ""])
 
     def test_multi_product_filter_preserves_neighboring_cues_and_original_sequence(self):
         cues = [
@@ -191,7 +197,7 @@ class ProhibitedTermGovernanceTests(unittest.TestCase):
         report = guard.build_report([cue], registry(), selected_ids=["81"], final_text="标题：顶级面料垂感")
         self.assertEqual(report["final_text_hits"], [])
         self.assertEqual([hit["cue_id"] for hit in report["final_contextual_candidates"]], ["final_text"])
-        self.assertEqual(report["status"], "REVIEW_CONTEXT")
+        self.assertEqual(report["status"], "FAIL")
 
     def test_runtime_defines_the_required_scan_order_without_changing_other_rules(self):
         rules = (ROOT / "references" / "global-rules.md").read_text(encoding="utf-8")

@@ -1,6 +1,6 @@
 # SRT Clip C2 Universal 0.4.7
 
-插件包与 Skill 版本：**0.4.41**；业务内核：**0.4.7**。日常入口见 `skills/srt-clip-c2/SKILL.md` 与唯一编译正文 `skills/srt-clip-c2/references/runtime-current.md`；日常剪辑不调用 Python、脚本、CLI 或 JSON 流水线。
+插件包与 Skill 版本：**0.4.42**；业务内核：**0.4.7**。除 SRT 文案剪辑外，也支持抖音电商商品、短视频、直播表达、流量、点击、成交和工作流咨询；咨询时区分已知事实、推断与待核实项，给出优先建议、行动和指标，重大工作流调整先确认方案。日常 SRT 入口见 skills/srt-clip-c2/SKILL.md 与唯一编译正文 skills/srt-clip-c2/references/runtime-current.md；日常剪辑不调用 Python、脚本、CLI 或 JSON 流水线。
 
 一个 AI 完成语义分析和现有一次终检。多商品先列商品身份与讲解窗口并等待用户选择，再完整读取所选商品并建立信息池；目标明确或单商品时跳过商品选择。
 

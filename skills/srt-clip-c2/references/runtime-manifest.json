@@ -6,6 +6,10 @@
   ],
   "conditional_files": [
     {
+      "path": "references/commerce-advisory.md",
+      "when": "The user requests advice or optimization for Douyin ecommerce work outside pure SRT copy generation"
+    },
+    {
       "path": "references/long-context-mode.md",
       "when": "Long Context Mode is needed"
     },
@@ -31,11 +35,11 @@
     "references/product-knowledge-registry.md",
     "references/final-check.md"
   ],
-  "skill_version": "0.4.41",
+  "skill_version": "0.4.42",
   "summary_file": "references/execution-summary.json",
   "source_hashes": {
     "references/ai-first-constitution.md": "f0d2670e3ff7ce36c3e58fea5443a8ec557432dc6d749e8b9cc4a1676c0e970d",
-    "references/runtime-contract.md": "9a39a6e7a1d5e2af86a2bf402613dc984abb43ae3bd274bc551ede9757b7d119",
+    "references/runtime-contract.md": "876a556d643569bf89ff3fae35dc05e3ec0f03df2ffe5935332e3e6c6b0ad289",
     "references/clip-selection-policy.md": "19e99c0c990d560b6fdc5f3490c27203b630e33e82f505201a2ab9a5096bf565",
     "references/global-rules.md": "ec1a9a15df40943d12a0753708a7b9fd02c4f205286d57a8a27a75f74a4e212a",
     "references/editorial-policy.md": "f49137db6ca80666f410ab1ef4375272bee1df4fa2afee6439337488d0190a69",
@@ -43,7 +47,7 @@
     "references/product-knowledge-registry.md": "d5125b4d4ba910ec8dc1c2fcbfe5ce55440a056232ae1ba7ed81b89f8c6d0a77",
     "references/final-check.md": "fddbd35d5237a3892f057e800a96ecdc1cc41bcb9d9dc1c8b024ee3b301f2bd9"
   },
-  "runtime_sha256": "b66dd7840e1f36f4904e0e96078a5f548ad179bbd504a163c2be466bc9ed65b3",
+  "runtime_sha256": "061276a9ecf90523fc0213ff5fd03c9218d2573353810dbabe4b6caf12ef0a75",
   "source_map": [
     {
       "rule_id": "SRC01.L0001",

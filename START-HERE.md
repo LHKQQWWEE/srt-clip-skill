@@ -1,6 +1,6 @@
 # SRT Clip C2 Universal 0.4.7｜开始使用
 
-插件包与 Skill 版本：**0.4.41**；业务内核：**0.4.7**。从 `skills/srt-clip-c2/SKILL.md` 进入。日常任务不调用 Python、脚本或 CLI；运行规则见 `skills/srt-clip-c2/references/runtime-current.md`。
+插件包与 Skill 版本：**0.4.42**；业务内核：**0.4.7**。可处理抖音电商增长咨询，也可执行 SRT 文案剪辑。咨询规则见 skills/srt-clip-c2/SKILL.md；SRT 运行规则见 skills/srt-clip-c2/references/runtime-current.md。日常任务不调用 Python、脚本或 CLI。
 
 ## 输入与边界
 

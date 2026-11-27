@@ -1,11 +1,15 @@
 ---
 name: srt-clip-c2
-description: "当用户发送‘srt文案’‘srt切片文案’‘str文案’或‘C2完整精简版’，并提供 SRT 文件或逐条时长文本时使用。执行 C2 Universal Core 0.4.7 / Skill 0.4.41。"
+description: "当用户讨论抖音电商增长/带货建议，或发送 SRT/C2 触发词并提供字幕文本时使用。执行 C2 Universal Core 0.4.7 / Skill 0.4.42。"
 ---
 
 # SRT Clip C2 Universal 0.4.7｜运行入口
 
-Skill 版本：**0.4.41**。
+Skill 版本：**0.4.42**。
+
+## 电商咨询路由
+
+非纯 SRT 的抖音电商经营、商品、直播、短视频或工作流咨询，先读 references/commerce-advisory.md。纯 SRT 文案仍按 C2 既有流程和固定五部分格式交付。
 
 ## 版本化执行摘要与规则读取
 

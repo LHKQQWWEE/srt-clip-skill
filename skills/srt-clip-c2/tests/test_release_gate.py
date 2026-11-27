@@ -8,6 +8,9 @@ import release_gate
 
 
 class ReleaseGateSemanticTests(unittest.TestCase):
+    def test_release_target_matches_skill_version(self):
+        self.assertEqual(release_gate.EXPECTED_SKILL, (ROOT / "VERSION").read_text(encoding="utf-8").strip())
+
     def test_flags_retired_semantic_variants(self):
         from_codes = lambda codes: "".join(chr(value) for value in codes)
         stale_share = from_codes([22810, 24320, 22836, 20801, 35768, 20849, 20139, 21516, 19968, 26368, 20339, 38057, 23376])

@@ -220,7 +220,7 @@ class ProhibitedTermGovernanceTests(unittest.TestCase):
         self.assertIn("最终成片复扫", final_check)
         self.assertIn("用户最多选择 3 个", contract)
         self.assertIn("90 秒是有效信息密度目标", duration_policy)
-        self.assertIn("100 秒可作为可接受参考", duration_policy)
+        self.assertIn("95–100 秒进入复核", duration_policy)
 
 
 if __name__ == "__main__":

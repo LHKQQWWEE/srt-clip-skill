@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://c2-universal.local/schemas/selection-0.4.49.json",
+  "$id": "https://c2-universal.local/schemas/selection-0.4.50.json",
   "title": "C2 Selection JSON",
   "description": "Development/test record for one actual user-selected final cut. Selling points describe product reasons only, while content_blocks records this plan's open, dynamic section order and roles keep promotion separate. Routine SRT execution never calls this JSON schema or Python tools. Create one independent record for each user-selected opening.",
   "type": "object",
@@ -43,7 +43,7 @@
     "estimated_duration_seconds": {
       "type": "number",
       "minimum": 0,
-      "description": "Approximate duration for this cut, planned before drafting after full point-pool review and duplicate-expression competition. Divide accumulated selected source duration by 1.2. The converted target is 90 seconds. Above the 100-second acceptable reference, measured before display rounding, review each cut without automatically truncating it."
+      "description": "Approximate duration for this cut, planned before drafting after full point-pool review and purchase-information-unit competition. Divide accumulated selected source duration by 1.2. The target is 90 seconds, with 90–95 preferred, 95–100 reviewed, and over 100 triggering special optimization, all measured before display rounding. Necessary irreplaceable content may exceed 100 seconds with evidence-backed reasons; do not truncate automatically."
     },
     "full_clip_playback_speed": {
       "type": "number",
@@ -53,8 +53,9 @@
     },
     "duration_review": {
       "type": "object",
-      "required": ["outcome", "review_reason", "omitted_blocks"],
+      "required": ["stage", "outcome", "review_reason", "omitted_blocks"],
       "properties": {
+        "stage": {"enum": ["review_95_to_100", "special_optimization_over_100"]},
         "outcome": {"enum": ["retain_all", "omit_low_value_blocks"]},
         "review_reason": {
           "type": "string",
@@ -88,7 +89,7 @@
         }
       ],
       "additionalProperties": false,
-      "description": "Above 100 seconds, record a review even when retaining every board. If lower-value complete boards are omitted, list every board, its source cues, points, and individual reason."
+      "description": "From 95 through 100 playback seconds, record stage review_95_to_100. Above 100 seconds, record stage special_optimization_over_100 and the special optimization reasoning, even when retaining every board. If lower-value complete boards are omitted, list every board, its source cues, points, and individual reason."
     },
     "content_blocks": {
       "type": "array",
@@ -280,8 +281,18 @@
   "additionalProperties": true,
   "allOf": [
     {
+      "if": {"properties": {"estimated_duration_seconds": {"type": "number", "minimum": 95, "maximum": 100}}, "required": ["estimated_duration_seconds"]},
+      "then": {
+        "required": ["duration_review"],
+        "properties": {"duration_review": {"properties": {"stage": {"const": "review_95_to_100"}}}}
+      }
+    },
+    {
       "if": {"properties": {"estimated_duration_seconds": {"type": "number", "exclusiveMinimum": 100}}, "required": ["estimated_duration_seconds"]},
-      "then": {"required": ["duration_review"]}
+      "then": {
+        "required": ["duration_review"],
+        "properties": {"duration_review": {"properties": {"stage": {"const": "special_optimization_over_100"}}}}
+      }
     }
   ]
 }

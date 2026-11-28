@@ -18,7 +18,7 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
     def test_every_plan_is_independent_and_capacity_omissions_are_visible(self):
         policy = read("references/clip-selection-policy.md")
         self.assertIn("每条成片先完整覆盖", policy)
-        self.assertIn("超过 100 秒须逐条复核", policy)
+        self.assertIn("超过 100 秒须启动专项优化并逐条复核", policy)
         self.assertIn("逐项注明省略的完整板块", policy)
 
     def test_dynamic_opening_and_customer_value_remain(self):
@@ -51,7 +51,7 @@ class PurchaseReasonPolicyTests(unittest.TestCase):
         policy = read("references/clip-selection-policy.md")
         final_check = read("references/final-check.md")
         self.assertIn("90 秒是有效信息密度目标", policy)
-        self.assertIn("100 秒可作为可接受参考", policy)
+        self.assertIn("95–100 秒进入复核", policy)
         self.assertIn("不形成容量上限", policy)
         for text in (policy, final_check):
             for unsupported in ("45 秒", "45秒", "130 秒", "130秒"):

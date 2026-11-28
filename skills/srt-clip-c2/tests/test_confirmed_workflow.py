@@ -47,8 +47,9 @@ class ConfirmedWorkflowPolicyTests(unittest.TestCase):
         self.assertIn("每条成片独立划分和编排内容板块", self.policy)
         self.assertIn("每条成片先完整覆盖信息池内全部有效卖点", self.policy)
         self.assertIn("90 秒是有效信息密度目标", self.policy)
-        self.assertIn("100 秒可作为可接受参考", self.policy)
-        self.assertIn("超过 100 秒须逐条复核", self.policy)
+        self.assertIn("90–95 秒为优先区间", self.policy)
+        self.assertIn("95–100 秒进入复核", self.policy)
+        self.assertIn("超过 100 秒须启动专项优化并逐条复核", self.policy)
 
     def test_04_text_only_context_tracks_event_lifecycle(self):
         for state in ("待回应", "延迟回应", "已回应", "删除但保留必要铺垫", "无法确定"):

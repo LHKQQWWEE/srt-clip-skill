@@ -43,11 +43,11 @@ class RuntimeContractTests(unittest.TestCase):
     def test_duration_and_original_cta_contract(self):
         policy = read("references/clip-selection-policy.md")
         editorial = read("references/editorial-policy.md")
-        self.assertIn("写出正文前完成首次容量规划", policy)
+        self.assertIn("写出正文前建立本条成片的时长预算", policy)
         self.assertIn("首稿必须以已完成容量优化的选段为基础", policy)
         self.assertIn("预计成片时长 = 原始选段累计时长 ÷ 1.2", policy)
         self.assertIn("90 秒是有效信息密度目标", policy)
-        self.assertIn("超过 100 秒须逐条复核", policy)
+        self.assertIn("超过 100 秒须启动专项优化并逐条复核", policy)
         self.assertIn("促单独立分类", editorial)
         self.assertIn("原文没有促单时，禁止编造、改写或补充", editorial)
 

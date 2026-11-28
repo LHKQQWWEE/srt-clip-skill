@@ -5,7 +5,7 @@ description: "Use when discussing Douyin e-commerce growth or selling advice (�
 
 # SRT Clip C2 Universal 0.4.7｜运行入口
 
-Skill 版本：**0.4.49**。
+Skill 版本：**0.4.50**。
 
 ## 电商咨询路由
 

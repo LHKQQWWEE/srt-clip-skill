@@ -8,21 +8,25 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class DynamicBlocksAndDurationTests(unittest.TestCase):
-    def test_duration_policy_has_target_tolerance_and_review_without_old_threshold(self):
+    def test_duration_policy_has_90_second_target_and_preserves_raw_120_second_mapping(self):
         policy = (ROOT / "references" / "clip-selection-policy.md").read_text(encoding="utf-8")
         self.assertIn("90 秒是有效信息密度目标", policy)
-        self.assertIn("100 秒可作为可接受参考", policy)
+        self.assertIn("90–95 秒为优先区间", policy)
+        self.assertIn("95–100 秒进入复核", policy)
+        self.assertIn("超过 100 秒启动专项优化", policy)
+        self.assertIn("95–100 秒进入复核", policy)
+        self.assertIn("120 秒原始时长对应 100 秒播放复核线", policy)
         self.assertIn("超过 100 秒", policy)
         self.assertIn("超过 90 秒时", policy)
         self.assertIn("不得自动截断", policy)
         self.assertIn("完整覆盖", policy)
         self.assertIn("低价值完整板块", policy)
-        self.assertIsNone(re.search(r"\b120\s*秒", policy))
+        self.assertIsNone(re.search(r"(?:成片|播放)(?:时长)?目标.{0,15}120\s*秒|120\s*秒.{0,15}(?:成片目标|播放目标)", policy))
 
     def test_first_pass_duration_optimization_happens_before_copy_is_written(self):
         policy = (ROOT / "references" / "clip-selection-policy.md").read_text(encoding="utf-8")
         for phrase in (
-            "写出正文前完成首次容量规划",
+            "写出正文前建立本条成片的时长预算",
             "首稿必须以已完成容量优化的选段为基础",
             "不得等待用户指出过长后才开始压缩",
             "大致重复表达先竞争",
@@ -48,6 +52,8 @@ class DynamicBlocksAndDurationTests(unittest.TestCase):
             self.assertIn("超过 90 秒", surface)
             self.assertIn("超过 100 秒", surface)
         self.assertIn("完整覆盖所有有效卖点", policy)
+        self.assertIn("95–100 秒进入复核", policy)
+        self.assertIn("超过 100 秒启动专项优化", policy)
 
     def test_content_boards_are_open_and_dynamically_ordered_as_units(self):
         policy = (ROOT / "references" / "clip-selection-policy.md").read_text(encoding="utf-8")
@@ -76,12 +82,22 @@ class DynamicBlocksAndDurationTests(unittest.TestCase):
         self.assertIn("content_blocks", schema["required"])
         self.assertIn("content_blocks", schema["properties"])
         self.assertIn("duration_review", schema["properties"])
+        self.assertIn("stage", schema["properties"]["duration_review"]["required"])
         speed = schema["properties"]["full_clip_playback_speed"]
         self.assertEqual(speed["default"], 1.2)
         self.assertEqual(speed["const"], 1.2)
         role = schema["properties"]["roles"]["items"]["properties"]
         self.assertIn("cta_type", role)
         self.assertIn("transaction_info", role)
+
+    def test_duration_schema_requires_the_matching_review_stage_from_95_seconds(self):
+        schema = json.loads((ROOT / "scripts" / "selection.schema.json").read_text(encoding="utf-8"))
+        review = schema["properties"]["duration_review"]
+        self.assertEqual(
+            review["properties"]["stage"]["enum"],
+            ["review_95_to_100", "special_optimization_over_100"],
+        )
+        self.assertTrue(any("minimum" in rule.get("if", {}).get("properties", {}).get("estimated_duration_seconds", {}) for rule in schema["allOf"]))
 
 
 if __name__ == "__main__":

@@ -139,6 +139,7 @@ class SelectionStructureTests(unittest.TestCase):
         _, codes = failure_codes(self.selection, self.source)
         self.assertIn("duration_review_required", codes)
         self.selection["duration_review"] = {
+            "stage": "special_optimization_over_100",
             "outcome": "retain_all",
             "review_reason": "保留全部独立理由及必要证据、条件和衔接",
             "omitted_blocks": [],

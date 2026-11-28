@@ -372,12 +372,14 @@ class SelectionPipelineTests(unittest.TestCase):
         self.assertEqual(result["playback_duration_display"], "\u7ea6 2 \u79d2")
         self.assertEqual([group["span_ms"] for group in result["source_groups"]], [1500, 500])
 
-    def test_full_clip_duration_uses_fixed_speed_and_reviews_exactly_above_100_seconds(self):
-        for evidence_seconds, expected_ms, needs_review in (
-            ("48", 90000, False),
-            ("60", 100000, False),
-            ("60.0001", 100000, True),
-            ("62.4", 102000, True),
+    def test_full_clip_duration_reviews_from_95_seconds_and_distinguishes_special_optimization(self):
+        for evidence_seconds, expected_ms, expected_stage in (
+            ("48", 90000, None),
+            ("53.9988", 94999, None),
+            ("54", 95000, "review_95_to_100"),
+            ("60", 100000, "review_95_to_100"),
+            ("60.00012", 100000, "special_optimization_over_100"),
+            ("62.4", 102000, "special_optimization_over_100"),
         ):
             with self.subTest(evidence_seconds=evidence_seconds):
                 source = srt_tools.parse_source(f"1 60 开头原话\n2 {evidence_seconds} 必要证据")
@@ -387,12 +389,15 @@ class SelectionPipelineTests(unittest.TestCase):
                 selection.pop("estimated_duration_seconds")
 
                 result = srt_tools.assemble_selection(source, selection, formal_terms=[])
-                if needs_review:
+                if expected_stage:
                     self.assertIn("duration_review_required", {
                         item["code"] for item in result["validation"]["hard_failures"]
                     })
                     selection["duration_review"] = {
-                        "outcome": "retain_all", "review_reason": "保留必要证据", "omitted_blocks": [],
+                        "stage": expected_stage,
+                        "outcome": "retain_all",
+                        "review_reason": "保留必要证据并核对独立信息覆盖",
+                        "omitted_blocks": [],
                     }
                     result = srt_tools.assemble_selection(source, selection, formal_terms=[])
 
@@ -401,6 +406,26 @@ class SelectionPipelineTests(unittest.TestCase):
                 self.assertEqual(result["full_clip_playback_speed"], 1.2)
                 self.assertEqual(result["selected_ids"], ["1", "2"])
                 self.assertEqual(result["body_text"], "开头原话\n必要证据")
+
+    def test_duration_review_stage_must_match_the_measured_playback_band(self):
+        source = srt_tools.parse_source("1 60 开头原话\n2 60.00012 必要证据")
+        selection = self.make_selection(source, selected_ids=("1", "2"))
+        selection["selling_points"][0]["necessary_evidence_ids"] = ["2"]
+        selection["selling_points"][0]["required_condition_ids"] = []
+        selection.pop("estimated_duration_seconds")
+        selection["duration_review"] = {
+            "stage": "review_95_to_100",
+            "outcome": "retain_all",
+            "review_reason": "必要证据保留",
+            "omitted_blocks": [],
+        }
+
+        result = srt_tools.assemble_selection(source, selection, formal_terms=[])
+
+        self.assertEqual(result["status"], "FAIL")
+        self.assertIn("duration_review_stage_mismatch", {
+            item["code"] for item in result["validation"]["hard_failures"]
+        })
 
     def test_invalid_full_clip_playback_speed_blocks_assembly(self):
         source = srt_tools.parse_source(SOURCE_WITH_GAPS)

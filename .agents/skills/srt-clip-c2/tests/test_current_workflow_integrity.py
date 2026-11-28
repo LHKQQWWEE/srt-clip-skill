@@ -38,7 +38,7 @@ class CurrentWorkflowIntegrityTests(unittest.TestCase):
         policy = read("references/clip-selection-policy.md")
         self.assertIn("每条成片先完整覆盖", policy)
         self.assertIn("方案之间不互相补足", policy)
-        self.assertIn("超过 100 秒须逐条复核", policy)
+        self.assertIn("超过 100 秒须启动专项优化并逐条复核", policy)
         self.assertIn("逐项注明省略的完整板块", policy)
 
     def test_original_eligible_purchase_prompt_is_required_but_never_invented(self):
@@ -51,11 +51,12 @@ class CurrentWorkflowIntegrityTests(unittest.TestCase):
         policy = read("references/clip-selection-policy.md")
         check = read("references/final-check.md")
         self.assertIn("先建立完整信息池", policy)
-        self.assertIn("写出正文前完成首次容量规划", policy)
+        self.assertIn("写出正文前建立本条成片的时长预算", policy)
         self.assertNotIn("先完成全部有效卖点的完整编排，再计算时长", policy)
         self.assertIn("90 秒是有效信息密度目标", policy)
-        self.assertIn("100 秒可作为可接受参考", policy)
-        self.assertIn("超过 100 秒须逐条复核", policy)
+        self.assertIn("90–95 秒为优先区间", policy)
+        self.assertIn("95–100 秒进入复核", policy)
+        self.assertIn("超过 100 秒须启动专项优化并逐条复核", policy)
         self.assertIn("90 秒为目标", check)
         self.assertIn("超过 90 秒比较", check)
         for path in (policy, check):
@@ -71,7 +72,7 @@ class CurrentWorkflowIntegrityTests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         runtime = ROOT / manifest["runtime_file"]
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.49")
+        self.assertEqual(manifest["skill_version"], "0.4.50")
         self.assertTrue(manifest["source_map"])
         self.assertEqual(text_sha256(runtime), manifest["runtime_sha256"])
         for relative, digest in manifest["source_hashes"].items():

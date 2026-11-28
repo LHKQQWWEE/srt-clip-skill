@@ -862,22 +862,36 @@ def validate_selection(
         or estimated_duration < 0
     ):
         failures.append(_failure("invalid_estimated_duration", "estimated duration must be a finite nonnegative number"))
-    if duration_review is None and source.status == "PASS" and selected_set <= source_ids:
+    expected_review_stage: str | None = None
+    if source.status == "PASS" and selected_set <= source_ids:
         groups = _selected_groups([source_by_id[cue_id] for cue_id in selected_ids], source.source_type)
-        if _source_duration_ms(groups) > 100_000 * FULL_CLIP_SPEED:
-            failures.append(_failure("duration_review_required", "a cut above the 100-second reference needs an individual review record"))
+        playback_duration_ms = _source_duration_ms(groups) / FULL_CLIP_SPEED
+        if playback_duration_ms >= 95_000:
+            expected_review_stage = (
+                "review_95_to_100" if playback_duration_ms <= 100_000 else "special_optimization_over_100"
+            )
+            if duration_review is None:
+                message = (
+                    "a cut from 95 through 100 playback seconds needs its individual review record"
+                    if expected_review_stage == "review_95_to_100"
+                    else "a cut above 100 playback seconds needs its special-optimization review record"
+                )
+                failures.append(_failure("duration_review_required", message))
 
     omitted_block_ids: list[str] = []
     if duration_review is not None:
-        if not isinstance(duration_review, dict) or set(duration_review) != {"outcome", "review_reason", "omitted_blocks"}:
-            failures.append(_failure("invalid_duration_review", "duration_review needs outcome, review_reason, and omitted_blocks"))
+        if not isinstance(duration_review, dict) or set(duration_review) != {"stage", "outcome", "review_reason", "omitted_blocks"}:
+            failures.append(_failure("invalid_duration_review", "duration_review needs stage, outcome, review_reason, and omitted_blocks"))
         else:
+            stage = duration_review.get("stage")
             outcome = duration_review.get("outcome")
             review_reason = duration_review.get("review_reason")
             omitted_blocks = duration_review.get("omitted_blocks")
-            if outcome not in {"retain_all", "omit_low_value_blocks"} or not isinstance(review_reason, str) or not review_reason.strip() or not isinstance(omitted_blocks, list):
+            if stage not in {"review_95_to_100", "special_optimization_over_100"} or outcome not in {"retain_all", "omit_low_value_blocks"} or not isinstance(review_reason, str) or not review_reason.strip() or not isinstance(omitted_blocks, list):
                 failures.append(_failure("invalid_duration_review", "duration review needs a supported outcome, reason, and omitted-block list"))
                 omitted_blocks = []
+            elif expected_review_stage is not None and stage != expected_review_stage:
+                failures.append(_failure("duration_review_stage_mismatch", "duration review stage must match the unrounded measured playback duration", expected=expected_review_stage, actual=stage))
             if outcome == "retain_all" and omitted_blocks:
                 failures.append(_failure("duration_review_outcome_mismatch", "retain_all cannot list omitted blocks"))
             if outcome == "omit_low_value_blocks" and not omitted_blocks:

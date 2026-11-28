@@ -29,11 +29,21 @@ class RuntimeManifestTests(unittest.TestCase):
 
     def test_source_hashes_runtime_hash_and_source_map_are_current(self):
         self.assertEqual(self.manifest["core_version"], "0.4.7")
-        self.assertEqual(self.manifest["skill_version"], "0.4.47")
+        self.assertEqual(self.manifest["skill_version"], "0.4.48")
         self.assertTrue(self.manifest["source_map"])
         self.assertEqual(text_sha256(ROOT / self.manifest["runtime_file"]), self.manifest["runtime_sha256"])
         for path, digest in self.manifest["source_hashes"].items():
             self.assertEqual(text_sha256(ROOT / path), digest, path)
+
+    def test_summary_binds_long_context_and_runtime_prompts(self):
+        self.assertIn("references/long-context-mode.md", self.manifest["summary_files"])
+        self.assertIn("references/commerce-advisory.md", self.manifest["summary_files"])
+        self.assertIn("agents/openai.yaml", self.manifest["summary_files"])
+        self.assertIn("product-knowledge-packs/*.md", self.manifest["summary_files"])
+        self.assertIn("../../plugin.json", self.manifest["optional_summary_files"])
+        self.assertIn("../../.codex-plugin/plugin.json", self.manifest["optional_summary_files"])
+        for relative in ("references/long-context-mode.md", "agents/openai.yaml"):
+            self.assertIn(relative, self.manifest["source_hashes"])
 
     def test_conditional_paths_resolve(self):
         for item in self.manifest["conditional_files"]:

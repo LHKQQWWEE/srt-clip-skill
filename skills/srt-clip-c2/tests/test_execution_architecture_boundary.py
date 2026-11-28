@@ -62,7 +62,7 @@ class ExecutionArchitectureBoundaryTests(unittest.TestCase):
         self.assertEqual(actual, self.manifest["runtime_sha256"])
 
     def test_07_all_source_files_have_matching_hashes(self):
-        self.assertEqual(set(self.manifest["source_files"]), set(self.manifest["source_hashes"]))
+        self.assertTrue(set(self.manifest["source_files"]).issubset(self.manifest["source_hashes"]))
         for relative, expected in self.manifest["source_hashes"].items():
             with self.subTest(source=relative):
                 self.assertEqual(text_sha256(ROOT / relative), expected)

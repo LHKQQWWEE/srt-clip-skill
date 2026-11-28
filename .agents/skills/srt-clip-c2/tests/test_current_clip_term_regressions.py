@@ -41,7 +41,8 @@ class SpecialUpgrade046Tests(unittest.TestCase):
         highlight = (ROOT / "references" / "highlight-selection.md").read_text(encoding="utf-8")
         policy = (ROOT / "references" / "clip-selection-policy.md").read_text(encoding="utf-8")
         self.assertIn("90 秒是有效信息密度目标", policy)
-        self.assertIn("先完成全部有效卖点的完整编排，再计算时长", policy)
+        self.assertIn("写出正文前完成首次容量规划", policy)
+        self.assertIn("首稿必须以已完成容量优化的选段为基础", policy)
         self.assertIn("只对实际写出的成片执行终检", FINAL_CHECK)
         self.assertIn("同一根因最多三轮", FINAL_CHECK)
 

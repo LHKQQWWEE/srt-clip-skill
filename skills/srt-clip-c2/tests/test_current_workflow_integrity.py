@@ -47,10 +47,12 @@ class CurrentWorkflowIntegrityTests(unittest.TestCase):
         self.assertIn("原文没有促单时，禁止编造、改写或补充", editorial)
         self.assertIn("不得跨商品移用话术", editorial)
 
-    def test_duration_is_calculated_after_complete_arrangement(self):
+    def test_duration_is_planned_after_full_pool_and_before_first_copy(self):
         policy = read("references/clip-selection-policy.md")
         check = read("references/final-check.md")
-        self.assertIn("先完成全部有效卖点的完整编排，再计算时长", policy)
+        self.assertIn("先建立完整信息池", policy)
+        self.assertIn("写出正文前完成首次容量规划", policy)
+        self.assertNotIn("先完成全部有效卖点的完整编排，再计算时长", policy)
         self.assertIn("90 秒是有效信息密度目标", policy)
         self.assertIn("100 秒可作为可接受参考", policy)
         self.assertIn("超过 100 秒须逐条复核", policy)
@@ -69,7 +71,7 @@ class CurrentWorkflowIntegrityTests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         runtime = ROOT / manifest["runtime_file"]
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.47")
+        self.assertEqual(manifest["skill_version"], "0.4.48")
         self.assertTrue(manifest["source_map"])
         self.assertEqual(text_sha256(runtime), manifest["runtime_sha256"])
         for relative, digest in manifest["source_hashes"].items():

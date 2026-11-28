@@ -1,6 +1,6 @@
 # C2 Universal｜平台适配器接口（仅规格，不实现）
 
-状态：DESIGN ONLY｜适用于 C2 Universal Core 0.4.7 / Skill 0.4.47 及之后的平台适配。
+状态：DESIGN ONLY｜适用于 C2 Universal Core 0.4.7 / Skill 0.4.48 及之后的平台适配。
 
 ## 目标
 

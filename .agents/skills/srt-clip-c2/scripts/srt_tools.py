@@ -692,6 +692,22 @@ def validate_selection(
     if mode not in {"script", "manual"}:
         failures.append(_failure("invalid_verification_mode", "verification_mode must be script or manual"))
 
+    playback_speed = selection.get("full_clip_playback_speed", 1.0)
+    try:
+        parsed_playback_speed = Decimal(str(playback_speed))
+    except (InvalidOperation, ValueError):
+        parsed_playback_speed = Decimal(0)
+    if (
+        isinstance(playback_speed, bool)
+        or not isinstance(playback_speed, (int, float))
+        or not parsed_playback_speed.is_finite()
+        or parsed_playback_speed <= 0
+    ):
+        failures.append(_failure(
+            "invalid_full_clip_playback_speed",
+            "full_clip_playback_speed must be a finite positive number for the whole clip",
+        ))
+
     selected_raw = selection.get("selected_ids", [])
     selected_ids = [str(item) for item in selected_raw] if isinstance(selected_raw, list) else []
     if not isinstance(selected_raw, list):
@@ -1069,8 +1085,10 @@ def assemble_selection(
     groups = _selected_groups(cues, source.source_type)
     source_duration_exact = sum((Decimal(str(group["span_ms_exact"])) for group in groups), Decimal(0))
     source_duration_ms = _number_value(source_duration_exact)
-    # Internal timing arithmetic is deterministic; only a coarse estimate is displayed.
-    accelerated_ms = int((source_duration_exact / Decimal("1.2")).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+    # The opening hook's 1.2x reference is separate from whole-cut playback speed.
+    playback_speed = Decimal(str(selection.get("full_clip_playback_speed", 1.0)))
+    playback_ms_exact = source_duration_exact / playback_speed
+    accelerated_ms = int(playback_ms_exact.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
     known_unaccelerated_ms = selection.get("known_unaccelerated_ms", 0)
     if isinstance(known_unaccelerated_ms, bool) or not isinstance(known_unaccelerated_ms, int) or known_unaccelerated_ms < 0:
         return {
@@ -1120,6 +1138,7 @@ def assemble_selection(
         "accelerated_duration_ms": accelerated_ms,
         "known_unaccelerated_ms": known_unaccelerated_ms,
         "playback_duration_ms": playback_ms,
+        "full_clip_playback_speed": float(playback_speed),
         "source_duration_display": _display_duration(source_duration_exact),
         "playback_duration_display": display,
         "shared_duration_field": "playback_duration_display",

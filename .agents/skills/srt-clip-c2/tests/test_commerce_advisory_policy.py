@@ -37,7 +37,7 @@ class CommerceAdvisoryPolicyTests(unittest.TestCase):
         self.assertIn("仍是确认前实施", ADVISORY)
 
     def test_plugin_prompt_exposes_the_advisory_mode(self):
-        self.assertIn("Skill 0.4.47", PROMPT)
+        self.assertIn("Skill 0.4.48", PROMPT)
         self.assertIn("重大工作流调整先给方案并等确认", PROMPT)
         self.assertIn("全部达到现有质量门槛且彼此实质不同", PROMPT)
 

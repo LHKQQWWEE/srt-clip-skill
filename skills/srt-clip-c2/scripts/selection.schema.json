@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://c2-universal.local/schemas/selection-0.4.47.json",
+  "$id": "https://c2-universal.local/schemas/selection-0.4.48.json",
   "title": "C2 Selection JSON",
   "description": "Development/test record for one actual user-selected final cut. Selling points describe product reasons only, while content_blocks records this plan's open, dynamic section order and roles keep promotion separate. Routine SRT execution never calls this JSON schema or Python tools. Create one independent record for each user-selected opening.",
   "type": "object",
@@ -43,7 +43,13 @@
     "estimated_duration_seconds": {
       "type": "number",
       "minimum": 0,
-      "description": "Approximate duration for this fully arranged plan, calculated after complete valid-point coverage. 90 seconds is the target, 100 seconds is an acceptable reference, and neither is a hard cut. Above 100 seconds requires a per-plan review."
+      "description": "Approximate duration for this cut, planned before drafting after full point-pool review and duplicate-expression competition. Use actual whole-clip playback speed; default to source speed 1.0 when unspecified. 90 seconds is the target, 100 seconds is a nonbinding acceptable reference, and neither is a hard cut. Above 100 seconds requires a per-cut review."
+    },
+    "full_clip_playback_speed": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "default": 1.0,
+      "description": "Actual playback speed for the whole cut. If unspecified, estimate at source speed 1.0. The 1.2x opening-hook reference applies only to opening attention checks and does not set whole-cut speed."
     },
     "duration_review": {
       "type": "object",
@@ -53,7 +59,7 @@
         "review_reason": {
           "type": "string",
           "minLength": 1,
-          "description": "Explain the per-plan capacity review and how complete purchase reasoning, necessary evidence, conditions, and transitions were protected."
+      "description": "Explain the per-cut capacity review and how all unique purchase reasons, necessary evidence, conditions, and transitions were protected."
         },
         "omitted_blocks": {
           "type": "array",

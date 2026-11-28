@@ -10,6 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SUMMARY_TOOL = ROOT / "scripts" / "execution_summary.py"
+PLUGIN = next(parent for parent in ROOT.parents if (parent / "plugin.json").is_file())
 sys.path.insert(0, str(ROOT / "scripts"))
 import build_runtime
 
@@ -24,8 +25,12 @@ class TextHashLineEndingTests(unittest.TestCase):
     def test_refreshed_summary_stays_valid_after_checkout_line_endings_change(self):
         with tempfile.TemporaryDirectory() as directory:
             temp = Path(directory)
-            root = temp / "skill"
+            root = temp / "plugin" / "skills" / "srt-clip-c2"
+            root.parent.mkdir(parents=True)
             shutil.copytree(ROOT, root, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+            plugin_root = root.parents[1]
+            shutil.copy2(PLUGIN / "plugin.json", plugin_root / "plugin.json")
+            shutil.copytree(PLUGIN / ".codex-plugin", plugin_root / ".codex-plugin")
             summary = temp / "execution-summary.json"
             body = temp / "summary-body.txt"
             body.write_text("测试摘要", encoding="utf-8")

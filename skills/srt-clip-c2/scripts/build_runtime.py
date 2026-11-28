@@ -31,6 +31,21 @@ def sha256(data: bytes) -> str:
     return hashlib.sha256(normalized).hexdigest()
 
 
+def expand_files(entries: list[str], *, optional: bool = False) -> list[str]:
+    expanded: list[str] = []
+    for relative in entries:
+        if any(char in relative for char in "*?["):
+            matches = sorted(path.relative_to(SKILL_ROOT).as_posix() for path in SKILL_ROOT.glob(relative) if path.is_file())
+            if not matches and not optional:
+                raise ValueError(f"manifest file pattern matched nothing: {relative}")
+            expanded.extend(matches)
+        elif (SKILL_ROOT / relative).is_file():
+            expanded.append(relative)
+        elif not optional:
+            raise ValueError(f"manifest file is missing: {relative}")
+    return list(dict.fromkeys(expanded))
+
+
 def compile_bundle() -> tuple[str, dict[str, object]]:
     core_version = (PLUGIN_ROOT / "VERSION").read_text(encoding="utf-8").strip()
     skill_version = SKILL_VERSION_PATH.read_text(encoding="utf-8").strip()
@@ -73,6 +88,10 @@ def compile_bundle() -> tuple[str, dict[str, object]]:
         raise ValueError("runtime manifest source_files do not match compiler sources")
     manifest["core_version"] = core_version
     manifest["skill_version"] = skill_version
+    integrity_files = expand_files(manifest.get("summary_files", []))
+    integrity_files.extend(expand_files(manifest.get("optional_summary_files", []), optional=True))
+    for relative in integrity_files:
+        source_hashes[relative] = sha256((SKILL_ROOT / relative).read_bytes())
     manifest["source_hashes"] = source_hashes
     manifest["runtime_sha256"] = sha256(runtime.encode("utf-8"))
     manifest["source_map"] = source_map

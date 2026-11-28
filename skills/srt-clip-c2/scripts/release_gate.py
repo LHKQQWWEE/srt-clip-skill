@@ -16,7 +16,7 @@ from pathlib import Path
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = next(parent for parent in SKILL_ROOT.parents if (parent / "VERSION").is_file())
 EXPECTED_CORE = "0.4.7"
-EXPECTED_SKILL = "0.4.47"
+EXPECTED_SKILL = "0.4.48"
 ACTIVE_SURFACES = (
     "SKILL.md", "README.md", "START-HERE.md", "ENVIRONMENT.md", "agents/openai.yaml",
     "references/ai-first-constitution.md", "references/runtime-contract.md",
@@ -329,6 +329,9 @@ def assert_semantic_surfaces() -> None:
         (selection, "每条成片独立划分和编排内容板块", "clip-selection-policy.md"),
         (selection, "超过 90 秒时", "clip-selection-policy.md"),
         (selection, "超过 100 秒须逐条复核", "clip-selection-policy.md"),
+        (selection, "写出正文前完成首次容量规划", "clip-selection-policy.md"),
+        (selection, "首稿必须以已完成容量优化的选段为基础", "clip-selection-policy.md"),
+        (selection, "全片播放速度", "clip-selection-policy.md"),
         (final_check, "每条成片从对应用户所选开头原话开始", "final-check.md"),
     ):
         if phrase not in text:

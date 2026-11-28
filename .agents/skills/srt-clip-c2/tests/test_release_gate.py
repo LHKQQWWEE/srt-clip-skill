@@ -104,7 +104,7 @@ class ReleaseGateSemanticTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "CHANGELOG.md").write_text(
-                "# Current release\n\n## Skill / Plugin 0.4.47\n\nCurrent.\n\n## Skill / Plugin 0.4." + "46\n\nOld.\n",
+                "# Current release\n\n## Skill / Plugin 0.4.48\n\nCurrent.\n\n## Skill / Plugin 0.4." + "46\n\nOld.\n",
                 encoding="utf-8",
             )
             with patch.object(release_gate, "PLUGIN_ROOT", root):

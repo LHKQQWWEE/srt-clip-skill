@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 POLICY = ROOT / "references" / "clip-selection-policy.md"
 SUMMARY_TOOL = ROOT / "scripts" / "execution_summary.py"
+PLUGIN = next(parent for parent in ROOT.parents if (parent / "plugin.json").is_file())
 
 
 def read(path: str) -> str:
@@ -19,7 +20,7 @@ def read(path: str) -> str:
     return target.read_text(encoding="utf-8")
 
 
-class Revision047PolicyTests(unittest.TestCase):
+class Revision048PolicyTests(unittest.TestCase):
     def test_duration_and_opening_choice_rules_have_one_source(self):
         self.assertTrue(POLICY.is_file(), "the new canonical clip-selection policy is missing")
         policy = POLICY.read_text(encoding="utf-8")
@@ -29,7 +30,9 @@ class Revision047PolicyTests(unittest.TestCase):
         final_check = read("references/final-check.md")
         self.assertIn("唯一规则来源", policy)
         self.assertIn("90 秒是有效信息密度目标", policy)
-        self.assertIn("先完成全部有效卖点的完整编排，再计算时长", policy)
+        self.assertIn("写出正文前完成首次容量规划", policy)
+        self.assertIn("首稿必须以已完成容量优化的选段为基础", policy)
+        self.assertIn("未明确整片播放速度时按原素材 1.0 倍速估算", policy)
         self.assertIn("超过 100 秒须逐条复核", policy)
         self.assertIn("不得自动截断", policy)
         self.assertIn("不得固定某些卖点永远低价值", policy)
@@ -80,7 +83,7 @@ class ExecutionSummaryTests(unittest.TestCase):
 
     def test_missing_summary_requires_full_rule_read_even_if_cache_exists(self):
         with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp) / "skill"
+            root = Path(temp) / "plugin" / "skills" / "srt-clip-c2"
             copy_skill(root)
             cache = Path(temp) / "optional-cache.json"
             cache.write_text("{}", encoding="utf-8")
@@ -91,7 +94,7 @@ class ExecutionSummaryTests(unittest.TestCase):
 
     def test_refresh_creates_persistent_versioned_summary_and_later_reuses_it(self):
         with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp) / "skill"
+            root = Path(temp) / "plugin" / "skills" / "srt-clip-c2"
             copy_skill(root)
             summary = Path(temp) / "persistent" / "execution-summary.json"
             body = Path(temp) / "body.txt"
@@ -100,9 +103,16 @@ class ExecutionSummaryTests(unittest.TestCase):
             self.assertEqual(code, 0)
             self.assertTrue(summary.is_file())
             data = json.loads(summary.read_text(encoding="utf-8"))
-            self.assertEqual(data["skill_version"], "0.4.47")
+            self.assertEqual(data["skill_version"], "0.4.48")
             self.assertEqual(data["core_version"], "0.4.7")
             self.assertTrue(data["rule_hashes"])
+            for relative in (
+                "references/long-context-mode.md",
+                "agents/openai.yaml",
+                "../../plugin.json",
+                "../../.codex-plugin/plugin.json",
+            ):
+                self.assertIn(relative, data["rule_hashes"])
             code, status = self.run_summary("validate", "--skill-root", str(root), "--summary", str(summary))
             self.assertEqual(code, 0)
             self.assertEqual(status["state"], "valid")
@@ -110,7 +120,7 @@ class ExecutionSummaryTests(unittest.TestCase):
 
     def test_skill_version_change_invalidates_summary(self):
         with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp) / "skill"
+            root = Path(temp) / "plugin" / "skills" / "srt-clip-c2"
             copy_skill(root)
             summary = Path(temp) / "execution-summary.json"
             create_summary(root, summary, Path(temp))
@@ -125,7 +135,7 @@ class ExecutionSummaryTests(unittest.TestCase):
 
     def test_rule_file_change_invalidates_summary(self):
         with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp) / "skill"
+            root = Path(temp) / "plugin" / "skills" / "srt-clip-c2"
             copy_skill(root)
             summary = Path(temp) / "execution-summary.json"
             create_summary(root, summary, Path(temp))
@@ -135,9 +145,40 @@ class ExecutionSummaryTests(unittest.TestCase):
             self.assertEqual(code, 2)
             self.assertTrue(status["requires_full_read"])
 
+    def test_long_context_and_plugin_prompt_changes_invalidate_summary(self):
+        for relative in ("references/long-context-mode.md", "../../plugin.json"):
+            with self.subTest(relative=relative), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp) / "plugin" / "skills" / "srt-clip-c2"
+                copy_skill(root)
+                summary = Path(temp) / "execution-summary.json"
+                create_summary(root, summary, Path(temp))
+                changed_file = root / relative
+                changed_file.write_text(changed_file.read_text(encoding="utf-8") + "\nUpdated runtime rule.\n", encoding="utf-8")
+
+                code, status = self.run_summary("validate", "--skill-root", str(root), "--summary", str(summary))
+
+                self.assertEqual(code, 2)
+                self.assertTrue(status["requires_full_read"])
+
+    def test_summary_body_hash_detects_corruption(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / "plugin" / "skills" / "srt-clip-c2"
+            copy_skill(root)
+            summary = Path(temp) / "execution-summary.json"
+            create_summary(root, summary, Path(temp))
+            payload = json.loads(summary.read_text(encoding="utf-8"))
+            payload["summary"] += "改动摘要"
+            summary.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+            code, status = self.run_summary("validate", "--skill-root", str(root), "--summary", str(summary))
+
+            self.assertEqual(code, 2)
+            self.assertEqual(status["state"], "corrupt")
+            self.assertTrue(status["requires_full_read"])
+
     def test_lost_optional_cache_falls_back_to_valid_persistent_summary(self):
         with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp) / "skill"
+            root = Path(temp) / "plugin" / "skills" / "srt-clip-c2"
             copy_skill(root)
             summary = Path(temp) / "execution-summary.json"
             create_summary(root, summary, Path(temp))
@@ -150,7 +191,11 @@ class ExecutionSummaryTests(unittest.TestCase):
 
 def copy_skill(target: Path) -> None:
     import shutil
+    target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copytree(ROOT, target, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    plugin_root = target.parents[1]
+    shutil.copy2(PLUGIN / "plugin.json", plugin_root / "plugin.json")
+    shutil.copytree(PLUGIN / ".codex-plugin", plugin_root / ".codex-plugin")
 
 
 def create_summary(root: Path, summary: Path, temp: Path) -> None:

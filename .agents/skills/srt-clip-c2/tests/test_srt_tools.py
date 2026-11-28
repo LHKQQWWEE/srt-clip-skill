@@ -366,10 +366,39 @@ class SelectionPipelineTests(unittest.TestCase):
         self.assertEqual(result["source_sequence"], "1,2,4")
         self.assertEqual(result["body_text"], "主卖点\n补充证据\n适用条件")
         self.assertEqual(result["source_duration_ms"], 2000)
-        self.assertEqual(result["playback_duration_ms"], 1817)
+        self.assertEqual(result["playback_duration_ms"], 2150)
+        self.assertEqual(result["full_clip_playback_speed"], 1.0)
         self.assertEqual(result["source_duration_display"], "\u7ea6 2 \u79d2")
         self.assertEqual(result["playback_duration_display"], "\u7ea6 2 \u79d2")
         self.assertEqual([group["span_ms"] for group in result["source_groups"]], [1500, 500])
+
+    def test_duration_text_uses_selected_row_sum_and_only_explicit_full_clip_speed(self):
+        source = srt_tools.parse_source("1 60.0 开头原话\n2 50.0 必要证据")
+        selection = self.make_selection(source, selected_ids=("1", "2"))
+        selection["selling_points"][0]["necessary_evidence_ids"] = ["2"]
+        selection["selling_points"][0]["required_condition_ids"] = []
+        selection["known_unaccelerated_ms"] = 0
+
+        default_result = srt_tools.assemble_selection(source, selection, formal_terms=[])
+        selection["full_clip_playback_speed"] = 1.2
+        speed_set_result = srt_tools.assemble_selection(source, selection, formal_terms=[])
+
+        self.assertEqual(default_result["source_duration_ms"], 110000)
+        self.assertEqual(default_result["playback_duration_ms"], 110000)
+        self.assertEqual(default_result["full_clip_playback_speed"], 1.0)
+        self.assertEqual(speed_set_result["source_duration_ms"], 110000)
+        self.assertEqual(speed_set_result["playback_duration_ms"], 91667)
+        self.assertEqual(speed_set_result["full_clip_playback_speed"], 1.2)
+
+    def test_invalid_full_clip_playback_speed_blocks_assembly(self):
+        source = srt_tools.parse_source(SOURCE_WITH_GAPS)
+        selection = self.make_selection(source)
+        selection["full_clip_playback_speed"] = 0
+
+        result = srt_tools.assemble_selection(source, selection, formal_terms=[])
+
+        self.assertEqual(result["status"], "FAIL")
+        self.assertIn("invalid_full_clip_playback_speed", {item["code"] for item in result["validation"]["hard_failures"]})
 
     def test_applicable_original_cta_role_is_valid_and_assembly_keeps_source_verbatim(self):
         source = srt_tools.parse_source("1 1.0 原文行动提示")

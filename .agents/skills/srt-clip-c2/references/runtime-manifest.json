@@ -35,19 +35,37 @@
     "references/product-knowledge-registry.md",
     "references/final-check.md"
   ],
-  "skill_version": "0.4.47",
+  "skill_version": "0.4.48",
   "summary_file": "references/execution-summary.json",
+  "summary_files": [
+    "references/commerce-advisory.md",
+    "references/long-context-mode.md",
+    "product-knowledge-packs/*.md",
+    "agents/openai.yaml"
+  ],
+  "optional_summary_files": [
+    "../../plugin.json",
+    "../../.codex-plugin/plugin.json"
+  ],
   "source_hashes": {
     "references/ai-first-constitution.md": "6108e61a9a714e3feed609ee6d906412ae3a5b14fc37095bc2efa18cfc2223f2",
-    "references/runtime-contract.md": "3f78b2e2c9ea595c805cef119a3a13f83b9e72af3cb369a0d3bb920628b68315",
-    "references/clip-selection-policy.md": "e2ff552f3db4c6bb7540ad430d441e9420e0c8e7930058dc86e31afddd110833",
+    "references/runtime-contract.md": "e44c9366fec4a923a49fdb125b1a255b7228e3d73cb19f39a73435f347dbbd4d",
+    "references/clip-selection-policy.md": "a9cf181536c4372d9820bd397de8b41b31430f8ad330826a22748869d54a0e10",
     "references/global-rules.md": "d84332dbf331548116ec77c9650cf7985fda9dbf31b50eff7edf6892dde8fb64",
-    "references/editorial-policy.md": "33e19e5b3b8017faad3cc7b0055147121bcd7a0cef9ba3f724e29143880425a1",
+    "references/editorial-policy.md": "5aae24d2952b4b7a75734cd9a4f30b516a505fe8064084ab9a05348b01b09449",
     "references/highlight-selection.md": "3ed6b18c4e738f136c58dcd923c9e9a79a11d56648917ea2fdc6e5242a9179ca",
     "references/product-knowledge-registry.md": "d5125b4d4ba910ec8dc1c2fcbfe5ce55440a056232ae1ba7ed81b89f8c6d0a77",
-    "references/final-check.md": "89c2b58adc40f6ca4440b0cc1166a20852b3ed11b10451b10627a2b7ac8b17f8"
+    "references/final-check.md": "e210a363e8bc7ccd190d1b837a53247ef4f4f6ff60b65a529d13ac0e2e950dea",
+    "references/commerce-advisory.md": "7b338c188abc976ffc6bf64f2ae03e00b87fced33975d1945e117a955ac80e55",
+    "references/long-context-mode.md": "3d128c5c027649f53a6fb7ce41adac5a88ca8994e5b1658d81252eeb48a9b6af",
+    "product-knowledge-packs/scarves.md": "138d3579b7a1f58b266e50373c42b782893b77fb55f85cf9e823e99e82714686",
+    "product-knowledge-packs/shoes.md": "13a1711a10721fade8e61a6e8d01fd39375840f6fa398ce6431e2fecd215a272",
+    "product-knowledge-packs/womens-fashion.md": "5ca22e0649f5e42c7ce69deab4f29098fcd023c988aed1fdfb5dd891dea7359f",
+    "agents/openai.yaml": "59eec5991cf336ee82c11e317fae710315cd0a243b15326ea70b651968d6a5e3",
+    "../../plugin.json": "59e8fe9a1d7920cc1a213bea7955a9fce98cf90494905eab8b274adbad69a7fe",
+    "../../.codex-plugin/plugin.json": "b9baac312a3bdceeee66fcec5cfe67b95658ef09439f8d94c96bf8151bb33450"
   },
-  "runtime_sha256": "de2eef90682c0be2103a080130d194b25471a3f848a023c994b2108d534a9f9e",
+  "runtime_sha256": "b3b4cc3fe640b55aac07c6801faf548c28606d4a491bb09bd141b279856e05fc",
   "source_map": [
     {
       "rule_id": "SRC01.L0001",
@@ -680,18 +698,18 @@
       "runtime_line": 159
     },
     {
-      "rule_id": "SRC03.L0021",
+      "rule_id": "SRC03.L0020",
       "source": "references/clip-selection-policy.md",
-      "source_line": 21,
+      "source_line": 20,
       "runtime_section": "Runtime source 3: references/clip-selection-policy.md",
-      "runtime_line": 161
+      "runtime_line": 160
     },
     {
-      "rule_id": "SRC03.L0023",
+      "rule_id": "SRC03.L0022",
       "source": "references/clip-selection-policy.md",
-      "source_line": 23,
+      "source_line": 22,
       "runtime_section": "Runtime source 3: references/clip-selection-policy.md",
-      "runtime_line": 163
+      "runtime_line": 162
     },
     {
       "rule_id": "SRC03.L0024",
@@ -715,18 +733,18 @@
       "runtime_line": 166
     },
     {
-      "rule_id": "SRC03.L0028",
+      "rule_id": "SRC03.L0027",
       "source": "references/clip-selection-policy.md",
-      "source_line": 28,
+      "source_line": 27,
       "runtime_section": "Runtime source 3: references/clip-selection-policy.md",
-      "runtime_line": 168
+      "runtime_line": 167
     },
     {
-      "rule_id": "SRC03.L0030",
+      "rule_id": "SRC03.L0029",
       "source": "references/clip-selection-policy.md",
-      "source_line": 30,
+      "source_line": 29,
       "runtime_section": "Runtime source 3: references/clip-selection-policy.md",
-      "runtime_line": 170
+      "runtime_line": 169
     },
     {
       "rule_id": "SRC03.L0031",
@@ -764,772 +782,779 @@
       "runtime_line": 175
     },
     {
-      "rule_id": "SRC03.L0037",
+      "rule_id": "SRC03.L0036",
       "source": "references/clip-selection-policy.md",
-      "source_line": 37,
+      "source_line": 36,
       "runtime_section": "Runtime source 3: references/clip-selection-policy.md",
-      "runtime_line": 177
+      "runtime_line": 176
     },
     {
-      "rule_id": "SRC03.L0039",
+      "rule_id": "SRC03.L0038",
       "source": "references/clip-selection-policy.md",
-      "source_line": 39,
+      "source_line": 38,
       "runtime_section": "Runtime source 3: references/clip-selection-policy.md",
-      "runtime_line": 179
+      "runtime_line": 178
+    },
+    {
+      "rule_id": "SRC03.L0040",
+      "source": "references/clip-selection-policy.md",
+      "source_line": 40,
+      "runtime_section": "Runtime source 3: references/clip-selection-policy.md",
+      "runtime_line": 180
     },
     {
       "rule_id": "SRC04.L0001",
       "source": "references/global-rules.md",
       "source_line": 1,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 183
+      "runtime_line": 184
     },
     {
       "rule_id": "SRC04.L0003",
       "source": "references/global-rules.md",
       "source_line": 3,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 185
+      "runtime_line": 186
     },
     {
       "rule_id": "SRC04.L0005",
       "source": "references/global-rules.md",
       "source_line": 5,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 187
+      "runtime_line": 188
     },
     {
       "rule_id": "SRC04.L0007",
       "source": "references/global-rules.md",
       "source_line": 7,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 189
+      "runtime_line": 190
     },
     {
       "rule_id": "SRC04.L0009",
       "source": "references/global-rules.md",
       "source_line": 9,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 191
+      "runtime_line": 192
     },
     {
       "rule_id": "SRC04.L0011",
       "source": "references/global-rules.md",
       "source_line": 11,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 193
+      "runtime_line": 194
     },
     {
       "rule_id": "SRC04.L0013",
       "source": "references/global-rules.md",
       "source_line": 13,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 195
+      "runtime_line": 196
     },
     {
       "rule_id": "SRC04.L0014",
       "source": "references/global-rules.md",
       "source_line": 14,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 196
+      "runtime_line": 197
     },
     {
       "rule_id": "SRC04.L0015",
       "source": "references/global-rules.md",
       "source_line": 15,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 197
+      "runtime_line": 198
     },
     {
       "rule_id": "SRC04.L0016",
       "source": "references/global-rules.md",
       "source_line": 16,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 198
+      "runtime_line": 199
     },
     {
       "rule_id": "SRC04.L0017",
       "source": "references/global-rules.md",
       "source_line": 17,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 199
+      "runtime_line": 200
     },
     {
       "rule_id": "SRC04.L0018",
       "source": "references/global-rules.md",
       "source_line": 18,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 200
+      "runtime_line": 201
     },
     {
       "rule_id": "SRC04.L0019",
       "source": "references/global-rules.md",
       "source_line": 19,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 201
+      "runtime_line": 202
     },
     {
       "rule_id": "SRC04.L0020",
       "source": "references/global-rules.md",
       "source_line": 20,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 202
+      "runtime_line": 203
     },
     {
       "rule_id": "SRC04.L0021",
       "source": "references/global-rules.md",
       "source_line": 21,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 203
+      "runtime_line": 204
     },
     {
       "rule_id": "SRC04.L0022",
       "source": "references/global-rules.md",
       "source_line": 22,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 204
+      "runtime_line": 205
     },
     {
       "rule_id": "SRC04.L0023",
       "source": "references/global-rules.md",
       "source_line": 23,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 205
+      "runtime_line": 206
     },
     {
       "rule_id": "SRC04.L0024",
       "source": "references/global-rules.md",
       "source_line": 24,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 206
+      "runtime_line": 207
     },
     {
       "rule_id": "SRC04.L0025",
       "source": "references/global-rules.md",
       "source_line": 25,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 207
+      "runtime_line": 208
     },
     {
       "rule_id": "SRC04.L0026",
       "source": "references/global-rules.md",
       "source_line": 26,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 208
+      "runtime_line": 209
     },
     {
       "rule_id": "SRC04.L0027",
       "source": "references/global-rules.md",
       "source_line": 27,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 209
+      "runtime_line": 210
     },
     {
       "rule_id": "SRC04.L0028",
       "source": "references/global-rules.md",
       "source_line": 28,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 210
+      "runtime_line": 211
     },
     {
       "rule_id": "SRC04.L0029",
       "source": "references/global-rules.md",
       "source_line": 29,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 211
+      "runtime_line": 212
     },
     {
       "rule_id": "SRC04.L0030",
       "source": "references/global-rules.md",
       "source_line": 30,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 212
+      "runtime_line": 213
     },
     {
       "rule_id": "SRC04.L0031",
       "source": "references/global-rules.md",
       "source_line": 31,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 213
+      "runtime_line": 214
     },
     {
       "rule_id": "SRC04.L0033",
       "source": "references/global-rules.md",
       "source_line": 33,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 215
+      "runtime_line": 216
     },
     {
       "rule_id": "SRC04.L0035",
       "source": "references/global-rules.md",
       "source_line": 35,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 217
+      "runtime_line": 218
     },
     {
       "rule_id": "SRC04.L0037",
       "source": "references/global-rules.md",
       "source_line": 37,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 219
+      "runtime_line": 220
     },
     {
       "rule_id": "SRC04.L0038",
       "source": "references/global-rules.md",
       "source_line": 38,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 220
+      "runtime_line": 221
     },
     {
       "rule_id": "SRC04.L0039",
       "source": "references/global-rules.md",
       "source_line": 39,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 221
+      "runtime_line": 222
     },
     {
       "rule_id": "SRC04.L0040",
       "source": "references/global-rules.md",
       "source_line": 40,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 222
+      "runtime_line": 223
     },
     {
       "rule_id": "SRC04.L0041",
       "source": "references/global-rules.md",
       "source_line": 41,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 223
+      "runtime_line": 224
     },
     {
       "rule_id": "SRC04.L0042",
       "source": "references/global-rules.md",
       "source_line": 42,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 224
+      "runtime_line": 225
     },
     {
       "rule_id": "SRC04.L0043",
       "source": "references/global-rules.md",
       "source_line": 43,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 225
+      "runtime_line": 226
     },
     {
       "rule_id": "SRC04.L0044",
       "source": "references/global-rules.md",
       "source_line": 44,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 226
+      "runtime_line": 227
     },
     {
       "rule_id": "SRC04.L0045",
       "source": "references/global-rules.md",
       "source_line": 45,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 227
+      "runtime_line": 228
     },
     {
       "rule_id": "SRC04.L0046",
       "source": "references/global-rules.md",
       "source_line": 46,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 228
+      "runtime_line": 229
     },
     {
       "rule_id": "SRC04.L0048",
       "source": "references/global-rules.md",
       "source_line": 48,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 230
+      "runtime_line": 231
     },
     {
       "rule_id": "SRC04.L0050",
       "source": "references/global-rules.md",
       "source_line": 50,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 232
+      "runtime_line": 233
     },
     {
       "rule_id": "SRC04.L0051",
       "source": "references/global-rules.md",
       "source_line": 51,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 233
+      "runtime_line": 234
     },
     {
       "rule_id": "SRC04.L0052",
       "source": "references/global-rules.md",
       "source_line": 52,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 234
+      "runtime_line": 235
     },
     {
       "rule_id": "SRC04.L0053",
       "source": "references/global-rules.md",
       "source_line": 53,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 235
+      "runtime_line": 236
     },
     {
       "rule_id": "SRC04.L0055",
       "source": "references/global-rules.md",
       "source_line": 55,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 237
+      "runtime_line": 238
     },
     {
       "rule_id": "SRC04.L0057",
       "source": "references/global-rules.md",
       "source_line": 57,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 239
+      "runtime_line": 240
     },
     {
       "rule_id": "SRC04.L0058",
       "source": "references/global-rules.md",
       "source_line": 58,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 240
+      "runtime_line": 241
     },
     {
       "rule_id": "SRC04.L0059",
       "source": "references/global-rules.md",
       "source_line": 59,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 241
+      "runtime_line": 242
     },
     {
       "rule_id": "SRC04.L0060",
       "source": "references/global-rules.md",
       "source_line": 60,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 242
+      "runtime_line": 243
     },
     {
       "rule_id": "SRC04.L0061",
       "source": "references/global-rules.md",
       "source_line": 61,
       "runtime_section": "Runtime source 4: references/global-rules.md",
-      "runtime_line": 243
+      "runtime_line": 244
     },
     {
       "rule_id": "SRC05.L0001",
       "source": "references/editorial-policy.md",
       "source_line": 1,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 247
+      "runtime_line": 248
     },
     {
       "rule_id": "SRC05.L0003",
       "source": "references/editorial-policy.md",
       "source_line": 3,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 249
+      "runtime_line": 250
     },
     {
       "rule_id": "SRC05.L0005",
       "source": "references/editorial-policy.md",
       "source_line": 5,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 251
+      "runtime_line": 252
     },
     {
       "rule_id": "SRC05.L0007",
       "source": "references/editorial-policy.md",
       "source_line": 7,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 253
+      "runtime_line": 254
     },
     {
       "rule_id": "SRC05.L0009",
       "source": "references/editorial-policy.md",
       "source_line": 9,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 255
+      "runtime_line": 256
     },
     {
       "rule_id": "SRC05.L0011",
       "source": "references/editorial-policy.md",
       "source_line": 11,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 257
+      "runtime_line": 258
     },
     {
       "rule_id": "SRC05.L0013",
       "source": "references/editorial-policy.md",
       "source_line": 13,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 259
+      "runtime_line": 260
     },
     {
       "rule_id": "SRC05.L0015",
       "source": "references/editorial-policy.md",
       "source_line": 15,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 261
+      "runtime_line": 262
     },
     {
       "rule_id": "SRC05.L0017",
       "source": "references/editorial-policy.md",
       "source_line": 17,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 263
+      "runtime_line": 264
     },
     {
       "rule_id": "SRC05.L0019",
       "source": "references/editorial-policy.md",
       "source_line": 19,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 265
+      "runtime_line": 266
     },
     {
       "rule_id": "SRC05.L0021",
       "source": "references/editorial-policy.md",
       "source_line": 21,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 267
+      "runtime_line": 268
     },
     {
       "rule_id": "SRC05.L0023",
       "source": "references/editorial-policy.md",
       "source_line": 23,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 269
+      "runtime_line": 270
     },
     {
       "rule_id": "SRC05.L0025",
       "source": "references/editorial-policy.md",
       "source_line": 25,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 271
+      "runtime_line": 272
     },
     {
       "rule_id": "SRC05.L0027",
       "source": "references/editorial-policy.md",
       "source_line": 27,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 273
+      "runtime_line": 274
     },
     {
       "rule_id": "SRC05.L0029",
       "source": "references/editorial-policy.md",
       "source_line": 29,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 275
+      "runtime_line": 276
     },
     {
       "rule_id": "SRC05.L0030",
       "source": "references/editorial-policy.md",
       "source_line": 30,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 276
+      "runtime_line": 277
     },
     {
       "rule_id": "SRC05.L0031",
       "source": "references/editorial-policy.md",
       "source_line": 31,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 277
+      "runtime_line": 278
     },
     {
       "rule_id": "SRC05.L0032",
       "source": "references/editorial-policy.md",
       "source_line": 32,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 278
+      "runtime_line": 279
     },
     {
       "rule_id": "SRC05.L0033",
       "source": "references/editorial-policy.md",
       "source_line": 33,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 279
+      "runtime_line": 280
     },
     {
       "rule_id": "SRC05.L0034",
       "source": "references/editorial-policy.md",
       "source_line": 34,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 280
+      "runtime_line": 281
     },
     {
       "rule_id": "SRC05.L0036",
       "source": "references/editorial-policy.md",
       "source_line": 36,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 282
+      "runtime_line": 283
     },
     {
       "rule_id": "SRC05.L0038",
       "source": "references/editorial-policy.md",
       "source_line": 38,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 284
+      "runtime_line": 285
     },
     {
       "rule_id": "SRC05.L0040",
       "source": "references/editorial-policy.md",
       "source_line": 40,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 286
+      "runtime_line": 287
     },
     {
       "rule_id": "SRC05.L0042",
       "source": "references/editorial-policy.md",
       "source_line": 42,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 288
+      "runtime_line": 289
     },
     {
       "rule_id": "SRC05.L0044",
       "source": "references/editorial-policy.md",
       "source_line": 44,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 290
+      "runtime_line": 291
     },
     {
       "rule_id": "SRC05.L0046",
       "source": "references/editorial-policy.md",
       "source_line": 46,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 292
+      "runtime_line": 293
     },
     {
       "rule_id": "SRC05.L0048",
       "source": "references/editorial-policy.md",
       "source_line": 48,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 294
+      "runtime_line": 295
     },
     {
       "rule_id": "SRC05.L0050",
       "source": "references/editorial-policy.md",
       "source_line": 50,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 296
+      "runtime_line": 297
     },
     {
       "rule_id": "SRC05.L0052",
       "source": "references/editorial-policy.md",
       "source_line": 52,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 298
+      "runtime_line": 299
     },
     {
       "rule_id": "SRC05.L0054",
       "source": "references/editorial-policy.md",
       "source_line": 54,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 300
+      "runtime_line": 301
     },
     {
       "rule_id": "SRC05.L0056",
       "source": "references/editorial-policy.md",
       "source_line": 56,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 302
+      "runtime_line": 303
     },
     {
       "rule_id": "SRC05.L0057",
       "source": "references/editorial-policy.md",
       "source_line": 57,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 303
+      "runtime_line": 304
     },
     {
       "rule_id": "SRC05.L0058",
       "source": "references/editorial-policy.md",
       "source_line": 58,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 304
+      "runtime_line": 305
     },
     {
       "rule_id": "SRC05.L0059",
       "source": "references/editorial-policy.md",
       "source_line": 59,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 305
+      "runtime_line": 306
     },
     {
       "rule_id": "SRC05.L0061",
       "source": "references/editorial-policy.md",
       "source_line": 61,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 307
+      "runtime_line": 308
     },
     {
       "rule_id": "SRC05.L0063",
       "source": "references/editorial-policy.md",
       "source_line": 63,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 309
+      "runtime_line": 310
     },
     {
       "rule_id": "SRC05.L0065",
       "source": "references/editorial-policy.md",
       "source_line": 65,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 311
+      "runtime_line": 312
     },
     {
       "rule_id": "SRC05.L0067",
       "source": "references/editorial-policy.md",
       "source_line": 67,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 313
+      "runtime_line": 314
     },
     {
       "rule_id": "SRC05.L0069",
       "source": "references/editorial-policy.md",
       "source_line": 69,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 315
+      "runtime_line": 316
     },
     {
       "rule_id": "SRC05.L0071",
       "source": "references/editorial-policy.md",
       "source_line": 71,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 317
+      "runtime_line": 318
     },
     {
       "rule_id": "SRC05.L0073",
       "source": "references/editorial-policy.md",
       "source_line": 73,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 319
+      "runtime_line": 320
     },
     {
       "rule_id": "SRC05.L0074",
       "source": "references/editorial-policy.md",
       "source_line": 74,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 320
+      "runtime_line": 321
     },
     {
       "rule_id": "SRC05.L0075",
       "source": "references/editorial-policy.md",
       "source_line": 75,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 321
+      "runtime_line": 322
     },
     {
       "rule_id": "SRC05.L0076",
       "source": "references/editorial-policy.md",
       "source_line": 76,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 322
+      "runtime_line": 323
     },
     {
       "rule_id": "SRC05.L0077",
       "source": "references/editorial-policy.md",
       "source_line": 77,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 323
+      "runtime_line": 324
     },
     {
       "rule_id": "SRC05.L0078",
       "source": "references/editorial-policy.md",
       "source_line": 78,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 324
+      "runtime_line": 325
     },
     {
       "rule_id": "SRC05.L0080",
       "source": "references/editorial-policy.md",
       "source_line": 80,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 326
+      "runtime_line": 327
     },
     {
       "rule_id": "SRC05.L0082",
       "source": "references/editorial-policy.md",
       "source_line": 82,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 328
+      "runtime_line": 329
     },
     {
       "rule_id": "SRC05.L0084",
       "source": "references/editorial-policy.md",
       "source_line": 84,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 330
+      "runtime_line": 331
     },
     {
       "rule_id": "SRC05.L0086",
       "source": "references/editorial-policy.md",
       "source_line": 86,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 332
+      "runtime_line": 333
     },
     {
       "rule_id": "SRC05.L0088",
       "source": "references/editorial-policy.md",
       "source_line": 88,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 334
+      "runtime_line": 335
     },
     {
       "rule_id": "SRC05.L0090",
       "source": "references/editorial-policy.md",
       "source_line": 90,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 336
+      "runtime_line": 337
     },
     {
-      "rule_id": "SRC05.L0092",
+      "rule_id": "SRC05.L0093",
       "source": "references/editorial-policy.md",
-      "source_line": 92,
+      "source_line": 93,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 338
+      "runtime_line": 340
     },
     {
       "rule_id": "SRC05.L0095",
       "source": "references/editorial-policy.md",
       "source_line": 95,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 341
+      "runtime_line": 342
+    },
+    {
+      "rule_id": "SRC05.L0096",
+      "source": "references/editorial-policy.md",
+      "source_line": 96,
+      "runtime_section": "Runtime source 5: references/editorial-policy.md",
+      "runtime_line": 343
     },
     {
       "rule_id": "SRC05.L0097",
       "source": "references/editorial-policy.md",
       "source_line": 97,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 343
+      "runtime_line": 344
     },
     {
       "rule_id": "SRC05.L0098",
       "source": "references/editorial-policy.md",
       "source_line": 98,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 344
+      "runtime_line": 345
     },
     {
       "rule_id": "SRC05.L0099",
       "source": "references/editorial-policy.md",
       "source_line": 99,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 345
+      "runtime_line": 346
     },
     {
       "rule_id": "SRC05.L0100",
       "source": "references/editorial-policy.md",
       "source_line": 100,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 346
+      "runtime_line": 347
     },
     {
       "rule_id": "SRC05.L0101",
       "source": "references/editorial-policy.md",
       "source_line": 101,
-      "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 347
-    },
-    {
-      "rule_id": "SRC05.L0102",
-      "source": "references/editorial-policy.md",
-      "source_line": 102,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
       "runtime_line": 348
     },
@@ -1538,735 +1563,728 @@
       "source": "references/editorial-policy.md",
       "source_line": 103,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 349
+      "runtime_line": 350
     },
     {
       "rule_id": "SRC05.L0105",
       "source": "references/editorial-policy.md",
       "source_line": 105,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 351
+      "runtime_line": 352
+    },
+    {
+      "rule_id": "SRC05.L0106",
+      "source": "references/editorial-policy.md",
+      "source_line": 106,
+      "runtime_section": "Runtime source 5: references/editorial-policy.md",
+      "runtime_line": 353
     },
     {
       "rule_id": "SRC05.L0107",
       "source": "references/editorial-policy.md",
       "source_line": 107,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 353
+      "runtime_line": 354
     },
     {
       "rule_id": "SRC05.L0108",
       "source": "references/editorial-policy.md",
       "source_line": 108,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 354
+      "runtime_line": 355
     },
     {
       "rule_id": "SRC05.L0109",
       "source": "references/editorial-policy.md",
       "source_line": 109,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 355
+      "runtime_line": 356
     },
     {
       "rule_id": "SRC05.L0110",
       "source": "references/editorial-policy.md",
       "source_line": 110,
       "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 356
-    },
-    {
-      "rule_id": "SRC05.L0111",
-      "source": "references/editorial-policy.md",
-      "source_line": 111,
-      "runtime_section": "Runtime source 5: references/editorial-policy.md",
       "runtime_line": 357
-    },
-    {
-      "rule_id": "SRC05.L0112",
-      "source": "references/editorial-policy.md",
-      "source_line": 112,
-      "runtime_section": "Runtime source 5: references/editorial-policy.md",
-      "runtime_line": 358
     },
     {
       "rule_id": "SRC06.L0001",
       "source": "references/highlight-selection.md",
       "source_line": 1,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 362
+      "runtime_line": 361
     },
     {
       "rule_id": "SRC06.L0003",
       "source": "references/highlight-selection.md",
       "source_line": 3,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 364
+      "runtime_line": 363
     },
     {
       "rule_id": "SRC06.L0005",
       "source": "references/highlight-selection.md",
       "source_line": 5,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 366
+      "runtime_line": 365
     },
     {
       "rule_id": "SRC06.L0007",
       "source": "references/highlight-selection.md",
       "source_line": 7,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 368
+      "runtime_line": 367
     },
     {
       "rule_id": "SRC06.L0009",
       "source": "references/highlight-selection.md",
       "source_line": 9,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 370
+      "runtime_line": 369
     },
     {
       "rule_id": "SRC06.L0011",
       "source": "references/highlight-selection.md",
       "source_line": 11,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 372
+      "runtime_line": 371
     },
     {
       "rule_id": "SRC06.L0013",
       "source": "references/highlight-selection.md",
       "source_line": 13,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 374
+      "runtime_line": 373
     },
     {
       "rule_id": "SRC06.L0014",
       "source": "references/highlight-selection.md",
       "source_line": 14,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 375
+      "runtime_line": 374
     },
     {
       "rule_id": "SRC06.L0015",
       "source": "references/highlight-selection.md",
       "source_line": 15,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 376
+      "runtime_line": 375
     },
     {
       "rule_id": "SRC06.L0016",
       "source": "references/highlight-selection.md",
       "source_line": 16,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 377
+      "runtime_line": 376
     },
     {
       "rule_id": "SRC06.L0018",
       "source": "references/highlight-selection.md",
       "source_line": 18,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 379
+      "runtime_line": 378
     },
     {
       "rule_id": "SRC06.L0020",
       "source": "references/highlight-selection.md",
       "source_line": 20,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 381
+      "runtime_line": 380
     },
     {
       "rule_id": "SRC06.L0023",
       "source": "references/highlight-selection.md",
       "source_line": 23,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 384
+      "runtime_line": 383
     },
     {
       "rule_id": "SRC06.L0025",
       "source": "references/highlight-selection.md",
       "source_line": 25,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 386
+      "runtime_line": 385
     },
     {
       "rule_id": "SRC06.L0027",
       "source": "references/highlight-selection.md",
       "source_line": 27,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 388
+      "runtime_line": 387
     },
     {
       "rule_id": "SRC06.L0029",
       "source": "references/highlight-selection.md",
       "source_line": 29,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 390
+      "runtime_line": 389
     },
     {
       "rule_id": "SRC06.L0031",
       "source": "references/highlight-selection.md",
       "source_line": 31,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 392
+      "runtime_line": 391
     },
     {
       "rule_id": "SRC06.L0033",
       "source": "references/highlight-selection.md",
       "source_line": 33,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 394
+      "runtime_line": 393
     },
     {
       "rule_id": "SRC06.L0034",
       "source": "references/highlight-selection.md",
       "source_line": 34,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 395
+      "runtime_line": 394
     },
     {
       "rule_id": "SRC06.L0036",
       "source": "references/highlight-selection.md",
       "source_line": 36,
       "runtime_section": "Runtime source 6: references/highlight-selection.md",
-      "runtime_line": 397
+      "runtime_line": 396
     },
     {
       "rule_id": "SRC07.L0001",
       "source": "references/product-knowledge-registry.md",
       "source_line": 1,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 401
+      "runtime_line": 400
     },
     {
       "rule_id": "SRC07.L0003",
       "source": "references/product-knowledge-registry.md",
       "source_line": 3,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 403
+      "runtime_line": 402
     },
     {
       "rule_id": "SRC07.L0005",
       "source": "references/product-knowledge-registry.md",
       "source_line": 5,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 405
+      "runtime_line": 404
     },
     {
       "rule_id": "SRC07.L0007",
       "source": "references/product-knowledge-registry.md",
       "source_line": 7,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 407
+      "runtime_line": 406
     },
     {
       "rule_id": "SRC07.L0008",
       "source": "references/product-knowledge-registry.md",
       "source_line": 8,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 408
+      "runtime_line": 407
     },
     {
       "rule_id": "SRC07.L0009",
       "source": "references/product-knowledge-registry.md",
       "source_line": 9,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 409
+      "runtime_line": 408
     },
     {
       "rule_id": "SRC07.L0010",
       "source": "references/product-knowledge-registry.md",
       "source_line": 10,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 410
+      "runtime_line": 409
     },
     {
       "rule_id": "SRC07.L0011",
       "source": "references/product-knowledge-registry.md",
       "source_line": 11,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 411
+      "runtime_line": 410
     },
     {
       "rule_id": "SRC07.L0013",
       "source": "references/product-knowledge-registry.md",
       "source_line": 13,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 413
+      "runtime_line": 412
     },
     {
       "rule_id": "SRC07.L0015",
       "source": "references/product-knowledge-registry.md",
       "source_line": 15,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 415
+      "runtime_line": 414
     },
     {
       "rule_id": "SRC07.L0016",
       "source": "references/product-knowledge-registry.md",
       "source_line": 16,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 416
+      "runtime_line": 415
     },
     {
       "rule_id": "SRC07.L0017",
       "source": "references/product-knowledge-registry.md",
       "source_line": 17,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 417
+      "runtime_line": 416
     },
     {
       "rule_id": "SRC07.L0018",
       "source": "references/product-knowledge-registry.md",
       "source_line": 18,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 418
+      "runtime_line": 417
     },
     {
       "rule_id": "SRC07.L0019",
       "source": "references/product-knowledge-registry.md",
       "source_line": 19,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 419
+      "runtime_line": 418
     },
     {
       "rule_id": "SRC07.L0021",
       "source": "references/product-knowledge-registry.md",
       "source_line": 21,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 421
+      "runtime_line": 420
     },
     {
       "rule_id": "SRC07.L0023",
       "source": "references/product-knowledge-registry.md",
       "source_line": 23,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 423
+      "runtime_line": 422
     },
     {
       "rule_id": "SRC07.L0025",
       "source": "references/product-knowledge-registry.md",
       "source_line": 25,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 425
+      "runtime_line": 424
     },
     {
       "rule_id": "SRC07.L0027",
       "source": "references/product-knowledge-registry.md",
       "source_line": 27,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 427
+      "runtime_line": 426
     },
     {
       "rule_id": "SRC07.L0029",
       "source": "references/product-knowledge-registry.md",
       "source_line": 29,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 429
+      "runtime_line": 428
     },
     {
       "rule_id": "SRC07.L0031",
       "source": "references/product-knowledge-registry.md",
       "source_line": 31,
       "runtime_section": "Runtime source 7: references/product-knowledge-registry.md",
-      "runtime_line": 431
+      "runtime_line": 430
     },
     {
       "rule_id": "SRC08.L0001",
       "source": "references/final-check.md",
       "source_line": 1,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 435
+      "runtime_line": 434
     },
     {
       "rule_id": "SRC08.L0003",
       "source": "references/final-check.md",
       "source_line": 3,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 437
+      "runtime_line": 436
     },
     {
       "rule_id": "SRC08.L0005",
       "source": "references/final-check.md",
       "source_line": 5,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 439
+      "runtime_line": 438
     },
     {
       "rule_id": "SRC08.L0007",
       "source": "references/final-check.md",
       "source_line": 7,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 441
+      "runtime_line": 440
     },
     {
       "rule_id": "SRC08.L0009",
       "source": "references/final-check.md",
       "source_line": 9,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 443
+      "runtime_line": 442
     },
     {
       "rule_id": "SRC08.L0011",
       "source": "references/final-check.md",
       "source_line": 11,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 445
+      "runtime_line": 444
     },
     {
       "rule_id": "SRC08.L0013",
       "source": "references/final-check.md",
       "source_line": 13,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 447
+      "runtime_line": 446
     },
     {
       "rule_id": "SRC08.L0015",
       "source": "references/final-check.md",
       "source_line": 15,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 449
+      "runtime_line": 448
     },
     {
       "rule_id": "SRC08.L0017",
       "source": "references/final-check.md",
       "source_line": 17,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 451
+      "runtime_line": 450
     },
     {
       "rule_id": "SRC08.L0019",
       "source": "references/final-check.md",
       "source_line": 19,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 453
+      "runtime_line": 452
     },
     {
       "rule_id": "SRC08.L0020",
       "source": "references/final-check.md",
       "source_line": 20,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 454
+      "runtime_line": 453
     },
     {
       "rule_id": "SRC08.L0021",
       "source": "references/final-check.md",
       "source_line": 21,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 455
+      "runtime_line": 454
     },
     {
       "rule_id": "SRC08.L0022",
       "source": "references/final-check.md",
       "source_line": 22,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 456
+      "runtime_line": 455
     },
     {
       "rule_id": "SRC08.L0023",
       "source": "references/final-check.md",
       "source_line": 23,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 457
+      "runtime_line": 456
     },
     {
       "rule_id": "SRC08.L0024",
       "source": "references/final-check.md",
       "source_line": 24,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 458
+      "runtime_line": 457
     },
     {
       "rule_id": "SRC08.L0026",
       "source": "references/final-check.md",
       "source_line": 26,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 460
+      "runtime_line": 459
     },
     {
       "rule_id": "SRC08.L0028",
       "source": "references/final-check.md",
       "source_line": 28,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 462
+      "runtime_line": 461
     },
     {
       "rule_id": "SRC08.L0029",
       "source": "references/final-check.md",
       "source_line": 29,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 463
+      "runtime_line": 462
     },
     {
       "rule_id": "SRC08.L0030",
       "source": "references/final-check.md",
       "source_line": 30,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 464
+      "runtime_line": 463
     },
     {
       "rule_id": "SRC08.L0031",
       "source": "references/final-check.md",
       "source_line": 31,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 465
+      "runtime_line": 464
     },
     {
       "rule_id": "SRC08.L0032",
       "source": "references/final-check.md",
       "source_line": 32,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 466
+      "runtime_line": 465
     },
     {
       "rule_id": "SRC08.L0033",
       "source": "references/final-check.md",
       "source_line": 33,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 467
+      "runtime_line": 466
     },
     {
       "rule_id": "SRC08.L0034",
       "source": "references/final-check.md",
       "source_line": 34,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 468
+      "runtime_line": 467
     },
     {
       "rule_id": "SRC08.L0035",
       "source": "references/final-check.md",
       "source_line": 35,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 469
+      "runtime_line": 468
     },
     {
       "rule_id": "SRC08.L0036",
       "source": "references/final-check.md",
       "source_line": 36,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 470
+      "runtime_line": 469
     },
     {
       "rule_id": "SRC08.L0037",
       "source": "references/final-check.md",
       "source_line": 37,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 471
+      "runtime_line": 470
     },
     {
       "rule_id": "SRC08.L0038",
       "source": "references/final-check.md",
       "source_line": 38,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 472
+      "runtime_line": 471
     },
     {
       "rule_id": "SRC08.L0039",
       "source": "references/final-check.md",
       "source_line": 39,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 473
+      "runtime_line": 472
     },
     {
       "rule_id": "SRC08.L0041",
       "source": "references/final-check.md",
       "source_line": 41,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 475
+      "runtime_line": 474
     },
     {
       "rule_id": "SRC08.L0043",
       "source": "references/final-check.md",
       "source_line": 43,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 477
+      "runtime_line": 476
     },
     {
       "rule_id": "SRC08.L0045",
       "source": "references/final-check.md",
       "source_line": 45,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 479
+      "runtime_line": 478
     },
     {
       "rule_id": "SRC08.L0046",
       "source": "references/final-check.md",
       "source_line": 46,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 480
+      "runtime_line": 479
     },
     {
       "rule_id": "SRC08.L0047",
       "source": "references/final-check.md",
       "source_line": 47,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 481
+      "runtime_line": 480
     },
     {
       "rule_id": "SRC08.L0048",
       "source": "references/final-check.md",
       "source_line": 48,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 482
+      "runtime_line": 481
     },
     {
       "rule_id": "SRC08.L0049",
       "source": "references/final-check.md",
       "source_line": 49,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 483
+      "runtime_line": 482
     },
     {
       "rule_id": "SRC08.L0050",
       "source": "references/final-check.md",
       "source_line": 50,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 484
+      "runtime_line": 483
     },
     {
       "rule_id": "SRC08.L0051",
       "source": "references/final-check.md",
       "source_line": 51,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 485
+      "runtime_line": 484
     },
     {
       "rule_id": "SRC08.L0052",
       "source": "references/final-check.md",
       "source_line": 52,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 486
+      "runtime_line": 485
     },
     {
       "rule_id": "SRC08.L0053",
       "source": "references/final-check.md",
       "source_line": 53,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 487
+      "runtime_line": 486
     },
     {
       "rule_id": "SRC08.L0054",
       "source": "references/final-check.md",
       "source_line": 54,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 488
+      "runtime_line": 487
     },
     {
       "rule_id": "SRC08.L0055",
       "source": "references/final-check.md",
       "source_line": 55,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 489
+      "runtime_line": 488
     },
     {
       "rule_id": "SRC08.L0056",
       "source": "references/final-check.md",
       "source_line": 56,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 490
+      "runtime_line": 489
     },
     {
       "rule_id": "SRC08.L0057",
       "source": "references/final-check.md",
       "source_line": 57,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 491
+      "runtime_line": 490
     },
     {
       "rule_id": "SRC08.L0058",
       "source": "references/final-check.md",
       "source_line": 58,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 492
+      "runtime_line": 491
     },
     {
       "rule_id": "SRC08.L0060",
       "source": "references/final-check.md",
       "source_line": 60,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 494
+      "runtime_line": 493
     },
     {
       "rule_id": "SRC08.L0062",
       "source": "references/final-check.md",
       "source_line": 62,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 496
+      "runtime_line": 495
     },
     {
       "rule_id": "SRC08.L0063",
       "source": "references/final-check.md",
       "source_line": 63,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 497
+      "runtime_line": 496
     },
     {
       "rule_id": "SRC08.L0064",
       "source": "references/final-check.md",
       "source_line": 64,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 498
+      "runtime_line": 497
     },
     {
       "rule_id": "SRC08.L0065",
       "source": "references/final-check.md",
       "source_line": 65,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 499
+      "runtime_line": 498
     },
     {
       "rule_id": "SRC08.L0066",
       "source": "references/final-check.md",
       "source_line": 66,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 500
+      "runtime_line": 499
     },
     {
       "rule_id": "SRC08.L0067",
       "source": "references/final-check.md",
       "source_line": 67,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 501
+      "runtime_line": 500
     },
     {
       "rule_id": "SRC08.L0068",
       "source": "references/final-check.md",
       "source_line": 68,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 502
+      "runtime_line": 501
     },
     {
       "rule_id": "SRC08.L0069",
       "source": "references/final-check.md",
       "source_line": 69,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 503
+      "runtime_line": 502
     },
     {
       "rule_id": "SRC08.L0070",
       "source": "references/final-check.md",
       "source_line": 70,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 504
+      "runtime_line": 503
     },
     {
       "rule_id": "SRC08.L0071",
       "source": "references/final-check.md",
       "source_line": 71,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 505
+      "runtime_line": 504
     },
     {
       "rule_id": "SRC08.L0072",
       "source": "references/final-check.md",
       "source_line": 72,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 506
+      "runtime_line": 505
     },
     {
       "rule_id": "SRC08.L0073",
       "source": "references/final-check.md",
       "source_line": 73,
       "runtime_section": "Runtime source 8: references/final-check.md",
-      "runtime_line": 507
+      "runtime_line": 506
     }
   ]
 }

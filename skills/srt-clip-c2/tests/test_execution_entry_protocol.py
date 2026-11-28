@@ -22,6 +22,9 @@ class EntryProtocolTests(unittest.TestCase):
         self.assertIn("摘要有效时直接复用", skill)
         self.assertIn("全部达到现有质量门槛且彼此实质不同", prompt)
         self.assertIn("不预选、不代选、不凑数", prompt)
+        self.assertIn("写稿前完成重复表达竞争与首次容量优化", prompt)
+        self.assertIn("未明确时按原素材1.0倍速", prompt)
+        self.assertIn("开头1.2倍速只作钩子参考", prompt)
         self.assertNotIn("每次调用 C2", prompt)
         self.assertIn(prompt, portable)
 
@@ -43,11 +46,11 @@ class EntryProtocolTests(unittest.TestCase):
         companion = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
         manifest = json.loads((ROOT / "references/runtime-manifest.json").read_text(encoding="utf-8"))
         self.assertEqual((PLUGIN / "VERSION").read_text(encoding="utf-8").strip(), "0.4.7")
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.47")
-        self.assertEqual(plugin["version"], "0.4.47")
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4.48")
+        self.assertEqual(plugin["version"], "0.4.48")
         self.assertEqual(companion["version"], plugin["version"])
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.47")
+        self.assertEqual(manifest["skill_version"], "0.4.48")
 
 
 if __name__ == "__main__":

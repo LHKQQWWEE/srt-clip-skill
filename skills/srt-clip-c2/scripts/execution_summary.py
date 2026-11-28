@@ -25,12 +25,33 @@ def read_json(path: Path) -> dict[str, object]:
     return value
 
 
+def _expand_entries(root: Path, entries: object, *, optional: bool = False) -> list[str]:
+    if not isinstance(entries, list):
+        return []
+    expanded: list[str] = []
+    for raw in entries:
+        relative = str(raw)
+        if any(char in relative for char in "*?["):
+            matches = sorted(path.relative_to(root).as_posix() for path in root.glob(relative) if path.is_file())
+            if not matches and not optional:
+                expanded.append(relative)
+            else:
+                expanded.extend(matches)
+        elif (root / relative).is_file():
+            expanded.append(relative)
+        elif not optional:
+            expanded.append(relative)
+    return expanded
+
+
 def current_files(root: Path, manifest: dict[str, object]) -> list[str]:
     paths = ["VERSION", "SKILL.md"]
     paths.extend(manifest.get("source_files", []))
     runtime_file = manifest.get("runtime_file")
     if isinstance(runtime_file, str):
         paths.append(runtime_file)
+    paths.extend(_expand_entries(root, manifest.get("summary_files", [])))
+    paths.extend(_expand_entries(root, manifest.get("optional_summary_files", []), optional=True))
     return list(dict.fromkeys(str(p) for p in paths))
 
 
@@ -109,10 +130,22 @@ def do_validate(root: Path, summary_path: Path, cache_path: Path | None) -> int:
     if summary.get("manifest_sha256") != manifest_sha:
         emit("manifest_stale", skill_version, core_version, cache_state)
         return 2
-    if summary.get("rule_hashes") != hashes:
+    stored_hashes = summary.get("rule_hashes")
+    optional_files = set(str(item) for item in manifest.get("optional_summary_files", []))
+    if isinstance(stored_hashes, dict):
+        comparable_hashes = {
+            key: value for key, value in stored_hashes.items()
+            if key not in optional_files or key in hashes
+        }
+    else:
+        comparable_hashes = stored_hashes
+    if comparable_hashes != hashes:
         emit("rule_hash_mismatch", skill_version, core_version, cache_state)
         return 2
     if not isinstance(summary.get("summary"), str) or not summary["summary"].strip():
+        emit("corrupt", skill_version, core_version, cache_state)
+        return 2
+    if summary.get("summary_sha256") != sha256(summary["summary"].encode("utf-8")):
         emit("corrupt", skill_version, core_version, cache_state)
         return 2
     emit("valid", skill_version, core_version, cache_state, summary_file=str(summary_path))
@@ -140,6 +173,7 @@ def do_refresh(root: Path, summary_path: Path, body_path: Path) -> int:
         "manifest_sha256": sha256(manifest_path.read_bytes()),
         "rule_hashes": hashes,
         "summary": body,
+        "summary_sha256": sha256(body.encode("utf-8")),
     }
     summary_path.parent.mkdir(parents=True, exist_ok=True)
     summary_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")

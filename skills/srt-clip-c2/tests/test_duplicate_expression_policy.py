@@ -77,8 +77,7 @@ class Phase3DuplicateControlTests(unittest.TestCase):
         policy = (ROOT / "references" / "clip-selection-policy.md").read_text(encoding="utf-8")
         self.assertIn("90 秒", policy)
         self.assertIn("90 秒是有效信息密度目标", policy)
-        self.assertIn("90–95 秒为优先区间", policy)
-        self.assertIn("超过 100 秒启动专项优化", policy)
+        self.assertIn("100 秒可作为可接受参考", policy)
         self.assertIn("不得自动截断", policy)
 
 

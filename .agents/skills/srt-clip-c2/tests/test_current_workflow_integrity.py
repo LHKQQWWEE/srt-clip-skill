@@ -38,25 +38,25 @@ class CurrentWorkflowIntegrityTests(unittest.TestCase):
         policy = read("references/clip-selection-policy.md")
         self.assertIn("每条成片先完整覆盖", policy)
         self.assertIn("方案之间不互相补足", policy)
-        self.assertIn("超过 100 秒须启动专项优化并逐条复核", policy)
+        self.assertIn("超过 100 秒须逐条复核", policy)
         self.assertIn("逐项注明省略的完整板块", policy)
 
-    def test_original_eligible_purchase_prompt_is_required_but_never_invented(self):
-        editorial = read("references/editorial-policy.md")
-        self.assertIn("原文存在适用且合规的促单时，完整保留原话", editorial)
-        self.assertIn("原文没有促单时，禁止编造、改写或补充", editorial)
-        self.assertIn("不得跨商品移用话术", editorial)
+    def test_promotion_policy_preserves_complete_units_and_never_invents(self):
+        policy = read("references/promotion-policy.md")
+        self.assertIn("完整上下文", policy)
+        self.assertIn("不拼接不同顾客的问答，不混合不同商品或款式", policy)
+        self.assertIn("最小完整组合", policy)
+        self.assertIn("没有时不编造、改写或补充购买口号", policy)
 
     def test_duration_is_planned_after_full_pool_and_before_first_copy(self):
         policy = read("references/clip-selection-policy.md")
         check = read("references/final-check.md")
         self.assertIn("先建立完整信息池", policy)
-        self.assertIn("写出正文前建立本条成片的时长预算", policy)
+        self.assertIn("写出正文前完成首次容量规划", policy)
         self.assertNotIn("先完成全部有效卖点的完整编排，再计算时长", policy)
         self.assertIn("90 秒是有效信息密度目标", policy)
-        self.assertIn("90–95 秒为优先区间", policy)
-        self.assertIn("95–100 秒进入复核", policy)
-        self.assertIn("超过 100 秒须启动专项优化并逐条复核", policy)
+        self.assertIn("100 秒可作为可接受参考", policy)
+        self.assertIn("超过 100 秒须逐条复核", policy)
         self.assertIn("90 秒为目标", check)
         self.assertIn("超过 90 秒比较", check)
         for path in (policy, check):
@@ -72,7 +72,7 @@ class CurrentWorkflowIntegrityTests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         runtime = ROOT / manifest["runtime_file"]
         self.assertEqual(manifest["core_version"], "0.4.7")
-        self.assertEqual(manifest["skill_version"], "0.4.50")
+        self.assertEqual(manifest["skill_version"], "0.4.51")
         self.assertTrue(manifest["source_map"])
         self.assertEqual(text_sha256(runtime), manifest["runtime_sha256"])
         for relative, digest in manifest["source_hashes"].items():

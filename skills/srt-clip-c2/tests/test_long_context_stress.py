@@ -80,7 +80,7 @@ class LongContextStress(unittest.TestCase):
         self.assertIn("每个所选开头", long_context)
         self.assertIn("写稿前完成首次容量优化", long_context)
         self.assertIn("90 秒是有效信息密度目标", policy)
-        self.assertIn("超过 100 秒须启动专项优化并逐条复核", policy)
+        self.assertIn("超过 100 秒须逐条复核", policy)
 
     def test_999_cues_across_products_deduplicate_overlap_and_keep_late_unique_point(self):
         cues = build_synthetic_999()

@@ -34,14 +34,14 @@ class SpecialUpgrade046Tests(unittest.TestCase):
         self.assertIn("用户最多选择 3 个候选", policy)
         self.assertIn("每个已选开头分别生成一条完整成片", policy)
         self.assertIn("每条成片先完整覆盖", policy)
-        self.assertIn("超过 100 秒须启动专项优化并逐条复核", policy)
+        self.assertIn("超过 100 秒须逐条复核", policy)
         self.assertIn("用户选择商品", contract)
 
     def test_duration_is_approximate_and_final_audit_is_selected_only(self):
         highlight = (ROOT / "references" / "highlight-selection.md").read_text(encoding="utf-8")
         policy = (ROOT / "references" / "clip-selection-policy.md").read_text(encoding="utf-8")
         self.assertIn("90 秒是有效信息密度目标", policy)
-        self.assertIn("写出正文前建立本条成片的时长预算", policy)
+        self.assertIn("写出正文前完成首次容量规划", policy)
         self.assertIn("首稿必须以已完成容量优化的选段为基础", policy)
         self.assertIn("只对实际写出的成片执行终检", FINAL_CHECK)
         self.assertIn("同一根因最多三轮", FINAL_CHECK)

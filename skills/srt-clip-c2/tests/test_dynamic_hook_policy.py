@@ -63,7 +63,7 @@ class DynamicHookPolicyTests(unittest.TestCase):
         policy = read("references/editorial-policy.md")
         selection = read("references/clip-selection-policy.md")
         self.assertIn("每条方案继续覆盖全部有效卖点", policy)
-        self.assertIn("原文保留适用且合规的促单", policy)
+        self.assertIn("references/promotion-policy.md", policy)
         self.assertIn("每条成片先完整覆盖信息池内全部有效卖点", selection)
 
     def test_schema_describes_user_choice_and_uncapped_candidates(self) -> None:
@@ -89,8 +89,8 @@ class DynamicHookPolicyTests(unittest.TestCase):
         manifest = json.loads(read("references/runtime-manifest.json"))
         summary = json.loads(read("references/execution-summary.json"))
         self.assertEqual(core_version, "0.4.7")
-        self.assertEqual(skill_version, "0.4.50")
-        self.assertEqual(plugin["version"], "0.4.50")
+        self.assertEqual(skill_version, "0.4.51")
+        self.assertEqual(plugin["version"], "0.4.51")
         self.assertEqual(manifest["core_version"], core_version)
         self.assertEqual(manifest["skill_version"], skill_version)
         self.assertEqual(summary["core_version"], core_version)

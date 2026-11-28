@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://c2-universal.local/schemas/selection-0.4.50.json",
+  "$id": "https://c2-universal.local/schemas/selection-0.4.51.json",
   "title": "C2 Selection JSON",
   "description": "Development/test record for one actual user-selected final cut. Selling points describe product reasons only, while content_blocks records this plan's open, dynamic section order and roles keep promotion separate. Routine SRT execution never calls this JSON schema or Python tools. Create one independent record for each user-selected opening.",
   "type": "object",
@@ -43,7 +43,7 @@
     "estimated_duration_seconds": {
       "type": "number",
       "minimum": 0,
-      "description": "Approximate duration for this cut, planned before drafting after full point-pool review and purchase-information-unit competition. Divide accumulated selected source duration by 1.2. The target is 90 seconds, with 90–95 preferred, 95–100 reviewed, and over 100 triggering special optimization, all measured before display rounding. Necessary irreplaceable content may exceed 100 seconds with evidence-backed reasons; do not truncate automatically."
+      "description": "Approximate duration for this cut, planned before drafting after full point-pool review and duplicate-expression competition. Divide accumulated selected source duration by 1.2. The converted target is 90 seconds. Above the 100-second acceptable reference, measured before display rounding, review each cut without automatically truncating it."
     },
     "full_clip_playback_speed": {
       "type": "number",
@@ -53,26 +53,60 @@
     },
     "duration_review": {
       "type": "object",
-      "required": ["stage", "outcome", "review_reason", "omitted_blocks"],
+      "required": [
+        "outcome",
+        "review_reason",
+        "omitted_blocks"
+      ],
       "properties": {
-        "stage": {"enum": ["review_95_to_100", "special_optimization_over_100"]},
-        "outcome": {"enum": ["retain_all", "omit_low_value_blocks"]},
+        "outcome": {
+          "enum": [
+            "retain_all",
+            "omit_low_value_blocks"
+          ]
+        },
         "review_reason": {
           "type": "string",
           "minLength": 1,
-      "description": "Explain the per-cut capacity review and how all unique purchase reasons, necessary evidence, conditions, and transitions were protected."
+          "description": "Explain the per-cut capacity review and how all unique purchase reasons, necessary evidence, conditions, and transitions were protected."
         },
         "omitted_blocks": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["id", "name", "cue_ids", "selling_point_ids", "reason"],
+            "required": [
+              "id",
+              "name",
+              "cue_ids",
+              "selling_point_ids",
+              "reason"
+            ],
             "properties": {
-              "id": {"type": "string", "minLength": 1},
-              "name": {"type": "string", "minLength": 1},
-              "cue_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
-              "selling_point_ids": {"type": "array", "items": {"type": "string"}},
-              "reason": {"type": "string", "minLength": 1}
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "cue_ids": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "selling_point_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
             },
             "additionalProperties": false
           }
@@ -80,31 +114,78 @@
       },
       "allOf": [
         {
-          "if": {"properties": {"outcome": {"const": "omit_low_value_blocks"}}, "required": ["outcome"]},
-          "then": {"properties": {"omitted_blocks": {"minItems": 1}}}
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "omit_low_value_blocks"
+              }
+            },
+            "required": [
+              "outcome"
+            ]
+          },
+          "then": {
+            "properties": {
+              "omitted_blocks": {
+                "minItems": 1
+              }
+            }
+          }
         },
         {
-          "if": {"properties": {"outcome": {"const": "retain_all"}}, "required": ["outcome"]},
-          "then": {"properties": {"omitted_blocks": {"maxItems": 0}}}
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "retain_all"
+              }
+            },
+            "required": [
+              "outcome"
+            ]
+          },
+          "then": {
+            "properties": {
+              "omitted_blocks": {
+                "maxItems": 0
+              }
+            }
+          }
         }
       ],
       "additionalProperties": false,
-      "description": "From 95 through 100 playback seconds, record stage review_95_to_100. Above 100 seconds, record stage special_optimization_over_100 and the special optimization reasoning, even when retaining every board. If lower-value complete boards are omitted, list every board, its source cues, points, and individual reason."
+      "description": "Above 100 seconds, record a review even when retaining every board. If lower-value complete boards are omitted, list every board, its source cues, points, and individual reason."
     },
     "content_blocks": {
       "type": "array",
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["id", "name", "cue_ids"],
+        "required": [
+          "id",
+          "name",
+          "cue_ids"
+        ],
         "properties": {
-          "id": {"type": "string", "minLength": 1},
-          "name": {"type": "string", "minLength": 1, "description": "Open-ended board name based on this product and cut. Do not use a fixed category list."},
-          "cue_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Open-ended board name based on this product and cut. Do not use a fixed category list."
+          },
+          "cue_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          }
         },
         "additionalProperties": false
       },
-      "description": "Boards are ordered as whole units. Cue order within each board can change. The flattened cue_ids must exactly match selected_ids, so boards cannot be crossed or interleaved. Put all applicable compliant promotion cues in the last board."
+      "description": "Boards are ordered as whole units. Preserve original order inside each complete semantic unit; different complete units may be dynamically ordered. The flattened cue_ids must exactly match selected_ids, so boards cannot be crossed or interleaved. Put the selected minimum complete promotion set in the last board."
     },
     "selling_points": {
       "type": "array",
@@ -163,21 +244,33 @@
               "必要衔接",
               "适用促单原话"
             ],
-            "description": "Promotion is a separate role and is never a selling point or support cue. Applicable compliant source wording remains complete in the last board and receives the same prohibited-claim review as other source text."
-          },
-          "cta_type": {
-            "enum": ["直接行动型", "种草/推荐/购买信心强化型"]
+            "description": "Promotion is a separate role and is never a selling point or support cue. Judge it by full-context function using references/promotion-policy.md; this structural schema does not impose a fixed promotion taxonomy."
           },
           "transaction_info": {
             "type": "object",
-            "required": ["dynamic_items", "sku_list_price_verified"],
+            "required": [
+              "dynamic_items",
+              "sku_list_price_verified"
+            ],
             "properties": {
               "dynamic_items": {
                 "type": "array",
                 "uniqueItems": true,
-                "items": {"enum": ["成交价", "优惠", "赠品", "直播福利", "倒计时", "库存/稀缺", "其他实时交易信息"]}
+                "items": {
+                  "enum": [
+                    "成交价",
+                    "优惠",
+                    "赠品",
+                    "直播福利",
+                    "倒计时",
+                    "库存/稀缺",
+                    "其他实时交易信息"
+                  ]
+                }
               },
-              "sku_list_price_verified": {"type": "boolean"}
+              "sku_list_price_verified": {
+                "type": "boolean"
+              }
             },
             "additionalProperties": false,
             "description": "A verified current-SKU list price may be retained in body text under the existing rule. Closing promotion contains no price or dynamic transaction information."
@@ -185,8 +278,21 @@
         },
         "allOf": [
           {
-            "if": {"properties": {"role": {"const": "适用促单原话"}}, "required": ["role"]},
-            "then": {"required": ["cta_type", "transaction_info"]}
+            "if": {
+              "properties": {
+                "role": {
+                  "const": "适用促单原话"
+                }
+              },
+              "required": [
+                "role"
+              ]
+            },
+            "then": {
+              "required": [
+                "transaction_info"
+              ]
+            }
           }
         ],
         "additionalProperties": false
@@ -281,17 +387,21 @@
   "additionalProperties": true,
   "allOf": [
     {
-      "if": {"properties": {"estimated_duration_seconds": {"type": "number", "minimum": 95, "maximum": 100}}, "required": ["estimated_duration_seconds"]},
+      "if": {
+        "properties": {
+          "estimated_duration_seconds": {
+            "type": "number",
+            "exclusiveMinimum": 100
+          }
+        },
+        "required": [
+          "estimated_duration_seconds"
+        ]
+      },
       "then": {
-        "required": ["duration_review"],
-        "properties": {"duration_review": {"properties": {"stage": {"const": "review_95_to_100"}}}}
-      }
-    },
-    {
-      "if": {"properties": {"estimated_duration_seconds": {"type": "number", "exclusiveMinimum": 100}}, "required": ["estimated_duration_seconds"]},
-      "then": {
-        "required": ["duration_review"],
-        "properties": {"duration_review": {"properties": {"stage": {"const": "special_optimization_over_100"}}}}
+        "required": [
+          "duration_review"
+        ]
       }
     }
   ]

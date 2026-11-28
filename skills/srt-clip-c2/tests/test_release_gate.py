@@ -54,10 +54,6 @@ class ReleaseGateSemanticTests(unittest.TestCase):
             with self.subTest(expected=expected):
                 self.assertEqual([item[1] for item in release_gate.semantic_conflicts(text)], [expected])
 
-    def test_raw_120_seconds_mapping_is_allowed_but_old_120_second_cut_target_is_rejected(self):
-        self.assertFalse(release_gate.has_retired_120_playback_target("120 秒原始时长对应 100 秒播放复核线"))
-        self.assertTrue(release_gate.has_retired_120_playback_target("成片时长目标为 120 秒"))
-
     def test_detects_retired_whole_clip_speed_and_hook_only_variants(self):
         samples = (
             "全片按原素材 " + "１．０ " + "倍速估算。",
@@ -123,7 +119,7 @@ class ReleaseGateSemanticTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "CHANGELOG.md").write_text(
-                "# Current release\n\n## Skill / Plugin 0.4.50\n\nCurrent.\n\n## Skill / Plugin 0.4." + "46\n\nOld.\n",
+                "# Current release\n\n## Skill / Plugin 0.4.51\n\nCurrent.\n\n## Skill / Plugin 0.4." + "46\n\nOld.\n",
                 encoding="utf-8",
             )
             with patch.object(release_gate, "PLUGIN_ROOT", root):

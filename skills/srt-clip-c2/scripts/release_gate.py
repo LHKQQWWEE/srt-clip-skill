@@ -17,16 +17,14 @@ from pathlib import Path
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = next(parent for parent in SKILL_ROOT.parents if (parent / "VERSION").is_file())
 EXPECTED_CORE = "0.4.7"
-EXPECTED_SKILL = "0.4.50"
+EXPECTED_SKILL = "0.4.51"
 ACTIVE_SURFACES = (
     "SKILL.md", "README.md", "START-HERE.md", "ENVIRONMENT.md", "agents/openai.yaml",
     "references/ai-first-constitution.md", "references/runtime-contract.md",
-    "references/clip-selection-policy.md", "references/editorial-policy.md",
+    "references/clip-selection-policy.md", "references/editorial-policy.md", "references/promotion-policy.md",
     "references/final-check.md", "references/global-rules.md", "references/long-context-mode.md",
     "references/highlight-selection.md", "references/product-knowledge-registry.md",
-    "references/update-protocol.md", "tests/quality-rubric.md",
-    "tests/test_duration_purchase_information_policy.py", "tests/test_candy_down_coat_regression.py",
-    "tests/fixtures/candy-down-coat-2166-regression.json",
+    "references/update-protocol.md", "tests/quality-rubric.md", "tests/test_duration_purchase_information_policy.py",
     "references/runtime-current.md", "references/execution-summary.json",
     "references/runtime-manifest.json", "scripts/selection.schema.json", "scripts/README.md",
     "scripts/prohibited_term_guard.py", "scripts/srt_tools.py",
@@ -88,14 +86,6 @@ def normalized_sha256(data: bytes) -> str:
     return hashlib.sha256(data.replace(b"\r\n", b"\n").replace(b"\r", b"\n")).hexdigest()
 
 
-def has_retired_120_playback_target(text: str) -> bool:
-    """Allow only the explicit 120 raw-second to 100 playback-second mapping."""
-    normalized = unicodedata.normalize("NFKC", text)
-    allowed_mapping = re.compile(r"120\s*秒\s*原始时长\s*对应\s*100\s*秒\s*播放复核线")
-    without_mapping = allowed_mapping.sub("", normalized)
-    return re.search(r"(?<!\d)120\s*秒", without_mapping) is not None
-
-
 def semantic_conflicts(text: str) -> list[tuple[int, str, str]]:
     """Return positive claims that revive a retired selection or structure rule."""
     conflicts = []
@@ -145,37 +135,33 @@ def assert_current_test_contract() -> None:
         "test_release_gate.py": (
             "test_unrelated_negation_does_not_hide_a_retired_candidate_cap",
             "test_detects_retired_duration_and_closing_activity_rules_in_plain_chinese",
-            "test_raw_120_seconds_mapping_is_allowed_but_old_120_second_cut_target_is_rejected",
             "test_stale_phase_plan_is_blocked_from_current_release_source",
             "test_stale_runtime_policy_markers_are_blocked",
             "test_detects_retired_whole_clip_speed_and_hook_only_variants",
             "test_semantic_scan_excludes_gitignored_superpowers_work_notes",
         ),
         "test_dynamic_blocks_and_duration.py": (
-            "test_duration_policy_has_90_second_target_and_preserves_raw_120_second_mapping",
+            "test_duration_policy_has_target_tolerance_and_review_without_old_threshold",
             "test_content_boards_are_open_and_dynamically_ordered_as_units",
-            "test_promotion_is_separate_and_ends_with_a_compliant_original_quote",
+            "test_promotion_uses_contextual_minimum_complete_set_and_keeps_ad_boundaries",
             "test_schema_records_open_boards_promotion_and_per_plan_duration_review",
-            "test_duration_schema_requires_the_matching_review_stage_from_95_seconds",
-        ),
-        "test_srt_tools.py": (
-            "test_full_clip_duration_reviews_from_95_seconds_and_distinguishes_special_optimization",
-            "test_duration_review_stage_must_match_the_measured_playback_band",
         ),
         "test_duration_purchase_information_policy.py": (
-            "test_first_draft_uses_the_90_second_target_and_explicit_review_tiers",
-            "test_purchase_information_competition_preserves_distinct_value_within_a_theme",
-            "test_final_review_checks_deleted_candidates_and_full_information_coverage",
-            "test_five_part_text_only_delivery_remains_frozen",
+            "test_duration_uses_installed_90_second_target_without_new_fixed_tiers",
+            "test_purchase_information_competition_preserves_distinct_value",
+            "test_omitted_independent_candidates_keep_a_traceable_reason",
+            "test_promotion_keeps_the_existing_ad_boundary_and_delivery_format",
         ),
-        "test_candy_down_coat_regression.py": (
-            "test_five_historical_sequence_lists_recalculate_from_real_source_durations",
-            "test_third_version_conflicting_duration_claim_is_resolved_from_its_74_ids",
-            "test_c_version_keeps_distinct_purchase_conditions_and_supporting_details",
+        "test_purchase_prompt_neutrality.py": (
+            "test_classification_uses_full_context_and_function_not_keywords",
+            "test_units_preserve_context_customers_skus_and_conditions",
+            "test_candidates_compete_without_dropping_independent_value",
+            "test_close_checks_required_cases_and_source_truth",
+            "test_promotion_has_no_fixed_category_count_or_duration_cap",
         ),
+        "test_srt_tools.py": ("test_full_clip_duration_uses_fixed_speed_and_reviews_exactly_above_100_seconds",),
         "test_selection_structure.py": (
             "test_promotion_cue_cannot_support_or_rank_as_a_selling_point",
-            "test_cta_must_have_a_distinct_promotion_classification",
             "test_promotion_block_must_be_last",
             "test_selected_cues_cannot_cross_and_reenter_a_board",
             "test_dynamic_price_offer_gift_benefit_countdown_and_scarcity_are_rejected_in_cta",
@@ -326,10 +312,6 @@ def assert_release_conflict_residuals() -> None:
         raise ValueError("final check must not create a proof-based exemption")
     if "混合字幕按完整字幕句选取" not in editorial or "不得从字幕句内截取子句" not in editorial:
         raise ValueError("mixed subtitle rules must preserve complete cue text and timing")
-    if "不得按主题粗暴去重" not in editorial or "有效候选删除追溯" not in final_check:
-        raise ValueError("purchase-information competition or deletion trace is missing")
-    if "独立信息覆盖复核" not in final_check or "每条成片分别核对" not in final_check:
-        raise ValueError("per-cut independent information coverage review is missing")
 
 
 def semantic_surface_paths() -> list[Path]:
@@ -380,26 +362,36 @@ def assert_semantic_surfaces() -> None:
         (editorial, "每条成片必须以对应的用户所选开头原话开始", "editorial-policy.md"),
         (selection, "每条成片独立划分和编排内容板块", "clip-selection-policy.md"),
         (selection, "超过 90 秒时", "clip-selection-policy.md"),
-        (selection, "超过 100 秒须启动专项优化并逐条复核", "clip-selection-policy.md"),
-        (selection, "写出正文前建立本条成片的时长预算", "clip-selection-policy.md"),
+        (selection, "超过 100 秒须逐条复核", "clip-selection-policy.md"),
+        (selection, "写出正文前完成首次容量规划", "clip-selection-policy.md"),
         (selection, "首稿必须以已完成容量优化的选段为基础", "clip-selection-policy.md"),
         (selection, "预计成片时长 = 原始选段累计时长 ÷ 1.2", "clip-selection-policy.md"),
         (selection, "折算后 90 秒是有效信息密度目标", "clip-selection-policy.md"),
-        (selection, "95–100 秒进入复核", "clip-selection-policy.md"),
-        (editorial, "不得按主题粗暴去重", "editorial-policy.md"),
-        (final_check, "有效候选删除追溯", "final-check.md"),
-        (final_check, "独立信息覆盖复核", "final-check.md"),
+        (selection, "100 秒可作为可接受参考", "clip-selection-policy.md"),
         (selection, "不得自动截断", "clip-selection-policy.md"),
         (final_check, "每条成片从对应用户所选开头原话开始", "final-check.md"),
     ):
         if phrase not in text:
             raise ValueError(f"required active rule missing from {source}: {phrase}")
 
+    promotion = (SKILL_ROOT / "references/promotion-policy.md").read_text(encoding="utf-8")
+    for phrase in (
+        "按话术在完整上下文中实际帮助观众完成的任务分类",
+        "不拼接不同顾客的问答，不混合不同商品或款式",
+        "全量识别候选",
+        "真正重复与仅主题相同",
+        "最小完整组合",
+        "促单专项终检",
+        "不新增促单秒数上限、固定候选数量、固定类别数量",
+    ):
+        if phrase not in promotion:
+            raise ValueError(f"required promotion rule missing: {phrase}")
+
     duration_surfaces = [(relative, SKILL_ROOT / relative) for relative in ACTIVE_SURFACES if not relative.startswith("tests/")]
     duration_surfaces.extend((relative, PLUGIN_ROOT / relative) for relative in PLUGIN_SURFACES)
     duration_surfaces.append(("docs/platform-adapter-interface.md", PLUGIN_ROOT / "docs/platform-adapter-interface.md"))
     for relative, path in duration_surfaces:
-        if has_retired_120_playback_target(path.read_text(encoding="utf-8")):
+        if re.search(r"\b120\s*秒", path.read_text(encoding="utf-8")):
             raise ValueError(f"retired 120-second duration rule remains in {relative}")
     if "只有用户明确要求制作有效期明确的活动素材" in editorial or "且确认活动与发布时段仍有效，才对该任务例外" in editorial:
         raise ValueError("retired closing-promotion activity exception remains")

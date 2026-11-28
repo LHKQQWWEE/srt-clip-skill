@@ -37,7 +37,6 @@ def selection_for(source, selected_ids=("1", "2", "3", "4")):
             {
                 "cue_id": "4",
                 "role": "适用促单原话",
-                "cta_type": "直接行动型",
                 "transaction_info": {"dynamic_items": [], "sku_list_price_verified": False},
             },
         ],
@@ -70,17 +69,6 @@ class SelectionStructureTests(unittest.TestCase):
         self.selection["selling_points"][0]["support_ids"] = ["1", "4"]
         _, codes = failure_codes(self.selection, self.source)
         self.assertIn("promotion_in_selling_point_support", codes)
-
-    def test_cta_must_have_a_distinct_promotion_classification(self):
-        del self.selection["roles"][3]["cta_type"]
-        _, codes = failure_codes(self.selection, self.source)
-        self.assertIn("promotion_classification_required", codes)
-
-    def test_recommendation_and_purchase_confidence_cta_classification_is_supported(self):
-        self.selection["roles"][3]["cta_type"] = "种草/推荐/购买信心强化型"
-        result, codes = failure_codes(self.selection, self.source)
-        self.assertEqual(result["status"], "PASS")
-        self.assertEqual(codes, set())
 
     def test_promotion_block_must_be_last(self):
         blocks = self.selection["content_blocks"]
@@ -125,7 +113,6 @@ class SelectionStructureTests(unittest.TestCase):
         self.selection["roles"][3] = {
             "cue_id": "5",
             "role": "适用促单原话",
-            "cta_type": "直接行动型",
             "transaction_info": {"dynamic_items": [], "sku_list_price_verified": False},
         }
         self.selection["content_blocks"][2]["cue_ids"] = ["5"]
@@ -139,7 +126,6 @@ class SelectionStructureTests(unittest.TestCase):
         _, codes = failure_codes(self.selection, self.source)
         self.assertIn("duration_review_required", codes)
         self.selection["duration_review"] = {
-            "stage": "special_optimization_over_100",
             "outcome": "retain_all",
             "review_reason": "保留全部独立理由及必要证据、条件和衔接",
             "omitted_blocks": [],

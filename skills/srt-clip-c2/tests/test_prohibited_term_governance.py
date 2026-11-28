@@ -192,7 +192,9 @@ class ProhibitedTermGovernanceTests(unittest.TestCase):
         self.assertEqual(report["direct_hits"], [])
         self.assertIn("价格本身不是本词库的违禁词命中", rules)
         self.assertIn("真实商品标价可按原话保留", editorial)
-        self.assertIn("结尾促单中的成交价、优惠", editorial)
+        promotion = (ROOT / "references" / "promotion-policy.md").read_text(encoding="utf-8")
+        self.assertIn("实时交易信息", promotion)
+        self.assertIn("活动有效期", editorial)
 
     def test_absolute_terms_in_final_text_are_rescanned_with_the_original_source_id(self):
         cues = [guard.Cue("65", "面料不起球"), guard.Cue("66", "领口走线整齐")]
@@ -220,7 +222,7 @@ class ProhibitedTermGovernanceTests(unittest.TestCase):
         self.assertIn("最终成片复扫", final_check)
         self.assertIn("用户最多选择 3 个", contract)
         self.assertIn("90 秒是有效信息密度目标", duration_policy)
-        self.assertIn("95–100 秒进入复核", duration_policy)
+        self.assertIn("100 秒可作为可接受参考", duration_policy)
 
 
 if __name__ == "__main__":

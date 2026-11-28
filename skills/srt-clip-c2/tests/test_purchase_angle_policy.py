@@ -14,8 +14,8 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
         plugin = ROOT.parents[1]
         manifest = json.loads(read("references/runtime-manifest.json"))
         self.assertEqual((plugin / "VERSION").read_text(encoding="utf-8").strip(), "0.4.7")
-        self.assertEqual(json.loads((plugin / "plugin.json").read_text(encoding="utf-8"))["version"], "0.4.50")
-        self.assertEqual(manifest["skill_version"], "0.4.50")
+        self.assertEqual(json.loads((plugin / "plugin.json").read_text(encoding="utf-8"))["version"], "0.4.51")
+        self.assertEqual(manifest["skill_version"], "0.4.51")
 
     def test_opening_choice_uses_dynamic_customer_motivation(self):
         editorial = read("references/editorial-policy.md")
@@ -50,7 +50,7 @@ class PurchaseAnglePolicyTests(unittest.TestCase):
         policy = read("references/clip-selection-policy.md")
         self.assertIn("每条成片先完整覆盖", policy)
         self.assertIn("方案之间不互相补足", policy)
-        self.assertIn("超过 100 秒须启动专项优化并逐条复核", policy)
+        self.assertIn("超过 100 秒须逐条复核", policy)
         self.assertIn("省略的完整板块", policy)
 
     def test_fixed_output_and_prohibited_terms_are_preserved(self):

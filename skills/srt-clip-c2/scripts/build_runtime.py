@@ -20,6 +20,7 @@ SOURCE_FILES = [
     "references/clip-selection-policy.md",
     "references/global-rules.md",
     "references/editorial-policy.md",
+    "references/promotion-policy.md",
     "references/highlight-selection.md",
     "references/product-knowledge-registry.md",
     "references/final-check.md",

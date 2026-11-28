@@ -54,6 +54,21 @@ class ReleaseGateSemanticTests(unittest.TestCase):
             with self.subTest(expected=expected):
                 self.assertEqual([item[1] for item in release_gate.semantic_conflicts(text)], [expected])
 
+    def test_detects_retired_whole_clip_speed_and_hook_only_variants(self):
+        samples = (
+            "全片按原素材 " + "１．０ " + "倍速估算。",
+            "估时用 " + "1.0" + "x。",
+            "1.2 倍速" + "只用于开头吸引力参考。",
+            "仅" + "开" + "头" + "使用 1.2 倍速。",
+            "The " + "1.2x reference applies " + "on" + "ly to the opening.",
+            'selection.get("full_clip_playback_speed", ' + "1." + "0)",
+        )
+        for sample in samples:
+            with self.subTest(sample=sample):
+                self.assertEqual([item[1] for item in release_gate.semantic_conflicts(sample)], ["retired_duration_speed"])
+        current = "全片按 1.2 倍速估算。开头 1.2 倍速对应的 2.4 秒和 6 秒只作吸引力参考。"
+        self.assertEqual(release_gate.semantic_conflicts(current), [])
+
     def test_allows_current_rule_that_explicitly_rejects_activity_exceptions(self):
         current = "活动有效期或活动素材需求不构成例外。"
         self.assertEqual(release_gate.semantic_conflicts(current), [])
@@ -104,7 +119,7 @@ class ReleaseGateSemanticTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "CHANGELOG.md").write_text(
-                "# Current release\n\n## Skill / Plugin 0.4.48\n\nCurrent.\n\n## Skill / Plugin 0.4." + "46\n\nOld.\n",
+                "# Current release\n\n## Skill / Plugin 0.4.49\n\nCurrent.\n\n## Skill / Plugin 0.4." + "46\n\nOld.\n",
                 encoding="utf-8",
             )
             with patch.object(release_gate, "PLUGIN_ROOT", root):

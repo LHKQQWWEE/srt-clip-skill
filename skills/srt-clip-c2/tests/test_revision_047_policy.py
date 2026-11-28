@@ -32,7 +32,7 @@ class Revision048PolicyTests(unittest.TestCase):
         self.assertIn("90 秒是有效信息密度目标", policy)
         self.assertIn("写出正文前完成首次容量规划", policy)
         self.assertIn("首稿必须以已完成容量优化的选段为基础", policy)
-        self.assertIn("未明确整片播放速度时按原素材 1.0 倍速估算", policy)
+        self.assertIn("预计成片时长 = 原始选段累计时长 ÷ 1.2", policy)
         self.assertIn("超过 100 秒须逐条复核", policy)
         self.assertIn("不得自动截断", policy)
         self.assertIn("不得固定某些卖点永远低价值", policy)
@@ -103,7 +103,7 @@ class ExecutionSummaryTests(unittest.TestCase):
             self.assertEqual(code, 0)
             self.assertTrue(summary.is_file())
             data = json.loads(summary.read_text(encoding="utf-8"))
-            self.assertEqual(data["skill_version"], "0.4.48")
+            self.assertEqual(data["skill_version"], "0.4.49")
             self.assertEqual(data["core_version"], "0.4.7")
             self.assertTrue(data["rule_hashes"])
             for relative in (

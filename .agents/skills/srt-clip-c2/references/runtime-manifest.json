@@ -35,7 +35,7 @@
     "references/product-knowledge-registry.md",
     "references/final-check.md"
   ],
-  "skill_version": "0.4.48",
+  "skill_version": "0.4.49",
   "summary_file": "references/execution-summary.json",
   "summary_files": [
     "references/commerce-advisory.md",
@@ -49,23 +49,23 @@
   ],
   "source_hashes": {
     "references/ai-first-constitution.md": "6108e61a9a714e3feed609ee6d906412ae3a5b14fc37095bc2efa18cfc2223f2",
-    "references/runtime-contract.md": "e44c9366fec4a923a49fdb125b1a255b7228e3d73cb19f39a73435f347dbbd4d",
-    "references/clip-selection-policy.md": "a9cf181536c4372d9820bd397de8b41b31430f8ad330826a22748869d54a0e10",
-    "references/global-rules.md": "d84332dbf331548116ec77c9650cf7985fda9dbf31b50eff7edf6892dde8fb64",
-    "references/editorial-policy.md": "5aae24d2952b4b7a75734cd9a4f30b516a505fe8064084ab9a05348b01b09449",
-    "references/highlight-selection.md": "3ed6b18c4e738f136c58dcd923c9e9a79a11d56648917ea2fdc6e5242a9179ca",
+    "references/runtime-contract.md": "fccc2372aff4ceaf34d5b5f398227f6dc720e13cc3c4bb56902ab293fc7fef48",
+    "references/clip-selection-policy.md": "926a9ec31d6ffb694ddbac8377601494190798d9cdba43427b0515c5f2f1edcb",
+    "references/global-rules.md": "94d391d7ce4f952c317c79bf63f5f64037d27884425a77c99039bec68c936eaf",
+    "references/editorial-policy.md": "1b168c209abdd107b83f868f973bd150ee8a65f6d9588f6e32b6b06c4760d000",
+    "references/highlight-selection.md": "91b72f79959c55980e9596c9f375a429fe67edeb3b6a6dd5f7811354912fce48",
     "references/product-knowledge-registry.md": "d5125b4d4ba910ec8dc1c2fcbfe5ce55440a056232ae1ba7ed81b89f8c6d0a77",
-    "references/final-check.md": "e210a363e8bc7ccd190d1b837a53247ef4f4f6ff60b65a529d13ac0e2e950dea",
+    "references/final-check.md": "ff4df2e46a19370a52ec03ed748fdfa42cd5077ff7e3eb55b961e389b296b006",
     "references/commerce-advisory.md": "7b338c188abc976ffc6bf64f2ae03e00b87fced33975d1945e117a955ac80e55",
     "references/long-context-mode.md": "3d128c5c027649f53a6fb7ce41adac5a88ca8994e5b1658d81252eeb48a9b6af",
     "product-knowledge-packs/scarves.md": "138d3579b7a1f58b266e50373c42b782893b77fb55f85cf9e823e99e82714686",
     "product-knowledge-packs/shoes.md": "13a1711a10721fade8e61a6e8d01fd39375840f6fa398ce6431e2fecd215a272",
     "product-knowledge-packs/womens-fashion.md": "5ca22e0649f5e42c7ce69deab4f29098fcd023c988aed1fdfb5dd891dea7359f",
-    "agents/openai.yaml": "59eec5991cf336ee82c11e317fae710315cd0a243b15326ea70b651968d6a5e3",
-    "../../plugin.json": "59e8fe9a1d7920cc1a213bea7955a9fce98cf90494905eab8b274adbad69a7fe",
-    "../../.codex-plugin/plugin.json": "b9baac312a3bdceeee66fcec5cfe67b95658ef09439f8d94c96bf8151bb33450"
+    "agents/openai.yaml": "78a76ec8129aa6993ce0e79d4ca6bc912357e0c2639d1a26f23d7fc07a809c47",
+    "../../plugin.json": "0d1a6fd1b03eeb4ea90890e861e2b2ad16ccfb4f99b98f1b06d49cee62b2b64e",
+    "../../.codex-plugin/plugin.json": "28337df328d71bf3a2f52ac034ba06d69dbe5c954d8236831da5d50656e2b120"
   },
-  "runtime_sha256": "b3b4cc3fe640b55aac07c6801faf548c28606d4a491bb09bd141b279856e05fc",
+  "runtime_sha256": "6e85a2074d3aa153f559fc8f5b8408b1fbfea0fb0e49111e92f72cdcbcf49e46",
   "source_map": [
     {
       "rule_id": "SRC01.L0001",

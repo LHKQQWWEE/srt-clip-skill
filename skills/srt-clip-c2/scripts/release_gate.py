@@ -9,6 +9,7 @@ import json
 import re
 import subprocess
 import sys
+import unicodedata
 import zipfile
 from pathlib import Path
 
@@ -16,7 +17,7 @@ from pathlib import Path
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = next(parent for parent in SKILL_ROOT.parents if (parent / "VERSION").is_file())
 EXPECTED_CORE = "0.4.7"
-EXPECTED_SKILL = "0.4.48"
+EXPECTED_SKILL = "0.4.49"
 ACTIVE_SURFACES = (
     "SKILL.md", "README.md", "START-HERE.md", "ENVIRONMENT.md", "agents/openai.yaml",
     "references/ai-first-constitution.md", "references/runtime-contract.md",
@@ -25,6 +26,7 @@ ACTIVE_SURFACES = (
     "references/highlight-selection.md", "references/product-knowledge-registry.md",
     "references/update-protocol.md", "tests/quality-rubric.md",
     "references/runtime-current.md", "references/execution-summary.json",
+    "references/runtime-manifest.json", "scripts/selection.schema.json", "scripts/README.md",
     "scripts/prohibited_term_guard.py", "scripts/srt_tools.py",
     "tests/prohibited-term-regression-cases.md", "tests/test_duplicate_expression_policy.py",
     "tests/test_absolute_term_policy.py", "tests/test_dynamic_blocks_and_duration.py",
@@ -56,6 +58,17 @@ _DURATION_CAP = re.compile(
     r"[^。！？；;!?]{0,24}(?:才|允许|可以|可|删|截|压缩|裁剪)",
     re.IGNORECASE,
 )
+_RETIRED_DURATION_SPEED = re.compile(
+    r"(?:1(?:\.0+)?倍速|1\.0+倍|1\.0+x|source(?:playback)?speed(?:of)?1(?:\.0+)?\b)"
+    r"|1\.2(?:倍速|倍|x)(?:只|仅|专)用?(?:于|作)?(?:开头|钩子)"
+    r"|(?:只|仅|专)有?(?:开头|钩子)[^。！？；;!?]{0,18}(?:按|使用|采用|以)1\.2(?:倍速|倍)"
+    r"|1\.2x[^。！？；;!?]{0,40}(?:only|solely)(?:to|for)[^。！？；;!?]{0,12}(?:opening|hook)"
+    r"|(?:only|solely)(?:the)?(?:opening|hook)[^。！？；;!?]{0,25}1\.2x"
+    r"|opening(?:-hook)?(?:'s)?1\.2xreferenceisseparatefromwhole-cut"
+    r"|full_clip_playback_speed[\"']\s*,\s*1(?:\.0+)?\s*\)",
+    re.IGNORECASE,
+)
+
 _CLOSING_ACTIVITY_EXCEPTION = re.compile(
     r"(?:福利|优惠|活动).{0,12}(?:仍在|正处于|有效期内|活动期|期间).{0,28}"
     r"(?:可以|可|允许|能够).{0,15}(?:留在|放在|保留|置于).{0,8}(?:最后|结尾)"
@@ -80,6 +93,9 @@ def semantic_conflicts(text: str) -> list[tuple[int, str, str]]:
         for clause in re.split(r"(?<=[。！？；;!?])", line):
             if not clause.strip():
                 continue
+            compact = re.sub(r"\s+", "", unicodedata.normalize("NFKC", clause))
+            if _RETIRED_DURATION_SPEED.search(compact):
+                conflicts.append((line_number, "retired_duration_speed", clause.strip()))
             candidates = (
                 ("hook_reuse", _MULTI_HOOK_SHARE),
                 ("candidate_display_cap", _CANDIDATE_CAP),
@@ -121,6 +137,7 @@ def assert_current_test_contract() -> None:
             "test_detects_retired_duration_and_closing_activity_rules_in_plain_chinese",
             "test_stale_phase_plan_is_blocked_from_current_release_source",
             "test_stale_runtime_policy_markers_are_blocked",
+            "test_detects_retired_whole_clip_speed_and_hook_only_variants",
             "test_semantic_scan_excludes_gitignored_superpowers_work_notes",
         ),
         "test_dynamic_blocks_and_duration.py": (
@@ -129,6 +146,7 @@ def assert_current_test_contract() -> None:
             "test_promotion_is_separate_and_ends_with_a_compliant_original_quote",
             "test_schema_records_open_boards_promotion_and_per_plan_duration_review",
         ),
+        "test_srt_tools.py": ("test_full_clip_duration_uses_fixed_speed_and_reviews_exactly_above_100_seconds",),
         "test_selection_structure.py": (
             "test_promotion_cue_cannot_support_or_rank_as_a_selling_point",
             "test_cta_must_have_a_distinct_promotion_classification",
@@ -305,11 +323,15 @@ def assert_semantic_surfaces() -> None:
     for path in paths:
         relative = path.relative_to(PLUGIN_ROOT).as_posix()
         text = path.read_text(encoding="utf-8")
+        if path.name == "selection.schema.json":
+            speed = json.loads(text)["properties"]["full_clip_playback_speed"]
+            if speed.get("const") != 1.2 or speed.get("default") != 1.2:
+                raise ValueError(f"whole-cut speed schema mismatch in {relative}")
         if path.name == "execution-summary.json":
             text = json.loads(text).get("summary", "")
         elif path.name == "plugin.json":
             payload = json.loads(text)
-            text = json.dumps(payload.get("extensions", {}), ensure_ascii=False) + "\n" + json.dumps(payload.get("interface", {}), ensure_ascii=False)
+            text = json.dumps(payload, ensure_ascii=False, indent=2)
         conflicts = semantic_conflicts(text)
         if conflicts:
             line, label, excerpt = conflicts[0]
@@ -331,7 +353,10 @@ def assert_semantic_surfaces() -> None:
         (selection, "超过 100 秒须逐条复核", "clip-selection-policy.md"),
         (selection, "写出正文前完成首次容量规划", "clip-selection-policy.md"),
         (selection, "首稿必须以已完成容量优化的选段为基础", "clip-selection-policy.md"),
-        (selection, "全片播放速度", "clip-selection-policy.md"),
+        (selection, "预计成片时长 = 原始选段累计时长 ÷ 1.2", "clip-selection-policy.md"),
+        (selection, "折算后 90 秒是有效信息密度目标", "clip-selection-policy.md"),
+        (selection, "100 秒可作为可接受参考", "clip-selection-policy.md"),
+        (selection, "不得自动截断", "clip-selection-policy.md"),
         (final_check, "每条成片从对应用户所选开头原话开始", "final-check.md"),
     ):
         if phrase not in text:

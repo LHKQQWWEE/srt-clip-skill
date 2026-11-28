@@ -30,15 +30,15 @@ class DynamicBlocksAndDurationTests(unittest.TestCase):
         ):
             self.assertIn(phrase, policy)
 
-    def test_hook_speed_reference_is_separate_from_full_clip_playback_estimate(self):
+    def test_hook_attention_reference_uses_the_same_speed_as_full_clip_estimate(self):
         policy = (ROOT / "references" / "clip-selection-policy.md").read_text(encoding="utf-8")
         contract = (ROOT / "references" / "runtime-contract.md").read_text(encoding="utf-8")
         editorial = (ROOT / "references" / "editorial-policy.md").read_text(encoding="utf-8")
-        self.assertIn("全片播放速度", policy)
-        self.assertIn("未明确整片播放速度时按原素材 1.0 倍速估算", contract)
-        self.assertIn("1.2 倍速仅用于开头吸引力参考", contract)
-        self.assertIn("默认以 1.2 倍速作估算参照", editorial)
-        self.assertNotIn("再按默认 1.2 倍速估算时长", contract)
+        for text in (policy, contract):
+            self.assertIn("预计成片时长 = 原始选段累计时长 ÷ 1.2", text)
+        self.assertIn("沿用全片估时的 1.2 倍速", editorial)
+        self.assertIn("前 2 秒约对应原素材累计 2.4 秒", editorial)
+        self.assertIn("前 5 秒约对应原素材累计 6 秒", editorial)
 
     def test_reference_surfaces_keep_the_same_two_duration_review_stages(self):
         policy = (ROOT / "references" / "clip-selection-policy.md").read_text(encoding="utf-8")
@@ -77,8 +77,8 @@ class DynamicBlocksAndDurationTests(unittest.TestCase):
         self.assertIn("content_blocks", schema["properties"])
         self.assertIn("duration_review", schema["properties"])
         speed = schema["properties"]["full_clip_playback_speed"]
-        self.assertEqual(speed["default"], 1.0)
-        self.assertEqual(speed["exclusiveMinimum"], 0)
+        self.assertEqual(speed["default"], 1.2)
+        self.assertEqual(speed["const"], 1.2)
         role = schema["properties"]["roles"]["items"]["properties"]
         self.assertIn("cta_type", role)
         self.assertIn("transaction_info", role)

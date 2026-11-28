@@ -5,7 +5,7 @@ description: "Use when discussing Douyin e-commerce growth or selling advice (�
 
 # SRT Clip C2 Universal 0.4.7｜运行入口
 
-Skill 版本：**0.4.48**。
+Skill 版本：**0.4.49**。
 
 ## 电商咨询路由
 
@@ -21,7 +21,7 @@ Skill 版本：**0.4.48**。
 - 若校验工具不可用，先检查摘要记录的版本、manifest 和规则哈希元数据；无法确认有效、规则存在冲突/不确定/缺失时，回查原始规则。不得把摘要当成新业务规则。
 - 工具边界仅限日常 SRT/逐条时长剪辑：不调用 Python、脚本、CLI 或外部工具。电商经营咨询涉及最新平台规则或其他时效信息且会影响判断时，可按需查官方权威来源。执行摘要文件若可直接读取，可作为辅助；缺失、失效或无法核验时直接读取 `runtime-current.md`，不得运行脚本生成或刷新摘要。
 
-`references/clip-selection-policy.md` 是时长与单条/多方案数量的唯一权威规则来源。其他文件仅引用它。`references/runtime-current.md` 是生成的日常运行正文；版本、构建元数据和完整规则哈希见 `references/runtime-manifest.json`。
+`references/clip-selection-policy.md` 是时长与单条/多方案数量的唯一权威规则来源。全片估时统一除以 1.2。`references/runtime-current.md` 是生成的日常运行正文；版本、构建元数据和完整规则哈希见 `references/runtime-manifest.json`。
 
 ## 任务边界
 

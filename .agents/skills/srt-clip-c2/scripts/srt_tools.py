@@ -68,6 +68,9 @@ class SourceReport:
     source_map_sha256: str = ""
 
 
+FULL_CLIP_SPEED = Decimal("1.2")
+
+
 def _source_map_records(cues: Iterable[Cue]) -> list[dict[str, object]]:
     return [
         {
@@ -692,20 +695,11 @@ def validate_selection(
     if mode not in {"script", "manual"}:
         failures.append(_failure("invalid_verification_mode", "verification_mode must be script or manual"))
 
-    playback_speed = selection.get("full_clip_playback_speed", 1.0)
-    try:
-        parsed_playback_speed = Decimal(str(playback_speed))
-    except (InvalidOperation, ValueError):
-        parsed_playback_speed = Decimal(0)
-    if (
-        isinstance(playback_speed, bool)
-        or not isinstance(playback_speed, (int, float))
-        or not parsed_playback_speed.is_finite()
-        or parsed_playback_speed <= 0
-    ):
+    playback_speed = selection.get("full_clip_playback_speed", float(FULL_CLIP_SPEED))
+    if playback_speed != float(FULL_CLIP_SPEED):
         failures.append(_failure(
             "invalid_full_clip_playback_speed",
-            "full_clip_playback_speed must be a finite positive number for the whole clip",
+            "full_clip_playback_speed must be 1.2 for the whole clip",
         ))
 
     selected_raw = selection.get("selected_ids", [])
@@ -861,11 +855,18 @@ def validate_selection(
 
     duration_review = selection.get("duration_review")
     estimated_duration = selection.get("estimated_duration_seconds")
-    if estimated_duration is not None:
-        if isinstance(estimated_duration, bool) or not isinstance(estimated_duration, (int, float)) or estimated_duration < 0:
-            failures.append(_failure("invalid_estimated_duration", "estimated duration must be a nonnegative number"))
-        elif estimated_duration > 100 and duration_review is None:
+    if estimated_duration is not None and (
+        isinstance(estimated_duration, bool)
+        or not isinstance(estimated_duration, (int, float))
+        or not Decimal(str(estimated_duration)).is_finite()
+        or estimated_duration < 0
+    ):
+        failures.append(_failure("invalid_estimated_duration", "estimated duration must be a finite nonnegative number"))
+    if duration_review is None and source.status == "PASS" and selected_set <= source_ids:
+        groups = _selected_groups([source_by_id[cue_id] for cue_id in selected_ids], source.source_type)
+        if _source_duration_ms(groups) > 100_000 * FULL_CLIP_SPEED:
             failures.append(_failure("duration_review_required", "a cut above the 100-second reference needs an individual review record"))
+
     omitted_block_ids: list[str] = []
     if duration_review is not None:
         if not isinstance(duration_review, dict) or set(duration_review) != {"outcome", "review_reason", "omitted_blocks"}:
@@ -1069,6 +1070,10 @@ def _selected_groups(cues: list[Cue], source_type: str) -> list[dict[str, object
     return result
 
 
+def _source_duration_ms(groups: list[dict[str, object]]) -> Decimal:
+    return sum((Decimal(str(group["span_ms_exact"])) for group in groups), Decimal(0))
+
+
 def assemble_selection(
     source: SourceReport,
     selection: dict[str, object],
@@ -1083,12 +1088,10 @@ def assemble_selection(
     by_id = _source_index(source)
     cues = [by_id[cue_id] for cue_id in selected_ids]
     groups = _selected_groups(cues, source.source_type)
-    source_duration_exact = sum((Decimal(str(group["span_ms_exact"])) for group in groups), Decimal(0))
+    source_duration_exact = _source_duration_ms(groups)
     source_duration_ms = _number_value(source_duration_exact)
-    # The opening hook's 1.2x reference is separate from whole-cut playback speed.
-    playback_speed = Decimal(str(selection.get("full_clip_playback_speed", 1.0)))
-    playback_ms_exact = source_duration_exact / playback_speed
-    accelerated_ms = int(playback_ms_exact.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+    playback_ms_exact = source_duration_exact / FULL_CLIP_SPEED
+    playback_ms = int(playback_ms_exact.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
     known_unaccelerated_ms = selection.get("known_unaccelerated_ms", 0)
     if isinstance(known_unaccelerated_ms, bool) or not isinstance(known_unaccelerated_ms, int) or known_unaccelerated_ms < 0:
         return {
@@ -1102,7 +1105,6 @@ def assemble_selection(
             },
             "assembled": False,
         }
-    playback_ms = accelerated_ms + known_unaccelerated_ms
     display = _display_duration(playback_ms)
     return {
         "status": "PASS",
@@ -1135,10 +1137,10 @@ def assemble_selection(
         "source_groups": groups,
         "source_duration_ms": source_duration_ms,
         "source_duration_ms_exact": _decimal_string(source_duration_exact),
-        "accelerated_duration_ms": accelerated_ms,
+        "accelerated_duration_ms": playback_ms,
         "known_unaccelerated_ms": known_unaccelerated_ms,
         "playback_duration_ms": playback_ms,
-        "full_clip_playback_speed": float(playback_speed),
+        "full_clip_playback_speed": float(FULL_CLIP_SPEED),
         "source_duration_display": _display_duration(source_duration_exact),
         "playback_duration_display": display,
         "shared_duration_field": "playback_duration_display",

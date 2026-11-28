@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://c2-universal.local/schemas/selection-0.4.48.json",
+  "$id": "https://c2-universal.local/schemas/selection-0.4.49.json",
   "title": "C2 Selection JSON",
   "description": "Development/test record for one actual user-selected final cut. Selling points describe product reasons only, while content_blocks records this plan's open, dynamic section order and roles keep promotion separate. Routine SRT execution never calls this JSON schema or Python tools. Create one independent record for each user-selected opening.",
   "type": "object",
@@ -43,13 +43,13 @@
     "estimated_duration_seconds": {
       "type": "number",
       "minimum": 0,
-      "description": "Approximate duration for this cut, planned before drafting after full point-pool review and duplicate-expression competition. Use actual whole-clip playback speed; default to source speed 1.0 when unspecified. 90 seconds is the target, 100 seconds is a nonbinding acceptable reference, and neither is a hard cut. Above 100 seconds requires a per-cut review."
+      "description": "Approximate duration for this cut, planned before drafting after full point-pool review and duplicate-expression competition. Divide accumulated selected source duration by 1.2. The converted target is 90 seconds. Above the 100-second acceptable reference, measured before display rounding, review each cut without automatically truncating it."
     },
     "full_clip_playback_speed": {
       "type": "number",
-      "exclusiveMinimum": 0,
-      "default": 1.0,
-      "description": "Actual playback speed for the whole cut. If unspecified, estimate at source speed 1.0. The 1.2x opening-hook reference applies only to opening attention checks and does not set whole-cut speed."
+      "const": 1.2,
+      "default": 1.2,
+      "description": "Fixed 1.2x playback speed for the whole-cut estimate and the opening attention reference."
     },
     "duration_review": {
       "type": "object",
@@ -256,7 +256,7 @@
     },
     "opening_choice": {
       "type": "object",
-      "description": "Optional record of the exact real opening selected by the user, including its necessary immediate bridge. Candidate qualification uses the open-ended viewing-motivation priority: show every distinct qualified first-priority candidate when any exist; otherwise use qualified fallback candidates. This priority defines the candidate pool and does not rank a winner or select for the user. Candidate display has no count limit; the user may select up to three, and each selected opening starts its own independent complete cut. Classify by actual viewing motivation, not product-benefit category or type label. No fixed order, weight, or score within the first priority. At default 1.2x, 2.4 and 6 cumulative source seconds are references only, never hard cuts. This schema is not a workflow dependency.",
+      "description": "Optional record of the exact real opening selected by the user, including its necessary immediate bridge. Candidate qualification uses the open-ended viewing-motivation priority: show every distinct qualified first-priority candidate when any exist; otherwise use qualified fallback candidates. This priority defines the candidate pool and does not rank a winner or select for the user. Candidate display has no count limit; the user may select up to three, and each selected opening starts its own independent complete cut. Classify by actual viewing motivation, not product-benefit category or type label. No fixed order, weight, or score within the first priority. At 1.2x, 2.4 and 6 cumulative source seconds are references only, never hard cuts. This schema is not a workflow dependency.",
       "properties": {
         "cue_ids": {
           "type": "array",
@@ -273,7 +273,8 @@
     "known_unaccelerated_ms": {
       "type": "integer",
       "minimum": 0,
-      "description": "Optional estimate supplement for display only; duration remains approximate and is never used for acceptance, pause, or splitting."
+      "deprecated": true,
+      "description": "Legacy annotation accepted for compatibility. It does not contribute to the whole-cut estimate."
     }
   },
   "additionalProperties": true,

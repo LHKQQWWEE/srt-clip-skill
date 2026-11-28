@@ -133,7 +133,9 @@ class SelectionStructureTests(unittest.TestCase):
         self.assertIn("selected_contextual_absolute_claim", codes)
 
     def test_duration_over_100_seconds_requires_a_review_without_forcing_omission(self):
-        self.selection["estimated_duration_seconds"] = 101
+        self.source = srt_tools.parse_source(SOURCE.replace("1 0.5 ", "1 120 "))
+        self.selection = selection_for(self.source)
+        self.selection["estimated_duration_seconds"] = 101.25
         _, codes = failure_codes(self.selection, self.source)
         self.assertIn("duration_review_required", codes)
         self.selection["duration_review"] = {
